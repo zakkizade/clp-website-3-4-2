@@ -1,47 +1,49 @@
-export default function Page() {
-  return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
-    </main>
-  )
+"use client"
+
+import { useMemo, useState } from "react"
+import { ArrowDownRight, ArrowRight, ChevronDown, Heart, Mail, Menu, MessageCircle, Search, Send, ShoppingBag, Sparkles, Star, X } from "lucide-react"
+
+const products = [
+  { name: "The Emerald Heirloom", type: "Natural Emerald · 18K Gold", price: "₹85,000", image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=900&q=85", tags: ["Natural", "GIA Certified"], view: true },
+  { name: "Jaipur Sunburst", type: "Citrine · 18K Gold", price: "₹42,500", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=900&q=85", tags: ["Hallmarked Gold"], view: false },
+  { name: "The Blue Hour", type: "Blue Sapphire · Silver", price: "₹68,000", image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=900&q=85", tags: ["Natural", "Certified"], view: true },
+  { name: "Rose of Amber", type: "Ruby · 18K Gold", price: "₹52,000", image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=900&q=85", tags: ["Natural", "Hallmarked Gold"], view: false },
+]
+const categories = [
+  { title: "Loose Natural Gemstones", eyebrow: "From the earth", image: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1000&q=85" },
+  { title: "Fine Gold Jewelry", eyebrow: "Made to last", image: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=1000&q=85" },
+  { title: "Jaipur Silver Collection", eyebrow: "A quiet shimmer", image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1000&q=85" },
+  { title: "Royal Craftsmanship", eyebrow: "By hand, in Jaipur", image: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1000&q=85" },
+]
+
+export default function Home() {
+  const [query, setQuery] = useState("")
+  const [activeFilter, setActiveFilter] = useState("All pieces")
+  const [wishlist, setWishlist] = useState<string[]>([])
+  const [cart, setCart] = useState(0)
+  const [newsletter, setNewsletter] = useState("")
+  const [subscribed, setSubscribed] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [rotated, setRotated] = useState<string[]>([])
+  const filteredProducts = useMemo(() => products.filter((product) => {
+    const searchable = `${product.name} ${product.type} ${product.tags.join(" ")}`.toLowerCase()
+    const matchesQuery = searchable.includes(query.toLowerCase())
+    const matchesFilter = activeFilter === "All pieces" || (activeFilter === "Gold" ? product.type.includes("Gold") : activeFilter === "Silver" ? product.type.includes("Silver") : product.type.toLowerCase().includes(activeFilter.toLowerCase()))
+    return matchesQuery && matchesFilter
+  }), [activeFilter, query])
+
+  return <main className="min-h-screen overflow-hidden bg-pearl text-ink">
+    <div className="utility-bar"><span>Direct customer care: <u>Email</u> &amp; <u>WhatsApp</u></span><span className="utility-right">Deliver to: <b>🇮🇳 India</b> <span className="currency">INR ₹</span><ChevronDown /></span></div>
+    <header className="site-header"><a href="#top" className="brand-mark" aria-label="CLP home"><span>CLP</span><small>GEMSTONES &amp; FINE JEWELRY</small></a><div className="search-wrap"><select aria-label="Search category" defaultValue="All"><option value="All">All categories</option><option>Gemstones</option><option>Fine Jewelry</option></select><Search aria-hidden="true" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search natural rubies, emerald rings..." aria-label="Search products" /></div><div className="header-actions"><button className="google-login"><span>G</span> Continue with Google</button><button className="icon-button" aria-label={`${wishlist.length} wishlist items`}><Heart /></button><button className="icon-button cart-button" aria-label={`${cart} items in cart`}><ShoppingBag />{cart > 0 && <b>{cart}</b>}</button><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button></div></header>
+    <nav className={`main-nav ${menuOpen ? "open" : ""}`} aria-label="Main navigation">{["Natural Gemstones", "Gold Fine Jewelry", "Sterling Silver Collection", "Custom Jaipur Design", "Certified Authenticity", "About Us"].map((item) => <a key={item} href={item === "About Us" ? "#story" : "#collection"}>{item}{item === "Natural Gemstones" && <ChevronDown />}</a>)}</nav>
+    <section id="top" className="hero-section"><div className="hero-image" role="img" aria-label="Natural emerald gemstone jewelry on velvet" /><div className="hero-overlay" /><div className="hero-card glass-panel"><p className="eyebrow gold-text">EST. 1987 · JAIPUR, INDIA</p><h1>The Heritage<br /><em>of Jaipur</em></h1><p className="hero-copy">Rare stones, quiet luxury, and the hands of Jaipur. Discover jewelry made to become part of your story.</p><div className="hero-buttons"><a href="#collection" className="button button-gold">Explore gemstones <ArrowRight /></a><a href="#story" className="text-link">Our story <ArrowDownRight /></a></div></div><div className="hero-caption">Natural light / emerald cut / 18k gold<br /><span>Scroll to discover</span></div></section>
+    <section className="intro-section content-width"><p className="eyebrow">A legacy, cut by hand</p><h2>Objects of <em>lasting wonder.</em></h2><p className="intro-copy">We source natural gemstones from the world&apos;s most storied mines and bring them to life in Jaipur, where every piece is shaped by generations of craft.</p></section>
+    <section className="category-section content-width" id="collection"><div className="section-heading"><div><p className="eyebrow">Explore the house</p><h2>Find your <em>signature.</em></h2></div><a className="text-link" href="#products">View all collections <ArrowRight /></a></div><div className="category-grid">{categories.map((category, index) => <a className={`category-card category-${index + 1}`} href="#products" key={category.title}><img src={category.image} alt={category.title} /><div className="card-shade" /><div className="category-copy"><p>{category.eyebrow}</p><h3>{category.title}</h3><ArrowRight /></div></a>)}</div></section>
+    <section className="products-section content-width" id="products"><div className="section-heading product-heading"><div><p className="eyebrow">The edit</p><h2>Pieces to <em>keep.</em></h2></div><div className="filters">{["All pieces", "Gold", "Silver", "Emerald", "Ruby"].map((filter) => <button className={activeFilter === filter ? "active" : ""} key={filter} onClick={() => setActiveFilter(filter)}>{filter}</button>)}</div></div><div className="product-grid">{filteredProducts.map((product) => <article className="product-card glass-panel" key={product.name}><div className={`product-image ${rotated.includes(product.name) ? "rotated" : ""}`}><img src={product.image} alt={product.name} /><button className="wishlist-button" onClick={() => setWishlist((current) => current.includes(product.name) ? current.filter((item) => item !== product.name) : [...current, product.name])} aria-label={`Add ${product.name} to wishlist`}><Heart fill={wishlist.includes(product.name) ? "currentColor" : "none"} /></button>{product.view && <button className="view-360" onClick={() => setRotated((current) => current.includes(product.name) ? current.filter((item) => item !== product.name) : [...current, product.name])}><Sparkles /> {rotated.includes(product.name) ? "ROTATE BACK" : "360° VIEW"}</button>}</div><div className="product-info"><div><p className="product-type">{product.type}</p><h3>{product.name}</h3></div><strong>{product.price}</strong></div><div className="tag-row">{product.tags.map((tag) => <span key={tag}><span>✓</span>{tag}</span>)}</div><div className="product-actions"><button className="button button-dark" onClick={() => setCart((value) => value + 1)}>Add to cart</button><button className="customize-button">Customize</button></div></article>)}</div>{filteredProducts.length === 0 && <p className="empty-state">No pieces found. Try another search.</p>}</section>
+    <section className="trust-section"><div className="content-width trust-grid"><div><span className="trust-icon">✦</span><h3>Worldwide insured shipping</h3><p>Handled with care, from our atelier to your door.</p></div><div><span className="trust-icon">◌</span><h3>Lifetime authenticity</h3><p>Every natural stone is certified and guaranteed.</p></div><div><span className="trust-icon">⌁</span><h3>Safe &amp; encrypted checkout</h3><p>Your details remain private, always.</p></div></div></section>
+    <section className="story-section content-width" id="story"><div className="story-image"><img src="https://images.unsplash.com/photo-1598560917807-1bae44bd2be8?auto=format&fit=crop&w=1200&q=85" alt="Artisan working with jewelry in Jaipur" /></div><div className="story-copy"><p className="eyebrow gold-text">The CLP atelier</p><h2>Made in Jaipur.<br /><em>Meant for everywhere.</em></h2><p>From a small family workshop in the Pink City to collectors across the world, our practice has always been about patience. We believe the finest jewelry should feel discovered, not designed.</p><a href="#top" className="button button-outline">Read our story <ArrowRight /></a></div></section>
+    <section className="newsletter-section"><div className="content-width newsletter-inner"><div><p className="eyebrow gold-text">A note from Jaipur</p><h2>Receive the <em>rare finds.</em></h2><p>Private previews, new arrivals, and stories from the atelier.</p></div><form onSubmit={(event) => { event.preventDefault(); if (newsletter) setSubscribed(true) }}><div className="newsletter-input"><Mail /><input value={newsletter} onChange={(event) => setNewsletter(event.target.value)} type="email" placeholder="Your email address" aria-label="Your email address" required /><button aria-label="Subscribe"><Send /></button></div>{subscribed && <span className="success-message">You&apos;re on the list. Welcome to CLP.</span>}</form></div></section>
+    <footer className="site-footer"><div className="content-width footer-grid"><div className="footer-brand"><a className="brand-mark" href="#top"><span>CLP</span><small>GEMSTONES &amp; FINE JEWELRY</small></a><p>Natural beauty, shaped by Jaipur.</p><div className="socials"><a href="#top" aria-label="Social profile"><Star /></a><a href="mailto:hello@clpjewels.com" aria-label="Email"><Mail /></a></div></div><div><h4>Explore</h4><a href="#collection">Gemstones</a><a href="#products">Fine jewelry</a><a href="#story">Our story</a><a href="#products">Custom design</a></div><div><h4>Care</h4><a href="#story">Shipping &amp; returns</a><a href="#story">Authenticity</a><a href="#story">Care guide</a><a href="mailto:hello@clpjewels.com">Contact us</a></div><div><h4>Payments we accept</h4><div className="payment-row"><span>VISA</span><span>MC</span><span>UPI</span><span>PayPal</span></div><p className="copyright">© 2026 CLP Jewels. All rights reserved.</p></div></div></footer>
+    <a className="whatsapp-widget" href="https://wa.me/919876543210" target="_blank" rel="noreferrer"><MessageCircle /><span>Chat with a<br /><b>Gem Expert</b></span></a>
+  </main>
 }
