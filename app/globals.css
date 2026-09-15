@@ -49,3 +49,27 @@ button { cursor:pointer; }
 .site-footer { background:#050d19; }
 .whatsapp-widget { background:#1b8c5a; }
 @media (max-width:600px) { .hero-card { background:rgba(15,23,42,.82); } }
+
+/* Futuristic emerald glassmorphism */
+:root { --void:#05050a; --neon:#00ff87; --royal:#6d4aff; --champagne:#d4af37; }
+body { background:radial-gradient(circle at 12% 18%, rgba(0,255,135,.14), transparent 28rem), radial-gradient(circle at 88% 42%, rgba(109,74,255,.16), transparent 30rem), var(--void); }
+.site-header, .utility-bar, .main-nav { background:rgba(5,5,10,.62); border-color:rgba(255,255,255,.12); }
+.site-header { box-shadow:0 10px 60px rgba(0,255,135,.06); }
+.brand-mark { text-shadow:0 0 22px rgba(212,175,55,.32); }
+.search-wrap, .google-login, .glass-panel { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.2); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px); }
+.search-wrap { transition:box-shadow .3s, border-color .3s; }
+.search-wrap:focus-within { border-color:var(--champagne); box-shadow:0 0 28px rgba(212,175,55,.2); }
+.hero-section { background:var(--void); }
+.hero-overlay { background:linear-gradient(90deg,rgba(5,5,10,.92),rgba(5,5,10,.54) 48%,rgba(5,5,10,.08)), radial-gradient(circle at 70% 30%, rgba(0,255,135,.15), transparent 25rem); }
+.hero-card { border-radius:1.5rem; box-shadow:0 24px 80px rgba(0,0,0,.5), 0 0 45px rgba(0,255,135,.08); }
+.category-card, .product-card { border-radius:1.5rem; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.07); backdrop-filter:blur(24px); transition:transform .3s ease-out, border-color .3s, box-shadow .3s; }
+.category-card:hover, .product-card:hover { transform:scale(1.05); border-color:var(--champagne); box-shadow:0 24px 70px rgba(0,0,0,.52), 0 0 30px rgba(212,175,55,.2); z-index:2; }
+.category-card:hover img { transform:scale(1.1); }
+.product-image { background:#080b13; }
+.product-image img { transition:transform .5s ease-out; }
+.product-card:hover .product-image img { transform:scale(1.08); }
+.view-360, .wishlist-button { backdrop-filter:blur(18px); background:rgba(5,5,10,.6); border-color:rgba(255,255,255,.2); }
+.trust-section { background:rgba(255,255,255,.04); }
+.newsletter-section { background:rgba(255,255,255,.05); }
+.site-footer { background:rgba(5,5,10,.88); }
+@media (max-width:600px) { .category-card:hover, .product-card:hover { transform:scale(1.015); } }

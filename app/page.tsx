@@ -5,17 +5,17 @@ import { ArrowDownRight, ArrowRight, ChevronDown, Crown, Heart, Mail, Menu, Mess
 
 const products = [
   { name: "3.2 Carat Natural Zambian Emerald (Deep Green Cut)", type: "Natural Emeralds · Panna Collection", price: "₹1,25,000", image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=1200&q=90", tags: ["100% Natural", "Zambian Origin", "GIA Certified"], view: true },
-  { name: "2.8 Carat Colombian Emerald (Vivid Green Octagon Cut)", type: "Natural Emeralds · Panna Collection", price: "₹2,10,000", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=90", tags: ["Unheated", "Colombian Fine", "IGI Certified"], view: true },
-  { name: "4.5 Carat Brazilian Natural Emerald (Rough Cut)", type: "Natural Emeralds · Panna Collection", price: "₹85,000", image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1200&q=90", tags: ["Natural Stone", "Jaipur Cut"], view: true },
-  { name: "18K Gold Emerald Solitaire Ring with Diamonds", type: "Gold & Silver Fine Jewelry", price: "₹1,45,000", image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=90", tags: ["18K Gold", "Hallmarked", "Jaipur Craft"], view: true },
+  { name: "2.8 Carat Colombian Emerald Solitaire Ring", type: "Natural Emeralds · Panna Collection", price: "₹2,10,000", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1200&q=90", tags: ["18K Gold", "Colombian Fine", "IGI Certified"], view: true },
+  { name: "4.5 Carat Brazilian Natural Emerald (Unheated)", type: "Natural Emeralds · Panna Collection", price: "₹85,000", image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1200&q=90", tags: ["Unheated", "Brazilian Origin"], view: true },
+  { name: "14K Gold Emerald & Diamond Royal Necklace", type: "Gold & Silver Fine Jewelry", price: "₹1,95,000", image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=90", tags: ["18K Gold", "Hallmarked", "Jaipur Craft"], view: true },
   { name: "925 Sterling Silver Royal Emerald Pendant", type: "Gold & Silver Fine Jewelry", price: "₹18,500", image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1200&q=90", tags: ["925 Silver", "Handcrafted"], view: true },
   { name: "14K Rose Gold Natural Emerald Bangle", type: "Gold & Silver Fine Jewelry", price: "₹98,000", image: "https://images.unsplash.com/photo-1598560917807-1bae44bd2be8?auto=format&fit=crop&w=1200&q=90", tags: ["14K Rose Gold", "Hallmarked"], view: true },
 ]
 const categories = [
-  { title: "Loose Natural Gemstones", eyebrow: "From the earth", image: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1000&q=85" },
-  { title: "Fine Gold Jewelry", eyebrow: "Made to last", image: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=1000&q=85" },
-  { title: "Jaipur Silver Collection", eyebrow: "A quiet shimmer", image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1000&q=85" },
-  { title: "Royal Craftsmanship", eyebrow: "By hand, in Jaipur", image: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1000&q=85" },
+  { title: "Natural Zambian & Colombian Emeralds", eyebrow: "From the earth", image: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1000&q=85" },
+  { title: "18K Gold Fine Jewelry", eyebrow: "Made to last", image: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&w=1000&q=85" },
+  { title: "Royal Silver Heritage", eyebrow: "A quiet shimmer", image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=1000&q=85" },
+  { title: "Jaipur Custom Craft", eyebrow: "By hand, in Jaipur", image: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1000&q=85" },
 ]
 
 export default function Home() {
