@@ -12,14 +12,12 @@ export type Product = {
 }
 
 const productImages = {
-  zambian: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=85&w=1400",
-  colombian: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=85&w=1400",
-  brazilian: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&q=85&w=1400",
-  necklace: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?auto=format&fit=crop&q=85&w=1400",
-  pendant: "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&q=85&w=1400",
-  goldJewelry: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=85&w=1400",
-  emeraldRing: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=85&w=1400",
-  artisanRing: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&q=85&w=1400",
+  zambian: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
+  colombian: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
+  brazilian: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800",
+  necklace: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800",
+  pendant: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
+  goldJewelry: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
 }
 
 export const products: Product[] = [
