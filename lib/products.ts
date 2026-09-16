@@ -18,8 +18,8 @@ const productImages = {
   necklace: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800",
   pendant: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
   goldJewelry: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-}
-
+  emeraldRing: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
+  }
 export const products: Product[] = [
   { id: "zambian-emerald", name: "3.2 Carat Natural Zambian Emerald (Deep Green Cut)", type: "Natural Emeralds · Panna Collection", priceInr: 125000, image: productImages.zambian, gallery: [productImages.zambian, productImages.colombian], tags: ["100% Natural", "Zambian Origin", "GIA Certified"], view: true, carat: "3.2 carat", metal: "18K Gold" },
   { id: "colombian-solitaire", name: "2.8 Carat Colombian Emerald Solitaire Ring", type: "Natural Emeralds · Panna Collection", priceInr: 210000, image: productImages.colombian, gallery: [productImages.colombian, productImages.emeraldRing], tags: ["18K Gold", "Colombian Fine", "IGI Certified"], view: true, carat: "2.8 carat", metal: "18K Gold" },
