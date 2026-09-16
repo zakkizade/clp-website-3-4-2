@@ -74,6 +74,42 @@ body { background:radial-gradient(circle at 12% 18%, rgba(0,255,135,.14), transp
 .site-footer { background:rgba(5,5,10,.88); }
 @media (max-width:600px) { .category-card:hover, .product-card:hover { transform:scale(1.015); } }
 
+/* Photographic catalog override: keep every stone and jewelry surface photographic. */
+.hero-image,
+.category-card > img,
+.story-image > img,
+.product-image > img,
+.pdp-main-image > img,
+.thumbnail-row img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:none;
+}
+
+.category-card,
+.product-card,
+.pdp-main-image,
+.thumbnail-row > button {
+  background:rgba(8, 18, 31, .78);
+  border:1px solid rgba(212,175,55,.42);
+  box-shadow:0 20px 55px rgba(0,0,0,.38), 0 0 26px rgba(0,255,135,.06);
+}
+
+.category-card::before,
+.category-card::after,
+.product-image::before,
+.product-image::after,
+.pdp-main-image::before,
+.pdp-main-image::after { content:none; }
+
+.card-shade { background:linear-gradient(0deg,rgba(3,12,20,.86),rgba(3,12,20,.08) 64%,transparent); }
+.product-image { background:#08121f; }
+.view-360 { border-color:rgba(212,175,55,.62); background:rgba(5,14,28,.78); }
+.certification-stamp { background:rgba(5,14,28,.82); border-color:rgba(212,175,55,.62); }
+@media (max-width:600px) { .category-card, .product-card { transform:none; } }
+
 /* Reference-inspired royal catalog layout */
 body { background:linear-gradient(135deg,#050e0c 0%,#07151a 48%,#0a1128 100%); }
 .utility-bar { min-height:24px; padding:5px 4vw; background:linear-gradient(90deg,#0a2e35,#122c2d 48%,#091426); font-size:9px; }

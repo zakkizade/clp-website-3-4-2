@@ -5,7 +5,7 @@ import Link from "next/link"
 import { ArrowDownRight, ArrowRight, ChevronDown, Crown, Heart, Mail, Menu, MessageCircle, Rotate3D, Search, Send, ShoppingBag, Star, X } from "lucide-react"
 import { products, formatPrice } from "@/lib/products"
 const categories = [
-  { title: "Loose Gemstones", eyebrow: "From the earth", image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800" },
+  { title: "Loose Gemstones", eyebrow: "From the earth", image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=1200" },
   { title: "Fine Gold Jewelry", eyebrow: "Made to last", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800" },
   { title: "Jaipur Silver", eyebrow: "Heritage in every detail", image: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800" },
   { title: "Custom Craft", eyebrow: "By hand, in Jaipur", image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800" },
