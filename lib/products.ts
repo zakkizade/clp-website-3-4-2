@@ -12,14 +12,15 @@ export type Product = {
 }
 
 const productImages = {
-  zambian: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
-  colombian: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-  brazilian: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800",
-  necklace: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=800",
-  pendant: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
-  goldJewelry: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-  emeraldRing: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-  }
+  zambian: "/placeholder.svg?height=800&width=800&text=Natural+Zambian+Emerald+Gemstone",
+  colombian: "/placeholder.svg?height=800&width=800&text=Colombian+Emerald+Gold+Ring",
+  brazilian: "/placeholder.svg?height=800&width=800&text=Brazilian+Natural+Emerald",
+  necklace: "/placeholder.svg?height=800&width=800&text=18K+Gold+Emerald+Necklace",
+  pendant: "/placeholder.svg?height=800&width=800&text=Royal+Emerald+Pendant",
+  goldJewelry: "/placeholder.svg?height=800&width=800&text=Fine+Gold+Emerald+Jewelry",
+  emeraldRing: "/placeholder.svg?height=800&width=800&text=18K+Gold+Emerald+Ring",
+  artisanRing: "/placeholder.svg?height=800&width=800&text=Jaipur+Emerald+Gold+Craft",
+}
 export const products: Product[] = [
   { id: "zambian-emerald", name: "3.2 Carat Natural Zambian Emerald (Deep Green Cut)", type: "Natural Emeralds · Panna Collection", priceInr: 125000, image: productImages.zambian, gallery: [productImages.zambian, productImages.colombian], tags: ["100% Natural", "Zambian Origin", "GIA Certified"], view: true, carat: "3.2 carat", metal: "18K Gold" },
   { id: "colombian-solitaire", name: "2.8 Carat Colombian Emerald Solitaire Ring", type: "Natural Emeralds · Panna Collection", priceInr: 210000, image: productImages.colombian, gallery: [productImages.colombian, productImages.emeraldRing], tags: ["18K Gold", "Colombian Fine", "IGI Certified"], view: true, carat: "2.8 carat", metal: "18K Gold" },
