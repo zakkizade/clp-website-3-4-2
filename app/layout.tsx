@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { WishlistProvider } from '@/components/wishlist-provider'
 
 export const metadata: Metadata = {
   title: 'CLP | Natural Gemstones & Fine Jewelry from Jaipur',
@@ -16,5 +17,5 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body className="antialiased">{children}{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
+  return <html lang="en"><body className="antialiased"><WishlistProvider>{children}</WishlistProvider>{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
 }

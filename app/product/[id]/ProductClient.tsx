@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { ArrowLeft, Heart, MessageCircle, Play, Rotate3D, ShoppingBag, X } from "lucide-react"
 import { formatPrice, type Product } from "@/lib/products"
+import { useWishlist } from "@/components/wishlist-provider"
 
 const viewLabels = ["Front Angle", "Side Profile", "On-Hand View", "Hallmark Detail", "Certificate", "Craft Detail"]
 
@@ -12,7 +13,8 @@ export default function ProductClient({ product }: { product: Product }) {
   const [active, setActive] = useState(0)
   const [mode, setMode] = useState<"gallery" | "360" | "video">("gallery")
   const [angle, setAngle] = useState(0)
-  const [wishlist, setWishlist] = useState(false)
+  const { isWishlisted, toggleWishlist } = useWishlist()
+  const wishlist = isWishlisted(product.id)
   const [cartOpen, setCartOpen] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const image = product.gallery[active] || product.image
@@ -33,7 +35,7 @@ export default function ProductClient({ product }: { product: Product }) {
           <div className="pdp-actions" aria-label="Purchase actions">
             <button className="pdp-buy-button" onClick={() => setCheckoutOpen(true)}>BUY NOW</button>
             <button className="pdp-cart-button" onClick={() => setCartOpen(true)}><ShoppingBag size={16} /> ADD TO CART</button>
-            <button className={`pdp-wishlist-button ${wishlist ? "is-saved" : ""}`} onClick={() => setWishlist((saved) => !saved)} aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}><Heart size={18} fill={wishlist ? "currentColor" : "none"} /><span>WISHLIST</span></button>
+            <button className={`pdp-wishlist-button ${wishlist ? "is-saved" : ""}`} onClick={() => toggleWishlist(product.id)} aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}><Heart size={18} fill={wishlist ? "currentColor" : "none"} /><span>WISHLIST</span></button>
           </div>
           <button className="pdp-whatsapp" onClick={() => window.open(`https://wa.me/919315589237?text=I%20am%20interested%20in%20${encodeURIComponent(product.name)}`, "_blank")}><MessageCircle size={16} /> INQUIRE VIA WHATSAPP</button>
           <div className="pdp-trust">Certified provenance · Secure insured delivery · Jaipur atelier support</div>
