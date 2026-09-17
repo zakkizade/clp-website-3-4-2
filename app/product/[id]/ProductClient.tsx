@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import { ArrowLeft, MessageCircle, Play, Rotate3D, ShieldCheck } from "lucide-react"
+import { ArrowLeft, Heart, MessageCircle, Play, Rotate3D, ShoppingBag, X } from "lucide-react"
 import { formatPrice, type Product } from "@/lib/products"
 
 const viewLabels = ["Front Angle", "Side Profile", "On-Hand View", "Hallmark Detail", "Certificate", "Craft Detail"]
@@ -12,7 +12,35 @@ export default function ProductClient({ product }: { product: Product }) {
   const [active, setActive] = useState(0)
   const [mode, setMode] = useState<"gallery" | "360" | "video">("gallery")
   const [angle, setAngle] = useState(0)
+  const [wishlist, setWishlist] = useState(false)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
   const image = product.gallery[active] || product.image
 
-  return <main className="pdp-page"><header className="pdp-header"><Link href="/" className="pdp-back"><ArrowLeft size={16} /> Back to collection</Link><span className="pdp-brand">CLP / Jaipur Heritage</span></header><div className="pdp-shell"><section className="pdp-gallery" aria-label="Product gallery"><div className="pdp-main-image">{mode === "video" ? <div className="craft-video"><div className="video-glow" /><button className="video-play" onClick={() => setMode("gallery")} aria-label="Close video preview"><Play fill="currentColor" /></button><span>Atelier preview · 00:28</span></div> : <Image src={image} alt={product.name} fill sizes="(max-width: 700px) 100vw, 55vw" className="object-cover" style={{ transform: mode === "360" ? `rotate(${angle}deg)` : undefined }} priority />}<div className="image-badge"><Rotate3D size={13} /> {mode === "360" ? "Drag to rotate" : "360° view"}</div></div><div className="gallery-tools"><button className={mode === "gallery" ? "active" : ""} onClick={() => setMode("gallery")}>Gallery</button><button className={mode === "360" ? "active" : ""} onClick={() => setMode("360")}><Rotate3D size={13} /> 360° View</button><button className={mode === "video" ? "active" : ""} onClick={() => setMode("video")}><Play size={13} /> Atelier Video</button></div>{mode === "360" && <input className="angle-slider" type="range" min="0" max="360" value={angle} onChange={(event) => setAngle(Number(event.target.value))} aria-label="Rotate product 360 degrees" />}<div className="thumbnail-row">{viewLabels.map((label, index) => <button key={label} className={active === index ? "active" : ""} onClick={() => { setActive(index); setMode("gallery") }}><Image src={product.gallery[index] || product.image} alt={label} fill sizes="90px" className="object-cover" /><span>{label}</span></button>)}</div></section><section className="pdp-info"><p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}</h1><p className="pdp-price">{formatPrice(product.priceInr, "INR")}</p><p className="pdp-description">A collector-grade natural emerald jewel, finished by Jaipur artisans with a focus on provenance, polish, and heirloom wear.</p><div className="spec-grid"><div><span>Carat weight</span><strong>{product.carat}</strong></div><div><span>Certificate</span><strong>{product.tags.find((tag) => tag.includes("GIA") || tag.includes("IGI")) || "GIA Certified"}</strong></div><div><span>Gold purity</span><strong>{product.metal}</strong></div><div><span>Origin</span><strong>{product.tags.find((tag) => tag.includes("Origin")) || "Jaipur, India"}</strong></div></div><div className="trust-row"><ShieldCheck size={18} /><span>Authenticity guaranteed · Insured worldwide delivery</span></div><a className="whatsapp-cta" href="https://wa.me/919315592037" target="_blank" rel="noreferrer"><MessageCircle size={18} /> Inquire via WhatsApp</a></section></div></main>
+  return (
+    <main className="pdp-page">
+      <header className="pdp-header"><Link href="/" className="pdp-back"><ArrowLeft size={16} /> Back to collection</Link><span className="pdp-brand">CLP / Jaipur Heritage</span></header>
+      <div className="pdp-shell">
+        <section className="pdp-gallery" aria-label="Product gallery">
+          <div className="pdp-main-image">{mode === "video" ? <div className="craft-video"><div className="video-glow" /><button className="video-play" onClick={() => setMode("gallery")} aria-label="Close video preview"><Play fill="currentColor" /></button><span>Atelier preview · 00:28</span></div> : <Image src={image} alt={product.name} fill sizes="(max-width: 700px) 100vw, 55vw" className="object-cover" priority />}<div className="image-badge"><Rotate3D size={13} /> {mode === "360" ? "Drag to rotate" : "360° view"}</div></div>
+          <div className="gallery-tools"><button className={mode === "gallery" ? "active" : ""} onClick={() => setMode("gallery")}>Gallery</button><button className={mode === "360" ? "active" : ""} onClick={() => setMode("360")}><Rotate3D size={13} /> 360° View</button><button className={mode === "video" ? "active" : ""} onClick={() => setMode("video")}><Play size={13} /> Atelier Video</button></div>
+          {mode === "360" && <input className="angle-slider" type="range" min="0" max="360" value={angle} onChange={(event) => setAngle(Number(event.target.value))} aria-label="Rotate product 360 degrees" />}
+          <div className="thumbnail-row">{viewLabels.map((label, index) => <button key={label} className={active === index ? "active" : ""} onClick={() => { setActive(index); setMode("gallery") }}><Image src={product.gallery[index] || product.image} alt={label} fill sizes="90px" className="object-cover" /><span>{label}</span></button>)}</div>
+        </section>
+        <section className="pdp-info">
+          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}</h1><p className="pdp-price">{formatPrice(product.priceInr, "INR")}</p>
+          <div className="pdp-specs"><div><span>Carat</span><strong>{product.carat}</strong></div><div><span>Gold purity</span><strong>{product.metal}</strong></div><div><span>Certificate</span><strong>{product.tags.find((tag) => tag.includes("Certified")) || "IGL Certified"}</strong></div></div>
+          <div className="pdp-actions" aria-label="Purchase actions">
+            <button className="pdp-buy-button" onClick={() => setCheckoutOpen(true)}>BUY NOW</button>
+            <button className="pdp-cart-button" onClick={() => setCartOpen(true)}><ShoppingBag size={16} /> ADD TO CART</button>
+            <button className={`pdp-wishlist-button ${wishlist ? "is-saved" : ""}`} onClick={() => setWishlist((saved) => !saved)} aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}><Heart size={18} fill={wishlist ? "currentColor" : "none"} /><span>WISHLIST</span></button>
+          </div>
+          <button className="pdp-whatsapp" onClick={() => window.open(`https://wa.me/919315589237?text=I%20am%20interested%20in%20${encodeURIComponent(product.name)}`, "_blank")}><MessageCircle size={16} /> INQUIRE VIA WHATSAPP</button>
+          <div className="pdp-trust">Certified provenance · Secure insured delivery · Jaipur atelier support</div>
+        </section>
+      </div>
+      {checkoutOpen && <div className="pdp-modal-backdrop" role="presentation" onClick={() => setCheckoutOpen(false)}><section className="pdp-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={(event) => event.stopPropagation()}><button className="pdp-modal-close" onClick={() => setCheckoutOpen(false)} aria-label="Close checkout"><X /></button><p className="eyebrow">CLP secure checkout</p><h2 id="checkout-title">Complete your purchase</h2><input placeholder="Full name" aria-label="Full name" /><input placeholder="Shipping address" aria-label="Shipping address" /><div className="payment-options"><button>UPI</button><button>Cards</button><button>COD</button></div><button className="pdp-buy-button" onClick={() => setCheckoutOpen(false)}>CONTINUE TO PAYMENT</button></section></div>}
+      {cartOpen && <aside className="pdp-cart-drawer" aria-label="Cart drawer"><button className="pdp-modal-close" onClick={() => setCartOpen(false)} aria-label="Close cart"><X /></button><p className="eyebrow">Your bag</p><h2>Added to cart</h2><div className="cart-item"><Image src={product.image} alt="" width={72} height={72} /><div><strong>{product.name}</strong><span>{formatPrice(product.priceInr, "INR")}</span></div></div><button className="pdp-buy-button" onClick={() => { setCartOpen(false); setCheckoutOpen(true) }}>PROCEED TO CHECKOUT</button></aside>}
+    </main>
+  )
 }
