@@ -7,7 +7,12 @@
 :root { --pearl: #0a0a0a; --ink: #f5e6c8; --emerald: #0a0a0a; --champagne: #c59b27; --line: rgba(197,155,39,.3); --muted: #d4a359; color-scheme:dark; }
 * { box-sizing:border-box; border-color:var(--line); }
 html { scroll-behavior:smooth; }
-:root { --pearl: #0a0a0a; --ink: #f5e6c8; --emerald: #0a0a0a; --champagne: #c59b27; --line: rgba(197,155,39,.3); --muted: #d4a359; color-scheme:dark; }
+body { 
+  margin: 0; 
+  background: #0a0a0a !important; 
+  color: #f5e6c8; 
+  font-family: 'DM Sans', sans-serif; 
+}
 a { color:inherit; text-decoration:none; }
 button, input, select { font:inherit; }
 button { cursor:pointer; }
