@@ -1592,7 +1592,7 @@ main,
   }
 
   #top > .hero-layout > .hero-copy > h1 {
-  font-size: 24px;
+  font-size: 36px;
   font-weight: 700;
   text-align: left;
   font-style: italic;
@@ -1604,7 +1604,7 @@ main,
   }
 
   #top > .hero-layout > .hero-copy > p.hero-copy {
-  font-size: 10px;
+  font-size: 12px;
   }
 
   #top > .hero-layout > .hero-copy > .hero-buttons > .button-gold {
