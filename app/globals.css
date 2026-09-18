@@ -1354,14 +1354,14 @@ body {
   gap: clamp(28px, 6vw, 92px);
 }
 
-.hero-photo-card {
+  .hero-photo-card {
   position: relative;
   min-height: 390px;
   overflow: hidden;
   background: linear-gradient(135deg, rgba(3, 39, 29, .25), rgba(5, 14, 28, .7)), url('/hero-emerald-gold.png') center/cover;
-  border-color: rgba(212, 175, 55, .5);
+  border: 0;
   box-shadow: 0 30px 90px rgba(0, 0, 0, .45), inset 0 0 70px rgba(0, 255, 135, .12);
-}
+  }
 
 .hero-photo-card::after {
   content: "";
