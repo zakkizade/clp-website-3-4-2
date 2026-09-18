@@ -1594,6 +1594,9 @@ main,
   #top > .hero-layout > .hero-copy > h1 {
   font-size: 24px;
   font-weight: 700;
+  text-align: left;
+  font-style: italic;
+  color: #e4be72;
   }
 
   #top > .hero-layout > .hero-copy > .eyebrow.gold-text {
@@ -1606,6 +1609,17 @@ main,
 
   #top > .hero-layout > .hero-copy > .hero-buttons > .button-gold {
   font-size: 10px;
+  background-color: #836f3a !important;
+  color: #b16f6f !important;
+  }
+
+  #top > .hero-layout > .hero-copy > .hero-buttons > .text-link {
+  gap: 4px;
+  }
+
+  #top > .hero-layout > .hero-photo-card {
+  font-size: 12px;
+  font-style: italic;
   }
 
 .button-gold {
