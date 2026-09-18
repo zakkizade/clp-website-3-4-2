@@ -1906,6 +1906,103 @@ h1, h2, h3, h4, p, .hero-copy, .product-info, .category-copy {
   }
 }
 
+/* Ultra-premium split hero treatment */
+.hero-section {
+  isolation: isolate;
+  min-height: 700px;
+  padding: clamp(54px, 8vw, 90px) 7vw;
+  background: radial-gradient(circle at 70% 30%, rgba(197, 155, 39, .12) 0%, transparent 60%), #0a0a0a;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .05;
+  background:
+    radial-gradient(ellipse at 70% 48%, transparent 0 24%, rgba(197, 155, 39, .8) 24.5% 25%, transparent 25.5% 34%, rgba(197, 155, 39, .55) 34.5% 35%, transparent 35.5%),
+    radial-gradient(circle at 70% 48%, rgba(197, 155, 39, .7) 0 1px, transparent 1.5px),
+    linear-gradient(90deg, transparent 49.7%, rgba(197, 155, 39, .45) 50%, transparent 50.3%);
+  background-size: 100% 100%, 28px 28px, 100% 100%;
+}
+
+.hero-image {
+  inset: 8% auto 8% 7vw;
+  width: min(46%, 560px);
+  border: 1px solid rgba(197, 155, 39, .4);
+  border-radius: 2px;
+  background-position: center;
+  filter: saturate(.8) brightness(.72);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(197, 155, 39, .12);
+}
+
+.hero-overlay {
+  background: linear-gradient(90deg, transparent 0%, rgba(10, 10, 10, .08) 48%, rgba(10, 10, 10, .72) 100%);
+}
+
+.hero-layout {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(300px, .95fr) minmax(360px, 1.05fr);
+  align-items: center;
+  gap: clamp(32px, 7vw, 100px);
+}
+
+.hero-photo-card {
+  min-height: clamp(430px, 58vh, 590px);
+  border: 1px solid rgba(197, 155, 39, .4);
+  border-radius: 2px;
+  background: linear-gradient(145deg, rgba(10, 10, 10, .08), rgba(10, 10, 10, .36)), url('/hero-emerald-gold.png') center/cover;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .48);
+}
+
+.hero-copy {
+  position: relative;
+  max-width: 480px;
+  padding: 18px 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.hero-copy h1 {
+  margin: 18px 0 22px;
+  color: #f5e6c8;
+  font: 500 clamp(48px, 5.8vw, 78px)/.98 'Playfair Display', serif;
+  letter-spacing: -.05em;
+}
+
+.hero-copy h1 em {
+  color: #f5e6c8;
+}
+
+.hero-copy > p.hero-copy {
+  color: #a39a82;
+}
+
+.hero-buttons {
+  align-items: center;
+  gap: 18px;
+}
+
+.hero-caption {
+  z-index: 2;
+}
+
+@media (max-width: 800px) {
+  .hero-section { min-height: auto; padding: 38px 20px 76px; }
+  .hero-image { display: none; }
+  .hero-layout { grid-template-columns: 1fr; gap: 22px; }
+  .hero-photo-card { min-height: 380px; }
+  .hero-copy { max-width: 100%; }
+}
+
 .cart-drawer {
   position: absolute;
   top: 0;
