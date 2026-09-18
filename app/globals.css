@@ -1497,6 +1497,120 @@ body {
   color: #d4af37;
 }
 
+/* Final concept refinement: pitch black velvet with antique-gold accents. */
+:root {
+  --pearl: #0a0a0a;
+  --ink: #f5e6c8;
+  --emerald: #0a0a0a;
+  --champagne: #c59b27;
+  --line: rgba(197, 155, 39, .36);
+  --muted: #c59b27;
+}
+
+body,
+main,
+.site-header,
+.utility-bar,
+.main-nav,
+.hero-section,
+.intro-section,
+.products-section,
+.story-section,
+.site-footer {
+  background-color: #0a0a0a !important;
+}
+
+.utility-bar,
+.site-header,
+.main-nav,
+.hero-section,
+.hero-card,
+.hero-copy,
+.intro-section,
+.products-section,
+.story-section,
+.site-footer {
+  color: #f5e6c8;
+}
+
+.main-nav {
+  border-top-color: rgba(197, 155, 39, .28);
+}
+
+.hero-section {
+  background: #0a0a0a !important;
+}
+
+.hero-image {
+  background: #0a0a0a !important;
+  filter: none;
+}
+
+.hero-overlay {
+  background: linear-gradient(90deg, rgba(10, 10, 10, .98), rgba(10, 10, 10, .78) 48%, rgba(10, 10, 10, .36)), linear-gradient(0deg, rgba(10, 10, 10, .72), transparent 55%) !important;
+}
+
+.hero-watermark {
+  display: none !important;
+}
+
+.glass-panel,
+.hero-card,
+.hero-photo-card {
+  background-color: rgba(10, 10, 10, .86) !important;
+  border-color: rgba(197, 155, 39, .62) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .52), inset 0 0 0 1px rgba(245, 230, 200, .04) !important;
+}
+
+.hero-photo-card {
+  background-image: linear-gradient(135deg, rgba(10, 10, 10, .12), rgba(10, 10, 10, .58)), url('/hero-emerald-gold.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.button-gold {
+  background: #c59b27 !important;
+  color: #0a0a0a !important;
+}
+
+.button-outline,
+.button-dark,
+.text-link,
+.filters button.active,
+.category-card,
+.product-card {
+  border-color: #c59b27 !important;
+}
+
+.button-outline,
+.text-link,
+.filters button.active {
+  color: #c59b27 !important;
+}
+
+.button-dark {
+  background: #0a0a0a !important;
+  color: #f5e6c8 !important;
+}
+
+.eyebrow,
+.gold-text,
+.hero-caption span,
+.product-type,
+.trust-icon {
+  color: #c59b27 !important;
+}
+
+h1, h2, h3, h4, p, .hero-copy, .product-info, .category-copy {
+  color: #f5e6c8;
+}
+
+.account-modal {
+  background: #0a0a0a !important;
+  border-color: rgba(197, 155, 39, .62) !important;
+  box-shadow: 0 28px 100px rgba(0, 0, 0, .7) !important;
+}
+
 .account-menu span {
   display: flex;
   flex-direction: column;
