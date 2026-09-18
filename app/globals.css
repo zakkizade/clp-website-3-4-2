@@ -1068,10 +1068,28 @@ h2 em {
 }
 
 .hero-card {
-  background: rgba(15, 23, 42, .70);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, .38);
-  backdrop-filter: blur(24px);
-}
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  }
+
+  .hero-layout > .hero-copy {
+  width: min(550px, 100%);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  justify-self: end;
+  }
+
+  .hero-layout > .hero-copy h1 {
+  background: transparent;
+  }
+
+  .hero-layout > .hero-copy .hero-copy {
+  background: transparent;
+  }
 
 .intro-section,
 .products-section,
