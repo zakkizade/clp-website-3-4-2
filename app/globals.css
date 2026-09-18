@@ -1583,11 +1583,30 @@ main,
   box-shadow: 0 24px 80px rgba(0, 0, 0, .52), inset 0 0 0 1px rgba(245, 230, 200, .04) !important;
 }
 
-.hero-photo-card {
+  .hero-photo-card {
   background-image: linear-gradient(135deg, rgba(10, 10, 10, .12), rgba(10, 10, 10, .58)), url('/hero-emerald-gold.png') !important;
   background-size: cover !important;
   background-position: center !important;
-}
+  font-size: 12px;
+  font-style: italic;
+  }
+
+  #top > .hero-layout > .hero-copy > h1 {
+  font-size: 24px;
+  font-weight: 700;
+  }
+
+  #top > .hero-layout > .hero-copy > .eyebrow.gold-text {
+  font-size: 12px;
+  }
+
+  #top > .hero-layout > .hero-copy > p.hero-copy {
+  font-size: 10px;
+  }
+
+  #top > .hero-layout > .hero-copy > .hero-buttons > .button-gold {
+  font-size: 10px;
+  }
 
 .button-gold {
   background: #c59b27 !important;
@@ -1827,7 +1846,13 @@ h1, h2, h3, h4, p, .hero-copy, .product-info, .category-copy {
   }
 
   .hero-photo-card {
-    min-height: 270px;
+  min-height: 390px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(3, 39, 29, .25), rgba(5, 14, 28, .7)), url('/hero-emerald-gold.png') center/cover;
+  border-color: rgba(212, 175, 55, .5);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .45), inset 0 0 70px rgba(0, 255, 135, .12);
+  font-size: 12px;
+  font-style: italic;
   }
 
   .hero-card {
