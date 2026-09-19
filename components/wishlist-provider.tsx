@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 type WishlistContextValue = {
   wishlist: string[]
@@ -12,6 +12,20 @@ const WishlistContext = createContext<WishlistContextValue | null>(null)
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<string[]>([])
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("clp-wishlist")
+      if (saved) setWishlist(JSON.parse(saved))
+    } catch {
+      window.localStorage.removeItem("clp-wishlist")
+    } finally {
+      setReady(true)
+    }
+  }, [])
+  useEffect(() => {
+    if (ready) window.localStorage.setItem("clp-wishlist", JSON.stringify(wishlist))
+  }, [ready, wishlist])
   const value = useMemo(() => ({
     wishlist,
     toggleWishlist: (productId: string) => setWishlist((items) => items.includes(productId) ? items.filter((id) => id !== productId) : [...items, productId]),

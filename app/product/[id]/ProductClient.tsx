@@ -6,6 +6,7 @@ import { useState } from "react"
 import { ArrowLeft, Heart, MessageCircle, Play, Rotate3D, ShoppingBag, X } from "lucide-react"
 import { formatPrice, type Product } from "@/lib/products"
 import { useWishlist } from "@/components/wishlist-provider"
+import { useCart } from "@/components/cart-provider"
 
 const viewLabels = ["Front Angle", "Side Profile", "On-Hand View", "Hallmark Detail", "Certificate", "Craft Detail"]
 
@@ -15,12 +16,15 @@ export default function ProductClient({ product }: { product: Product }) {
   const [angle, setAngle] = useState(0)
   const { isWishlisted, toggleWishlist } = useWishlist()
   const wishlist = isWishlisted(product.id)
+  const { addToCart } = useCart()
   const [cartOpen, setCartOpen] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const image = product.gallery[active] || product.image
 
+  const productJsonLd = { "@context": "https://schema.org", "@type": "Product", name: product.name, description: product.description, image: product.gallery, brand: { "@type": "Brand", name: "CLP Jewels" }, offers: { "@type": "Offer", priceCurrency: "INR", price: product.priceInr, availability: "https://schema.org/InStock", url: `https://clpjewels.com/product/${product.slug}` } }
+
   return (
-    <main className="pdp-page">
+    <main className="pdp-page"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       <header className="pdp-header"><Link href="/" className="pdp-back"><ArrowLeft size={16} /> Back to collection</Link><span className="pdp-brand">CLP / Jaipur Heritage</span></header>
       <div className="pdp-shell">
         <section className="pdp-gallery" aria-label="Product gallery">
@@ -33,8 +37,8 @@ export default function ProductClient({ product }: { product: Product }) {
           <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}</h1><p className="pdp-price">{formatPrice(product.priceInr, "INR")}</p>
           <div className="pdp-specs"><div><span>Carat</span><strong>{product.carat}</strong></div><div><span>Gold purity</span><strong>{product.metal}</strong></div><div><span>Certificate</span><strong>{product.tags.find((tag) => tag.includes("Certified")) || "IGL Certified"}</strong></div></div>
           <div className="pdp-actions" aria-label="Purchase actions">
-            <button className="pdp-buy-button" onClick={() => setCheckoutOpen(true)}>BUY NOW</button>
-            <button className="pdp-cart-button" onClick={() => setCartOpen(true)}><ShoppingBag size={16} /> ADD TO CART</button>
+            <button className="pdp-buy-button" onClick={() => { addToCart(product.id); setCheckoutOpen(true) }}>BUY NOW</button>
+            <button className="pdp-cart-button" onClick={() => { addToCart(product.id); setCartOpen(true) }}><ShoppingBag size={16} /> ADD TO CART</button>
             <button className={`pdp-wishlist-button ${wishlist ? "is-saved" : ""}`} onClick={() => toggleWishlist(product.id)} aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}><Heart size={18} fill={wishlist ? "currentColor" : "none"} /><span>WISHLIST</span></button>
           </div>
           <button className="pdp-whatsapp" onClick={() => window.open(`https://wa.me/919315589237?text=I%20am%20interested%20in%20${encodeURIComponent(product.name)}`, "_blank")}><MessageCircle size={16} /> INQUIRE VIA WHATSAPP</button>

@@ -1906,6 +1906,8 @@ h1, h2, h3, h4, p, .hero-copy, .product-info, .category-copy {
   }
 }
 
+.editorial-page { min-height:100vh; background:#0a0a0a; color:#f5e6c8; padding:32px 7vw 80px; }.editorial-header { display:flex; justify-content:space-between; align-items:center; max-width:1080px; margin:0 auto 90px; }.editorial-content { max-width:760px; margin:0 auto; }.editorial-content h1 { margin:18px 0 24px; font:500 clamp(48px,7vw,86px)/.98 'Playfair Display',serif; color:#f5e6c8; }.editorial-intro { max-width:620px; color:#a39a82; font-size:18px; line-height:1.8; margin-bottom:70px; }.editorial-content section { border-top:1px solid rgba(197,155,39,.3); padding:28px 0; }.editorial-content h2 { color:#c59b27; font:500 27px 'Playfair Display',serif; }.editorial-content section p { max-width:620px; color:#a39a82; line-height:1.9; }.contact-form { display:grid; gap:14px; max-width:560px; }.contact-form input,.contact-form textarea { width:100%; border:1px solid rgba(197,155,39,.3); border-radius:6px; padding:14px; background:#111; color:#f5e6c8; font:inherit; }.contact-links { display:flex; gap:24px; margin-top:28px; flex-wrap:wrap; }.contact-links a { color:#c59b27; }
+
 /* Ultra-premium split hero treatment */
 .hero-section {
   isolation: isolate;
