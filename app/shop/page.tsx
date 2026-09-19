@@ -5,11 +5,13 @@ import Link from "next/link"
 import { Search } from "lucide-react"
 import { Suspense, useMemo, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { formatPrice, products } from "@/lib/products"
+import { formatPrice } from "@/lib/products"
+import { useProducts } from "@/components/product-store"
 
 const filters = ["All", "Gold", "Emerald", "Ruby", "Loose Gemstones", "Fine Jewelry"]
 
 function ShopContent() {
+  const { products } = useProducts()
   const [query, setQuery] = useState("")
   const searchParams = useSearchParams()
   const [filter, setFilter] = useState(searchParams.get("category") || "All")

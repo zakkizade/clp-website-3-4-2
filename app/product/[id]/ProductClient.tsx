@@ -7,10 +7,13 @@ import { ArrowLeft, Heart, MessageCircle, Play, Rotate3D, ShoppingBag, X } from 
 import { formatPrice, type Product } from "@/lib/products"
 import { useWishlist } from "@/components/wishlist-provider"
 import { useCart } from "@/components/cart-provider"
+import { useProducts } from "@/components/product-store"
 
 const viewLabels = ["Front Angle", "Side Profile", "On-Hand View", "Hallmark Detail", "Certificate", "Craft Detail"]
 
-export default function ProductClient({ product }: { product: Product }) {
+export default function ProductClient({ product: initialProduct }: { product: Product }) {
+  const { products: liveProducts } = useProducts()
+  const product = liveProducts.find((item) => item.id === initialProduct.id) || initialProduct
   const [active, setActive] = useState(0)
   const [mode, setMode] = useState<"gallery" | "360" | "video">("gallery")
   const [angle, setAngle] = useState(0)

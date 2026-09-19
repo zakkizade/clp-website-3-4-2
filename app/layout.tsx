@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { WishlistProvider } from '@/components/wishlist-provider'
 import { CartProvider } from '@/components/cart-provider'
+import { ProductProvider } from '@/components/product-store'
 
 export const metadata: Metadata = {
   title: 'CLP | Natural Gemstones & Fine Jewelry from Jaipur',
@@ -22,5 +23,5 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body className="antialiased"><WishlistProvider><CartProvider>{children}</CartProvider></WishlistProvider>{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
+  return <html lang="en"><body className="antialiased"><ProductProvider><WishlistProvider><CartProvider>{children}</CartProvider></WishlistProvider></ProductProvider>{process.env.NODE_ENV === 'production' && <Analytics />}</body></html>
 }
