@@ -16,6 +16,8 @@ export type Product = {
   view: boolean
   carat: string
   metal: string
+  videoUrl?: string
+  view360?: string[]
 }
 
 const productImages = {
