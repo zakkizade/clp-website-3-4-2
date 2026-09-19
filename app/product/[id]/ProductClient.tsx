@@ -8,15 +8,16 @@ import { formatPrice, type Product } from "@/lib/products"
 import { useWishlist } from "@/components/wishlist-provider"
 import { useCart } from "@/components/cart-provider"
 import { useProducts } from "@/components/product-store"
+import { ProductViewer360 } from "@/components/product-viewer-360"
 
 const viewLabels = ["Front Angle", "Side Profile", "On-Hand View", "Hallmark Detail", "Certificate", "Craft Detail"]
+const fallback360Frames = (product: Product) => product.gallery.length > 1 ? product.gallery : [product.image]
 
 export default function ProductClient({ product: initialProduct }: { product: Product }) {
   const { products: liveProducts } = useProducts()
   const product = liveProducts.find((item) => item.id === initialProduct.id) || initialProduct
   const [active, setActive] = useState(0)
   const [mode, setMode] = useState<"gallery" | "360" | "video">("gallery")
-  const [angle, setAngle] = useState(0)
   const { isWishlisted, toggleWishlist } = useWishlist()
   const wishlist = isWishlisted(product.id)
   const { addToCart } = useCart()
@@ -36,9 +37,9 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
       <header className="pdp-header"><Link href="/" className="pdp-back"><ArrowLeft size={16} /> Back to collection</Link><span className="pdp-brand">CLP / Jaipur Heritage</span></header>
       <div className="pdp-shell">
         <section className="pdp-gallery" aria-label="Product gallery">
-          <div className="pdp-main-image">{mode === "video" ? <div className="craft-video"><div className="video-glow" /><button className="video-play" onClick={() => setMode("gallery")} aria-label="Close video preview"><Play fill="currentColor" /></button><span>Atelier preview · 00:28</span></div> : <Image src={image} alt={product.name} fill sizes="(max-width: 700px) 100vw, 55vw" className="object-cover" priority />}<div className="image-badge"><Rotate3D size={13} /> {mode === "360" ? "Drag to rotate" : "360° view"}</div></div>
+          <div className="pdp-main-image">{mode === "video" ? <div className="craft-video"><div className="video-glow" /><button className="video-play" onClick={() => setMode("gallery")} aria-label="Close video preview"><Play fill="currentColor" /></button><span>Atelier preview · 00:28</span></div> : mode === "360" ? <ProductViewer360 images={product.view360 && product.view360.length > 1 ? product.view360 : fallback360Frames(product)} alt={product.name} /> : <Image src={image} alt={product.name} fill sizes="(max-width: 700px) 100vw, 55vw" className="object-cover" priority />}</div>
           <div className="gallery-tools"><button className={mode === "gallery" ? "active" : ""} onClick={() => setMode("gallery")}>Gallery</button><button className={mode === "360" ? "active" : ""} onClick={() => setMode("360")}><Rotate3D size={13} /> 360° View</button><button className={mode === "video" ? "active" : ""} onClick={() => setMode("video")}><Play size={13} /> Atelier Video</button></div>
-          {mode === "360" && <input className="angle-slider" type="range" min="0" max="360" value={angle} onChange={(event) => setAngle(Number(event.target.value))} aria-label="Rotate product 360 degrees" />}
+          
           <div className="thumbnail-row">{viewLabels.map((label, index) => <button key={label} className={active === index ? "active" : ""} onClick={() => { setActive(index); setMode("gallery") }}><Image src={product.gallery[index] || product.image} alt={label} fill sizes="90px" className="object-cover" /><span>{label}</span></button>)}</div>
         </section>
         <section className="pdp-info">
