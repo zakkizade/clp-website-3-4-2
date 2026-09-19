@@ -9,7 +9,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false)
   useEffect(() => { try { const saved = window.localStorage.getItem("clp-cart"); if (saved) setCartItems(JSON.parse(saved)) } catch { window.localStorage.removeItem("clp-cart") } finally { setReady(true) } }, [])
   useEffect(() => { if (ready) window.localStorage.setItem("clp-cart", JSON.stringify(cartItems)) }, [ready, cartItems])
-  const value = useMemo(() => ({ cartItems, setCartItems, addToCart: (id: string) => setCartItems((items) => items.includes(id) ? items : [...items, id]), removeFromCart: (id: string) => setCartItems((items) => items.filter((item) => item !== id)), clearCart: () => setCartItems([]) }), [cartItems])
+  const value = useMemo(() => ({ cartItems, setCartItems, addToCart: (id: string) => setCartItems((items) => [...items, id]), removeFromCart: (id: string) => setCartItems((items) => { const index = items.indexOf(id); return index < 0 ? items : [...items.slice(0, index), ...items.slice(index + 1)] }), clearCart: () => setCartItems([]) }), [cartItems])
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error("useCart must be used inside CartProvider"); return context }
