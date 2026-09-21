@@ -36,6 +36,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     load().catch(() => { if (active) { setError("Unable to connect to the catalog."); setItems(seedProducts); setLoading(false) } })
     return () => { active = false }
   }, [])
+  useEffect(() => {
+    const refresh = () => { void createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false }).then(({ data }) => { if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>))) }) }
+    const interval = window.setInterval(refresh, 30000)
+    return () => window.clearInterval(interval)
+  }, [])
   const saveProduct = async (product: Product) => {
     const payload = { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.priceInr, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl || null, view_360: product.view360 || [], updated_at: new Date().toISOString() }
     const { data, error: mutationError } = await createClient().from("products").upsert(payload).select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()

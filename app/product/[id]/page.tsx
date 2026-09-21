@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation"
-import { products, getProductBySlug } from "@/lib/products"
-import ProductClient from "./ProductClient"
+import { getProductBySlug } from "@/lib/products"
+import ProductRouteClient from "./ProductRouteClient"
 import type { Metadata } from "next"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -12,7 +11,5 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const product = products.find((item) => item.id === id)
-  if (!product) notFound()
-  return <ProductClient product={product} />
+  return <ProductRouteClient id={id} />
 }
