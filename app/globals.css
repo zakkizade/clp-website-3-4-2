@@ -3298,3 +3298,185 @@ body {
   border-color: #e6c866;
   box-shadow: 0 24px 70px rgba(0, 0, 0, .48), 0 0 28px rgba(212, 175, 55, .16);
 }
+
+/* Cool Mist Gray light mode: dark mode remains unchanged above. */
+.light,
+.light body {
+  background: #eaecee !important;
+  color: #1a1a1a !important;
+}
+.light main,
+.light .site-header,
+.light .utility-bar,
+.light .main-nav,
+.light .hero-section,
+.light .intro-section,
+.light .products-section,
+.light .category-section,
+.light .story-section,
+.light .trust-section,
+.light .newsletter-section,
+.light .site-footer,
+.light .pdp-page,
+.light .pdp-shell,
+.light .admin-page {
+  background: #eaecee !important;
+  color: #1a1a1a !important;
+}
+.light .site-header,
+.light .utility-bar,
+.light .main-nav {
+  border-color: rgba(0, 0, 0, .08) !important;
+}
+.light h1,
+.light h2,
+.light h3,
+.light h4,
+.light p,
+.light .hero-copy,
+.light .product-info,
+.light .category-copy,
+.light .pdp-page,
+.light .pdp-page h1,
+.light .pdp-page h2,
+.light .pdp-page h3,
+.light .pdp-page p,
+.light .admin-page,
+.light .admin-page h1,
+.light .admin-page h2,
+.light .admin-page h3 {
+  color: #1a1a1a !important;
+}
+.light .eyebrow,
+.light .gold-text,
+.light .pdp-page .eyebrow,
+.light .admin-page .eyebrow {
+  color: #a47d16 !important;
+}
+.light .glass-panel,
+.light .product-card,
+.light .category-card,
+.light .hero-photo-card,
+.light .account-modal,
+.light .cart-drawer,
+.light .pdp-modal,
+.light .pdp-cart-drawer,
+.light .admin-login,
+.light .admin-stats div,
+.light .admin-table,
+.light .orders-dashboard,
+.light .order-card,
+.light .checkout-modal {
+  background: #f8f9fa !important;
+  border-color: rgba(0, 0, 0, .08) !important;
+  color: #1a1a1a !important;
+  box-shadow: 0 14px 36px rgba(27, 39, 51, .12) !important;
+}
+.light .category-card {
+  border-color: rgba(0, 0, 0, .08) !important;
+  box-shadow: 0 14px 36px rgba(27, 39, 51, .12), inset 0 1px rgba(255, 255, 255, .7) !important;
+}
+.light .category-card .card-shade {
+  background: linear-gradient(0deg, rgba(26, 26, 26, .72), rgba(26, 26, 26, .04) 70%) !important;
+}
+.light .hero-overlay {
+  background: linear-gradient(90deg, rgba(234, 236, 238, .94), rgba(234, 236, 238, .45), rgba(234, 236, 238, .9)) !important;
+}
+.light .hero-image {
+  opacity: .18;
+  filter: saturate(.55) brightness(1.08);
+}
+.light .button-dark,
+.light .pdp-buy-button,
+.light .admin-button,
+.light .primary-cta,
+.light .checkout-modal button[type="submit"] {
+  background: #d4af37 !important;
+  border-color: #c5a059 !important;
+  color: #1a1a1a !important;
+}
+.light .button-dark:hover,
+.light .pdp-buy-button:hover,
+.light .admin-button:hover,
+.light .primary-cta:hover {
+  background: #c5a059 !important;
+}
+.light .search-wrap,
+.light .account-trigger,
+.light .search-wrap input,
+.light .search-wrap select,
+.light select,
+.light input,
+.light textarea,
+.light .pdp-modal input,
+.light .checkout-modal-fields input,
+.light .admin-page input,
+.light .admin-page select,
+.light .admin-page textarea {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, .12) !important;
+  color: #1a1a1a !important;
+}
+.light .pdp-modal-backdrop,
+.light .auth-modal-backdrop {
+  background: rgba(44, 62, 80, .42) !important;
+}
+.light .pdp-modal-close,
+.light .pdp-page .pdp-back,
+.light .pdp-page .pdp-secondary-button,
+.light .admin-logout,
+.light .theme-toggle {
+  color: #2c3e50 !important;
+  border-color: rgba(0, 0, 0, .14) !important;
+}
+.light .product-card,
+.light .pdp-media-frame,
+.light .pdp-image-stage,
+.light .pdp-video-stage,
+.light .product-video,
+.light .pdp-specs,
+.light .pdp-details,
+.light .pdp-highlights,
+.light .item-details,
+.light .checkout-modal,
+.light .checkout-modal .upi-panel {
+  background: #f8f9fa !important;
+  color: #1a1a1a !important;
+  border-color: rgba(0, 0, 0, .08) !important;
+}
+.light .pdp-page .text-\[\#c8bfa9\],
+.light .pdp-page .text-\[\#a39a82\],
+.light .pdp-page .text-\[\#f5e6c8\] {
+  color: #2c3e50 !important;
+}
+.light .admin-table span,
+.light .admin-login p:not(.eyebrow),
+.light .order-card p,
+.light .order-address,
+.light .payment-note,
+.light .checkout-intro,
+.light .form-caption {
+  color: #52606d !important;
+}
+.light .admin-stats strong,
+.light .admin-button,
+.light .order-status,
+.light .checkout-product-line,
+.light .upi-panel strong {
+  color: #a47d16 !important;
+}
+.light .admin-button,
+.light .pdp-buy-button,
+.light .button-dark {
+  color: #1a1a1a !important;
+}
+.light .admin-page .admin-table article,
+.light .orders-dashboard,
+.light .order-card,
+.light .pdp-page .pdp-trust,
+.light .pdp-page li {
+  border-color: rgba(0, 0, 0, .1) !important;
+}
+.light .pdp-page .product-video {
+  background: #dfe3e7 !important;
+}
