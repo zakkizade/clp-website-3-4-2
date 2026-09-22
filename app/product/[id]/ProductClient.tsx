@@ -50,7 +50,7 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
             <button className="pdp-cart-button" onClick={() => { addToCart(product.id); setCartOpen(true) }}><ShoppingBag size={16} /> ADD TO CART</button>
             <button className={`pdp-wishlist-button ${wishlist ? "is-saved" : ""}`} onClick={() => { toggleWishlist(product.id); showToast(wishlist ? "Removed from Wishlist" : "Added to Wishlist") }} aria-label={wishlist ? "Remove from wishlist" : "Add to wishlist"}><Heart size={18} fill={wishlist ? "currentColor" : "none"} /><span>WISHLIST</span></button>
           </div>
-          <button className="pdp-whatsapp" onClick={() => window.open(`https://wa.me/919315589237?text=I%20am%20interested%20in%20${encodeURIComponent(product.name)}`, "_blank")}><MessageCircle size={16} /> INQUIRE VIA WHATSAPP</button>
+          <button className="pdp-whatsapp" onClick={() => window.open(`https://wa.me/919828354333?text=I%20am%20interested%20in%20${encodeURIComponent(product.name)}`, "_blank")}><MessageCircle size={16} /> INQUIRE VIA WHATSAPP</button>
           <div className="pdp-trust">Certified provenance · Secure insured delivery · Jaipur atelier support</div>
         </section>
       </div>
