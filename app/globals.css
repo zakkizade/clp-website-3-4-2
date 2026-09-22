@@ -3480,3 +3480,97 @@ body {
 .light .pdp-page .product-video {
   background: #dfe3e7 !important;
 }
+
+/* Final cool-slate light-mode refinements. */
+.light,
+.light body,
+.light main,
+.light .site-header,
+.light .utility-bar,
+.light .main-nav,
+.light .hero-section,
+.light .intro-section,
+.light .products-section,
+.light .category-section,
+.light .story-section,
+.light .trust-section,
+.light .newsletter-section,
+.light .site-footer,
+.light .pdp-page,
+.light .admin-page {
+  background-color: #e2e8f0 !important;
+}
+.light .eyebrow,
+.light .gold-text,
+.light .hero-caption span,
+.light .product-type,
+.light .trust-icon,
+.light .currency,
+.light .brand-mark,
+.light .text-link,
+.light .story-copy .button-outline,
+.light .section-heading a,
+.light .footer-grid a,
+.light .newsletter-section a,
+.light .pdp-page .eyebrow,
+.light .admin-page .eyebrow {
+  color: #2d3748 !important;
+}
+.light .hero-section {
+  background: #cbd5e1 !important;
+}
+.light .hero-image {
+  opacity: .78 !important;
+  filter: saturate(.92) contrast(1.12) brightness(.9) !important;
+}
+.light .hero-overlay {
+  background: linear-gradient(90deg, rgba(15, 23, 42, .78) 0%, rgba(15, 23, 42, .28) 48%, rgba(15, 23, 42, .56) 100%), linear-gradient(0deg, rgba(15, 23, 42, .48), transparent 55%) !important;
+}
+.light .hero-copy,
+.light .hero-copy h1,
+.light .hero-copy .hero-copy,
+.light .hero-caption,
+.light .hero-caption strong {
+  color: #f8fafc !important;
+}
+.light .hero-copy .gold-text,
+.light .hero-copy .eyebrow,
+.light .hero-copy .text-link,
+.light .hero-caption span {
+  color: #f8fafc !important;
+}
+.light .button-gold,
+.light .button-dark,
+.light .pdp-buy-button,
+.light .primary-cta,
+.light .admin-button {
+  background: #d4af37 !important;
+  border-color: #c5a059 !important;
+  color: #1a202c !important;
+}
+.light .button-gold:hover,
+.light .button-dark:hover,
+.light .pdp-buy-button:hover,
+.light .primary-cta:hover,
+.light .admin-button:hover {
+  background: #c5a059 !important;
+  color: #1a202c !important;
+}
+.light .glass-panel,
+.light .product-card,
+.light .category-card,
+.light .hero-photo-card,
+.light .account-modal,
+.light .cart-drawer,
+.light .pdp-modal,
+.light .admin-login,
+.light .orders-dashboard,
+.light .order-card {
+  background: #f8f9fa !important;
+  border-color: rgba(0, 0, 0, .08) !important;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, .14) !important;
+}
+.light .story-copy .eyebrow.gold-text,
+.light .newsletter-inner .eyebrow.gold-text {
+  color: #2d3748 !important;
+}
