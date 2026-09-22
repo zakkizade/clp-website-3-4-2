@@ -3063,7 +3063,7 @@ main {
     font-size: 42px;
   }
 
-.product-video { width:100%; height:100%; object-fit:contain; background:#0a0a0a; }.viewer-360 {
+.product-video { display:block; width:100%; height:100%; object-fit:cover; background:#0a0a0a; }.viewer-360 {
     font-size: 8px;
   }
 
