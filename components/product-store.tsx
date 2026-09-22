@@ -32,7 +32,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     return () => { active = false }
   }, [])
   useEffect(() => {
-    const refresh = () => { void createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false }).then(({ data }) => { if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>))) }) }
+    const refresh = () => { try { void createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false }).then(({ data }) => { if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>))) }) } catch { /* catalog client not ready; skip this refresh tick */ } }
     const interval = window.setInterval(refresh, 30000)
     return () => window.clearInterval(interval)
   }, [])
