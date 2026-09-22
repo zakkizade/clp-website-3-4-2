@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import { products as seedProducts, type Product } from "@/lib/products"
+import type { Product } from "@/lib/products"
 import { createClient } from "@/lib/supabase/client"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
@@ -25,15 +25,10 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const { data, error: queryError } = await createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false })
       if (!active) return
       if (queryError) { setError(queryError.message || "Unable to load the catalog."); setItems([]); setLoading(false); return }
-      if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>)))
-      else {
-        const seedRows = seedProducts.map((product) => ({ id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.priceInr, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl || null, view_360: product.view360 || [] }))
-        const { data: seeded } = await createClient().from("products").upsert(seedRows).select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360")
-        setItems(seeded?.length ? seeded.map((row) => toProduct(row as Record<string, unknown>)) : seedProducts)
-      }
+      setItems(data?.map((row) => toProduct(row as Record<string, unknown>)) || [])
       setLoading(false)
     }
-    load().catch(() => { if (active) { setError("Unable to connect to the catalog."); setItems(seedProducts); setLoading(false) } })
+    load().catch((reason: unknown) => { if (active) { setError(reason instanceof Error ? reason.message : "Unable to connect to the catalog."); setItems([]); setLoading(false) } })
     return () => { active = false }
   }, [])
   useEffect(() => {
@@ -53,4 +48,3 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useProducts() { const context = useContext(ProductContext); if (!context) throw new Error("useProducts must be used inside ProductProvider"); return context }
-export { seedProducts }
