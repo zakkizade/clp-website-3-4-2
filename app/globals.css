@@ -3683,3 +3683,68 @@ body {
 .light textarea::placeholder {
   color: #64748b !important;
 }
+
+/* Unified hero: independent text and image columns with no desktop overlap. */
+.hero-section {
+  min-height: 0 !important;
+  display: block !important;
+  padding: clamp(40px, 7vw, 88px) clamp(18px, 7vw, 96px) !important;
+  background: #0a0a0a !important;
+}
+.hero-layout {
+  position: relative !important;
+  z-index: 1 !important;
+  width: min(1180px, 100%) !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  align-items: stretch !important;
+  gap: clamp(28px, 5vw, 76px) !important;
+}
+.hero-layout > .hero-copy {
+  width: auto !important;
+  max-width: 560px !important;
+  align-self: center !important;
+  justify-self: stretch !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.hero-description { max-width: 42ch; }
+.hero-banner {
+  position: relative;
+  min-height: clamp(360px, 42vw, 600px);
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, .28);
+  background: #111 url('/hero-emerald-gold.png') center/cover no-repeat;
+  box-shadow: 0 24px 72px rgba(0,0,0,.34);
+}
+.hero-banner::after {
+  content: "";
+  position: absolute;
+  inset: 16px;
+  border: 1px solid rgba(255,255,255,.2);
+  pointer-events: none;
+}
+.hero-banner .hero-caption {
+  position: absolute;
+  z-index: 1;
+  right: 24px;
+  bottom: 22px;
+  left: 24px;
+  color: #f8fafc;
+  text-align: right;
+  text-shadow: 0 1px 8px rgba(0,0,0,.8);
+}
+.light .hero-section { background: #e2e8f0 !important; }
+.light .hero-banner { background-color: #cbd5e1; box-shadow: 0 24px 72px rgba(15,23,42,.18); }
+.light .hero-banner::after { border-color: rgba(255,255,255,.62); }
+.light .hero-banner .hero-caption { color: #f8fafc !important; }
+@media (max-width: 760px) {
+  .hero-section { padding: 42px 18px 56px !important; }
+  .hero-layout { grid-template-columns: 1fr !important; gap: 30px !important; }
+  .hero-layout > .hero-copy { max-width: none !important; }
+  .hero-banner { min-height: min(118vw, 520px); order: 2; }
+  .hero-buttons { flex-wrap: wrap; }
+}
