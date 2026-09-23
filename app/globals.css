@@ -439,31 +439,38 @@ h2 em {
 .card-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, .85), rgba(0, 0, 0, .4) 42%, transparent 78%);
+  background: linear-gradient(to top, rgba(0, 0, 0, .92) 0%, rgba(0, 0, 0, .68) 34%, rgba(0, 0, 0, .25) 64%, transparent 100%);
 }
 
 .category-copy {
   position: absolute;
-  right: 24px;
-  bottom: 24px;
-  left: 24px;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1;
+  padding: 16px;
 }
 
 .category-copy p {
-  margin: 0 0 7px;
+  margin: 0 0 6px;
   color: #D4AF37;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: .18em;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
 .category-copy h3 {
-  max-width: 190px;
+  max-width: calc(100% - 30px);
   margin: 0;
   color: #fff;
-  font: 700 16px/1.15 'Playfair Display', serif;
-  letter-spacing: .04em;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .45);
 }
 
 .category-copy svg {
