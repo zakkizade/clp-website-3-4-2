@@ -1494,6 +1494,82 @@ body {
   font: 400 36px/1.05 'Playfair Display', serif;
 }
 
+.checkout-modal {
+  width: min(620px, 100%);
+}
+
+.checkout-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.checkout-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.checkout-field-wide,
+.checkout-fields,
+.checkout-form .payment-options,
+.checkout-form > button {
+  grid-column: 1 / -1;
+}
+
+.checkout-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.checkout-form label {
+  color: #d8c9ad;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.checkout-form input:not([type="radio"]) {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  border: 1px solid rgba(197, 168, 128, .55);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(0, 0, 0, .28);
+  color: #fff;
+  font: inherit;
+  letter-spacing: .02em;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.checkout-form input:not([type="radio"]):focus {
+  border-color: #c5a880;
+  background: rgba(0, 0, 0, .42);
+  box-shadow: 0 0 0 3px rgba(197, 168, 128, .14);
+}
+
+.checkout-form input::placeholder {
+  color: rgba(230, 220, 202, .48);
+}
+
+@media (max-width: 620px) {
+  .checkout-form,
+  .checkout-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-field-wide,
+  .checkout-fields,
+  .checkout-form .payment-options,
+  .checkout-form > button {
+    grid-column: auto;
+  }
+}
+
 .account-modal h2 em {
   color: #dfc16a;
 }
