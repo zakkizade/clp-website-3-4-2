@@ -3719,6 +3719,7 @@ body {
   border: 1px solid rgba(212, 175, 55, .28);
   background: #111 url('/hero-emerald-gold.png') center/cover no-repeat;
   box-shadow: 0 24px 72px rgba(0,0,0,.34);
+  transition: background-image .35s ease, background-color .35s ease, filter .35s ease;
 }
 .hero-banner::after {
   content: "";
