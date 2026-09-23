@@ -3748,3 +3748,67 @@ body {
   .hero-banner { min-height: min(118vw, 520px); order: 2; }
   .hero-buttons { flex-wrap: wrap; }
 }
+
+/* Hero atmosphere and type scale. The rings stay behind both independent columns. */
+.hero-section::before,
+.hero-section::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  width: min(125vw, 1500px);
+  height: min(125vw, 1500px);
+  border-radius: 50%;
+  left: 58%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.hero-section::before {
+  border: 1px solid rgba(212, 175, 55, .22);
+  box-shadow: 0 0 0 90px rgba(212, 175, 55, .05), 0 0 0 180px rgba(212, 175, 55, .035), 0 0 0 270px rgba(212, 175, 55, .022);
+}
+.hero-section::after {
+  width: min(100vw, 1200px);
+  height: min(100vw, 1200px);
+  border: 1px solid rgba(212, 175, 55, .12);
+  transform: translate(-50%, -50%) rotate(22deg) scaleY(.42);
+}
+.hero-layout { isolation: isolate; }
+.hero-layout > * { position: relative; z-index: 1; }
+.hero-layout > .hero-copy h1,
+#top > .hero-layout > .hero-copy > h1 {
+  font-size: clamp(2.5rem, 4.7vw, 4.5rem) !important;
+  line-height: .98 !important;
+  letter-spacing: -.045em;
+}
+.hero-layout > .hero-copy > .eyebrow,
+#top > .hero-layout > .hero-copy > .eyebrow.gold-text {
+  font-size: clamp(.82rem, 1.1vw, 1rem) !important;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+.hero-layout > .hero-copy > .hero-description,
+.hero-layout > .hero-copy > p.hero-copy {
+  max-width: 44ch;
+  font-size: clamp(1rem, 1.35vw, 1.2rem) !important;
+  font-weight: 500;
+  line-height: 1.7;
+}
+.hero-buttons .button,
+.hero-buttons .text-link {
+  min-height: 48px;
+  font-size: clamp(.78rem, 1vw, .92rem) !important;
+  font-weight: 700;
+}
+.light .hero-section::before { border-color: rgba(164, 125, 22, .3); box-shadow: 0 0 0 90px rgba(164, 125, 22, .075), 0 0 0 180px rgba(164, 125, 22, .045), 0 0 0 270px rgba(164, 125, 22, .03); }
+.light .hero-section::after { border-color: rgba(164, 125, 22, .2); }
+.light .hero-layout > .hero-copy,
+.light .hero-layout > .hero-copy * { color: #1e293b !important; }
+@media (max-width: 760px) {
+  .hero-section::before { width: 180vw; height: 180vw; left: 50%; top: 58%; }
+  .hero-section::after { width: 145vw; height: 145vw; left: 50%; top: 58%; }
+  .hero-layout > .hero-copy h1,
+  #top > .hero-layout > .hero-copy > h1 { font-size: clamp(2.35rem, 12vw, 3.5rem) !important; }
+  .hero-layout > .hero-copy > .eyebrow { font-size: .78rem !important; }
+  .hero-layout > .hero-copy > .hero-description { font-size: 1rem !important; }
+}
