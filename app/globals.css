@@ -3574,3 +3574,111 @@ body {
 .light .newsletter-inner .eyebrow.gold-text {
   color: #2d3748 !important;
 }
+
+/* Strict light-mode contrast pass: no gold text, clear photography, charcoal controls. */
+.light,
+.light body,
+.light main,
+.light main *,
+.light .site-header,
+.light .site-header *,
+.light .site-footer,
+.light .site-footer *,
+.light .pdp-page,
+.light .pdp-page *,
+.light .admin-page,
+.light .admin-page * {
+  color: #1e293b !important;
+}
+.light .hero-section,
+.light .hero-section * {
+  color: #1e293b !important;
+}
+.light .hero-image {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  background-image: url('/hero-emerald-gold.png') !important;
+  background-color: #cbd5e1 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+.light .hero-photo-card {
+  background-image: linear-gradient(135deg, rgba(15, 23, 42, .04), rgba(15, 23, 42, .2)), url('/hero-emerald-gold.png') !important;
+  background-color: #cbd5e1 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+.light .hero-overlay {
+  background: linear-gradient(90deg, rgba(226, 232, 240, .08), rgba(226, 232, 240, .02) 48%, rgba(226, 232, 240, .1)) !important;
+}
+.light .hero-copy,
+.light .hero-copy * {
+  color: #0f172a !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, .75) !important;
+}
+.light .hero-copy .button-gold,
+.light .hero-copy .button-dark,
+.light .hero-copy .primary-cta,
+.light .pdp-buy-button,
+.light .button-gold,
+.light .button-dark,
+.light .primary-cta,
+.light .admin-button {
+  background: #d4af37 !important;
+  border: 1px solid #a67c00 !important;
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+.light .hero-copy .button-gold *,
+.light .hero-copy .button-dark *,
+.light .hero-copy .primary-cta *,
+.light .pdp-buy-button *,
+.light .button-gold *,
+.light .button-dark *,
+.light .primary-cta *,
+.light .admin-button * {
+  color: #0f172a !important;
+}
+.light .pdp-secondary-button,
+.light .pdp-wishlist-button,
+.light .pdp-cart-button,
+.light .pdp-page button:not(.pdp-buy-button),
+.light .admin-page button:not(.admin-button),
+.light .text-link,
+.light a {
+  color: #1e293b !important;
+  border-color: #1e293b !important;
+}
+.light .eyebrow,
+.light .gold-text,
+.light .product-type,
+.light .currency,
+.light .trust-icon,
+.light .order-status,
+.light .checkout-product-line,
+.light .upi-panel strong {
+  color: #1e293b !important;
+}
+.light .product-card,
+.light .product-card *,
+.light .category-card,
+.light .category-card *,
+.light .pdp-specs,
+.light .pdp-details,
+.light .pdp-highlights,
+.light .item-details,
+.light .checkout-modal,
+.light .checkout-modal *,
+.light .orders-dashboard,
+.light .orders-dashboard * {
+  color: #1e293b !important;
+}
+.light .category-card .card-shade,
+.light .category-card .card-shade * {
+  color: #f8fafc !important;
+}
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #64748b !important;
+}
