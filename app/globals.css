@@ -410,7 +410,7 @@ h2 em {
 
 .category-grid {
   display: grid;
-  grid-template-columns: 1.1fr .9fr .9fr 1.1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 13px;
 }
 
@@ -439,7 +439,7 @@ h2 em {
 .card-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(10, 10, 10, .82), transparent 55%);
+  background: linear-gradient(to top, rgba(0, 0, 0, .85), rgba(0, 0, 0, .4) 42%, transparent 78%);
 }
 
 .category-copy {
@@ -451,16 +451,19 @@ h2 em {
 
 .category-copy p {
   margin: 0 0 7px;
-  color: #d8bf6c;
-  font-size: 10px;
-  letter-spacing: .16em;
+  color: #D4AF37;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .18em;
   text-transform: uppercase;
 }
 
 .category-copy h3 {
   max-width: 190px;
   margin: 0;
-  font: 400 25px/1.05 'Playfair Display', serif;
+  color: #fff;
+  font: 700 16px/1.15 'Playfair Display', serif;
+  letter-spacing: .04em;
 }
 
 .category-copy svg {
@@ -468,12 +471,6 @@ h2 em {
   right: 0;
   bottom: 2px;
   width: 20px;
-}
-
-.category-2,
-.category-3 {
-  min-height: 310px;
-  margin-top: 42px;
 }
 
 .products-section {
