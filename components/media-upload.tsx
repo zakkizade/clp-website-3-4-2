@@ -17,16 +17,30 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
   const [uploading, setUploading] = useState(false)
   const [dragging, setDragging] = useState(false)
 
+  async function compressImage(file: File) {
+    if (!file.type.startsWith("image/") || file.type === "image/svg+xml") return file
+    const bitmap = await createImageBitmap(file)
+    const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height))
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale))
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale))
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+    bitmap.close()
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", .84))
+    return blob ? new File([blob], `${file.name.replace(/\.[^.]+$/, "")}.webp`, { type: "image/webp" }) : file
+  }
+
   async function uploadFiles(files: FileList | File[]) {
     const selected = Array.from(files)
     if (!selected.length) return
     setUploading(true)
     try {
       const client = createClient()
-      const uploaded = await Promise.all(selected.map(async (file) => {
+      const uploaded = await Promise.all(selected.map(async (originalFile) => {
+        const file = await compressImage(originalFile)
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-")
         const path = `${Date.now()}-${crypto.randomUUID()}-${safeName}`
-        const { error } = await client.storage.from("product-media").upload(path, file, { cacheControl: "3600", upsert: false, contentType: file.type })
+        const { error } = await client.storage.from("product-media").upload(path, file, { cacheControl: "31536000", upsert: false, contentType: file.type })
         if (error) throw error
         return client.storage.from("product-media").getPublicUrl(path).data.publicUrl
       }))
