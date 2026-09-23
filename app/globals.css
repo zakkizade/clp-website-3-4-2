@@ -439,26 +439,34 @@ h2 em {
 .card-shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, .92) 0%, rgba(0, 0, 0, .68) 34%, rgba(0, 0, 0, .25) 64%, transparent 100%);
+  z-index: 10;
+  background: linear-gradient(to top, rgba(0, 0, 0, .95) 0%, rgba(0, 0, 0, .70) 38%, rgba(0, 0, 0, .28) 68%, transparent 100%);
 }
 
 .category-copy {
   position: absolute;
-  right: 16px;
-  bottom: 16px;
-  left: 16px;
-  z-index: 1;
-  padding: 16px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  min-height: 42%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 20px;
+  text-align: center;
 }
 
 .category-copy p {
   margin: 0 0 6px;
   color: #D4AF37;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: .2em;
   line-height: 1.25;
   text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .75);
 }
 
 .category-copy h3 {
@@ -470,7 +478,8 @@ h2 em {
   font-weight: 700;
   letter-spacing: .06em;
   line-height: 1.2;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, .45);
+  text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .85), 0 2px 12px rgba(0, 0, 0, .7);
 }
 
 .category-copy svg {
