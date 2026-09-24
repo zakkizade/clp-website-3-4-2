@@ -1,6 +1,7 @@
 export function saleDetails(product: { priceInr: number; regularPriceInr?: number; salePriceInr?: number; discountPercent?: number }) {
   const regular = product.regularPriceInr ?? product.priceInr
-  const sale = product.salePriceInr ?? product.priceInr
+  const calculatedSale = product.discountPercent && product.discountPercent > 0 && product.discountPercent < 100 ? Math.round(regular * (1 - product.discountPercent / 100)) : product.priceInr
+  const sale = product.salePriceInr && product.salePriceInr > 0 && product.salePriceInr < regular ? product.salePriceInr : calculatedSale
   const discounted = regular > sale && sale > 0
-  return { regular, sale, discounted, percentOff: product.discountPercent ?? (discounted ? Math.round(((regular - sale) / regular) * 100) : 0), savings: discounted ? regular - sale : 0 }
+  return { regular, sale, discounted, percentOff: discounted ? (product.discountPercent && product.discountPercent > 0 ? product.discountPercent : Math.round(((regular - sale) / regular) * 100)) : 0, savings: discounted ? regular - sale : 0 }
 }
