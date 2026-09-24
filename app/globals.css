@@ -3675,36 +3675,41 @@ html, body, main, .site-header, .utility-bar, .main-nav, .hero-section, .categor
 /* Final light-mode hero contrast pass: metallic panel, white type, and a soft image blend. */
 html.light .hero-section,
 .light .hero-section {
-  background: #faf8f5 !important;
+  background: linear-gradient(90deg, #d1d5db 0%, #e5e7eb 52%, #f3f4f6 100%) !important;
+  color: #0f172a !important;
 }
 
 html.light .hero-layout > .hero-copy,
 .light .hero-layout > .hero-copy {
-  background: linear-gradient(90deg, #2c3237 0%, #4a525a 58%, rgba(140, 149, 158, .78) 84%, transparent 100%) !important;
-  color: #e2e8f0 !important;
-  padding-right: 5rem;
+  width: min(550px, 100%);
+  min-height: 430px;
+  padding: 34px 42px 40px;
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 54%, #d8dde2 100%) !important;
+  border: 1px solid rgba(15, 23, 42, .1);
+  color: #0f172a !important;
+  box-shadow: 0 22px 55px rgba(15, 23, 42, .16);
 }
 
 html.light .hero-copy h1,
 html.light .hero-copy h1 em,
 .light .hero-copy h1,
 .light .hero-copy h1 em {
-  color: #fff !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, .35) !important;
+  color: #0f172a !important;
+  text-shadow: none !important;
 }
 
 html.light .hero-copy .eyebrow,
 html.light .hero-copy .gold-text,
 .light .hero-copy .eyebrow,
 .light .hero-copy .gold-text {
-  color: #d4af37 !important;
+  color: #b8952b !important;
   font-weight: 600;
   letter-spacing: .2em;
 }
 
 html.light .hero-copy .hero-description,
 .light .hero-copy .hero-description {
-  color: #e2e8f0 !important;
+  color: #334155 !important;
 }
 
 html.light .hero-copy .button-gold,
@@ -3718,22 +3723,22 @@ html.light .hero-copy .text-link,
 html.light .hero-copy .button-outline,
 .light .hero-copy .text-link,
 .light .hero-copy .button-outline {
-  border-color: rgba(255, 255, 255, .72) !important;
-  color: #fff !important;
+  border-color: #0f172a !important;
+  color: #0f172a !important;
 }
 
 html.light .hero-copy .text-link:hover,
 html.light .hero-copy .button-outline:hover,
 .light .hero-copy .text-link:hover,
 .light .hero-copy .button-outline:hover {
-  border-color: #d4af37 !important;
-  color: #d4af37 !important;
-  background: rgba(255, 255, 255, .08);
+  border-color: #b8952b !important;
+  color: #b8952b !important;
+  background: rgba(184, 149, 43, .08);
 }
 
 html.light .hero-overlay,
 .light .hero-overlay {
-  background: linear-gradient(90deg, rgba(10, 10, 10, .08), rgba(10, 10, 10, .02) 56%, transparent 100%) !important;
+  background: linear-gradient(90deg, rgba(229, 231, 235, .08), rgba(229, 231, 235, .02) 56%, transparent 100%) !important;
 }
 
 /* Midnight emerald and gold category treatment */
