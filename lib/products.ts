@@ -7,6 +7,7 @@ export type Product = {
   regularPriceInr?: number
   salePriceInr?: number
   showSaleBadge?: boolean
+  discountPercent?: number
   image: string
   gallery: string[]
   tags: string[]
