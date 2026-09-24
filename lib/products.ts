@@ -4,6 +4,9 @@ export type Product = {
   type: string
   slug: string
   priceInr: number
+  regularPriceInr?: number
+  salePriceInr?: number
+  showSaleBadge?: boolean
   image: string
   gallery: string[]
   tags: string[]

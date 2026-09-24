@@ -946,7 +946,7 @@ h2 em {
   flex: 0 0 auto;
   }
   .header-wishlist, .cart-button { overflow: visible; }
-.wishlist-actions { display:flex; gap:8px; align-items:center; margin-top:10px; }
+.admin-control-panel { margin:2rem 0; padding:1.25rem; border:1px solid rgba(212,175,55,.24); background:rgba(17,16,14,.45); } .admin-inline-grid { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:end; } .admin-toggle { display:flex !important; align-items:center; gap:8px; } .admin-toggle input { width:auto !important; } .site-media-order { display:flex; gap:6px; margin:7px 0; } .site-media-order button { border:1px solid rgba(212,175,55,.3); background:transparent; color:#f5e6c8; padding:5px 8px; cursor:pointer; } .sale-badge { display:inline-block; padding:3px 6px; background:#b68b22; color:#0a0a0a; font-size:9px; letter-spacing:.12em; font-weight:700; vertical-align:middle; } .product-info del, .pdp-price del { color:#928b7b; font-size:.72em; margin-right:5px; } .wishlist-actions { display:flex; gap:8px; align-items:center; margin-top:10px; }
 .wishlist-actions button { display:inline-flex; align-items:center; justify-content:center; gap:6px; border:1px solid rgba(197,155,39,.48); padding:8px 10px; color:#f5e6c8; background:rgba(197,155,39,.12); cursor:pointer; }
 .wishlist-actions button:first-child { background:#c59b27; color:#0a0a0a; }
 .wishlist-actions button:hover { filter:brightness(1.12); }
