@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import type { Product } from "@/lib/products"
+import { products as fallbackProducts, type Product } from "@/lib/products"
 import { createClient } from "@/lib/supabase/client"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
@@ -24,8 +24,15 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const load = async () => {
       const { data, error: queryError } = await createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false })
       if (!active) return
-      if (queryError) { setError(queryError.message || "Unable to load the catalog."); setItems([]); setLoading(false); return }
-      setItems(data?.map((row) => toProduct(row as Record<string, unknown>)) || [])
+      if (queryError) {
+        if (active) {
+          setError("Using the local catalog preview. Connect Supabase to sync products.")
+          setItems(fallbackProducts)
+          setLoading(false)
+        }
+        return
+      }
+      setItems(data?.length ? data.map((row) => toProduct(row as Record<string, unknown>)) : fallbackProducts)
       setLoading(false)
     }
     load().catch((reason: unknown) => { if (active) { setError(reason instanceof Error ? reason.message : "Unable to connect to the catalog."); setItems([]); setLoading(false) } })
@@ -39,10 +46,18 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const saveProduct = async (product: Product) => {
     const payload = { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.priceInr, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl || null, view_360: product.view360 || [], updated_at: new Date().toISOString() }
     const { data, error: mutationError } = await createClient().from("products").upsert(payload).select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()
-    if (mutationError) throw mutationError
+    if (mutationError) {
+      setItems((current) => current.some((item) => item.id === product.id) ? current.map((item) => item.id === product.id ? product : item) : [product, ...current])
+      setError("Saved in this preview only. Connect Supabase to sync catalog changes.")
+      return
+    }
     setItems((current) => { const next = toProduct(data as Record<string, unknown>); return current.some((item) => item.id === next.id) ? current.map((item) => item.id === next.id ? next : item) : [next, ...current] })
   }
-  const deleteProduct = async (id: string) => { const { error: mutationError } = await createClient().from("products").delete().eq("id", id); if (mutationError) throw mutationError; setItems((current) => current.filter((item) => item.id !== id)) }
+  const deleteProduct = async (id: string) => {
+    const { error: mutationError } = await createClient().from("products").delete().eq("id", id)
+    if (mutationError) setError("Removed in this preview only. Connect Supabase to sync catalog changes.")
+    setItems((current) => current.filter((item) => item.id !== id))
+  }
   const value = useMemo(() => ({ products: items, loading, error, saveProduct, deleteProduct }), [items, loading, error])
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
 }
