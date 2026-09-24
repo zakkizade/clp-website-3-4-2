@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowDownRight, ArrowRight, ChevronDown, Crown, Download, Heart, LogIn, Mail, Menu, MessageCircle, Package, Play, Rotate3D, Search, Send, ShoppingBag, Star, Sun, Moon, User, X, ShieldCheck, Globe2 } from "lucide-react"
+import { ArrowDownRight, ArrowRight, ChevronDown, Crown, Download, Heart, LogIn, Mail, Menu, MessageCircle, Package, Play, Rotate3D, Search, Send, ShoppingBag, Star, Sun, Moon, User, X, ShieldCheck, Globe2, Trash2 } from "lucide-react"
 import { formatPrice } from "@/lib/products"
 import { useProducts } from "@/components/product-store"
 import { useWishlist } from "@/components/wishlist-provider"

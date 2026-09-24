@@ -18,6 +18,8 @@ export type Product = {
   metal: string
   videoUrl?: string
   view360?: string[]
+  sizeOptions?: string[]
+  caratWeight?: string
 }
 
 const productImages = {
