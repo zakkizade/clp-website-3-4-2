@@ -2123,6 +2123,125 @@ h1, h2, h3, h4, p, .hero-copy, .product-info, .category-copy {
   font-size: 10px;
 }
 
+/* Warm ivory light theme: preserve sharp contrast without cool grey surfaces. */
+html.light,
+html.light body {
+  background: #faf8f5 !important;
+  color: #111827;
+  color-scheme: light;
+}
+
+html.light main,
+html.light .intro-section,
+html.light .products-section,
+html.light .story-section,
+html.light .site-footer {
+  background: #faf8f5 !important;
+  color: #111827;
+}
+
+html.light .utility-bar,
+html.light .site-header,
+html.light .main-nav {
+  background: #fff9f2 !important;
+  color: #111827;
+}
+
+html.light .hero-section {
+  background: #faf8f5 !important;
+}
+
+html.light .hero-layout > .hero-copy {
+  background: linear-gradient(to right, #f4efea, #efe8e0 72%, transparent) !important;
+  color: #4b5563 !important;
+  padding: 2.25rem 2.5rem 2.5rem 0;
+}
+
+html.light .hero-copy h1,
+html.light .hero-copy h1 em {
+  color: #111827 !important;
+  text-shadow: none;
+}
+
+html.light .hero-copy .eyebrow,
+html.light .hero-copy .gold-text {
+  color: #9b7b22 !important;
+}
+
+html.light .hero-copy .hero-description {
+  color: #4b5563 !important;
+}
+
+html.light .hero-copy .button-gold {
+  background: #d4af37 !important;
+  color: #000 !important;
+}
+
+html.light .hero-copy .text-link,
+html.light .hero-copy .button-outline {
+  border-color: #111827 !important;
+  color: #111827 !important;
+}
+
+html.light .hero-copy .text-link:hover,
+html.light .hero-copy .button-outline:hover {
+  background: rgba(0, 0, 0, .05);
+}
+
+html.light .intro-section h2,
+html.light .section-heading h2,
+html.light .story-copy h2,
+html.light .newsletter-inner h2,
+html.light .product-info h3,
+html.light .trust-grid h3,
+html.light .site-footer h4 {
+  color: #111827 !important;
+}
+
+html.light .intro-copy,
+html.light .story-copy > p:not(.eyebrow),
+html.light .trust-grid p,
+html.light .newsletter-inner > div > p:not(.eyebrow),
+html.light .product-type {
+  color: #4b5563 !important;
+}
+
+html.light .product-card,
+html.light .glass-panel,
+html.light .category-card,
+html.light .wishlist-grid article {
+  background: #fff !important;
+  border-color: rgba(212, 175, 55, .2) !important;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, .08) !important;
+}
+
+html.light .product-info strong,
+html.light .filters button.active,
+html.light .text-link,
+html.light .site-footer a {
+  color: #9b7b22 !important;
+}
+
+html.light .search-wrap {
+  border-color: rgba(17, 24, 39, .22);
+  color: #111827;
+}
+
+html.light .search-wrap input,
+html.light .search-wrap select,
+html.light .icon-button,
+html.light .account-trigger {
+  color: #111827;
+}
+
+html.light .search-wrap input::placeholder {
+  color: #6b7280;
+}
+
+html.light .hero-caption {
+  color: #f9fafb;
+}
+
 @media (max-width:800px) {
   .hero-layout {
     grid-template-columns: 1fr;
