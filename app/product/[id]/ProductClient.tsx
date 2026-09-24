@@ -11,6 +11,7 @@ import { useProducts } from "@/components/product-store"
 import { ProductViewer360 } from "@/components/product-viewer-360"
 import { addLocalOrder, orderId, whatsappOrderUrl } from "@/lib/order-store"
 import { purityOptions, sizingForProduct } from "@/lib/sizing"
+import { saleDetails } from "@/lib/pricing"
 
 const viewLabels = ["Front Angle", "Side Profile", "On-Hand View", "Hallmark Detail", "Certificate", "Craft Detail"]
 const fallback360Frames = (product: Product) => product.gallery.length > 1 ? product.gallery : [product.image]
@@ -54,7 +55,7 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
           <div className="thumbnail-row">{viewLabels.map((label, index) => <button key={label} className={active === index ? "active" : ""} onClick={() => { setActive(index); setMode("gallery") }}><Image src={product.gallery[index] || product.image} alt={label} fill sizes="90px" className="object-cover" /><span>{label}</span></button>)}</div>
         </section>
         <section className="pdp-info">
-          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}</h1><p className="pdp-price">{product.showSaleBadge && product.regularPriceInr && product.salePriceInr ? <><span className="sale-badge">ON SALE</span> <del>{formatPrice(product.regularPriceInr, "INR")}</del> {formatPrice(product.salePriceInr, "INR")}</> : formatPrice(product.priceInr, "INR")}</p>
+          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}</h1><p className="pdp-price">{(() => { const sale = saleDetails(product); return sale.discounted ? <><span className="sale-badge">{product.showSaleBadge ? "ON SALE · " : ""}{sale.percentOff}% OFF</span> <del>{formatPrice(sale.regular, "INR")}</del> {formatPrice(sale.sale, "INR")}</> : formatPrice(product.priceInr, "INR") })()}</p>
           <div className="pdp-specs"><div><span>Carat</span><strong>{product.carat}</strong></div><div><span>Gold Purity</span><strong>{product.goldPurity}</strong></div><div><span>Certificate</span><strong>{product.certificate}</strong></div><div><span>Origin</span><strong>{product.origin}</strong></div></div><div className="product-option-grid"><label>Gold Purity<select value={purity} onChange={(event) => setPurity(event.target.value)}>{purityOptions.map((option) => <option key={option}>{option}</option>)}</select></label><label>{sizing.label}<select value={size} onChange={(event) => setSize(event.target.value)}><option value="">Select {sizing.label.toLowerCase()}</option>{sizing.options.map((option) => <option key={option}>{option}</option>)}</select></label></div>
           <div className="pdp-actions" aria-label="Purchase actions">
             <button className="pdp-buy-button" onClick={() => { if (!size) { showToast(`Choose ${sizing.label.toLowerCase()} first`); return }; addToCart(product.id); setCheckoutOpen(true) }}>BUY NOW</button>
