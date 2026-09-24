@@ -25,7 +25,7 @@ export function OrdersDashboard() {
       const localOrders = getLocalOrders()
       const remoteOrders = (data || []) as Order[]
       setOrders([...localOrders, ...remoteOrders.filter((order) => !localOrders.some((local) => local.id === order.id))])
-    }).catch(() => setError("Orders are temporarily unavailable. Locally placed orders are still shown."))
+    }, () => setError("Orders are temporarily unavailable. Locally placed orders are still shown."))
     return () => window.removeEventListener("clp:order-created", onCreated)
   }, [])
   const filtered = useMemo(() => orders.filter((order) => (status === "All" || order.dispatch_status === status) && (destination === "All" || order.destination === destination) && `${order.customer_name} ${order.customer_email} ${order.product_name}`.toLowerCase().includes(query.toLowerCase())), [orders, status, destination, query])

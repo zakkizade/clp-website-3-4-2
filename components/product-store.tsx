@@ -45,7 +45,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, [])
   const saveProduct = async (product: Product) => {
     const payload = { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.priceInr, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl || null, view_360: product.view360 || [], updated_at: new Date().toISOString() }
-    const { data, error: mutationError } = await createClient().from("products").upsert(payload).select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()
+    const { data, error: mutationError } = await (createClient().from("products") as any).upsert(payload).select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()
     if (mutationError) {
       setItems((current) => current.some((item) => item.id === product.id) ? current.map((item) => item.id === product.id ? product : item) : [product, ...current])
       setError("Saved in this preview only. Connect Supabase to sync catalog changes.")

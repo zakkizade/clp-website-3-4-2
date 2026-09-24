@@ -10,7 +10,7 @@ export type LocalOrder = {
   city: string
   state: string
   pincode: string
-  payment_method: "UPI" | "Card" | "COD"
+  payment_method: "UPI" | "Card"
   destination: string
   buyer_notes: string
   dispatch_status: "New" | "Completed" | "Overdue"
