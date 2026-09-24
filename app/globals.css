@@ -2152,40 +2152,56 @@ html.light .hero-section {
 }
 
 html.light .hero-layout > .hero-copy {
-  background: linear-gradient(to right, #f4efea, #efe8e0 72%, transparent) !important;
-  color: #4b5563 !important;
-  padding: 2.25rem 2.5rem 2.5rem 0;
+  background: linear-gradient(90deg, #2c3237 0%, #4a525a 58%, rgba(140, 149, 158, .78) 84%, transparent 100%) !important;
+  color: #e2e8f0 !important;
+  padding: 2.25rem 5rem 2.5rem 0;
+  position: relative;
+  z-index: 2;
 }
 
 html.light .hero-copy h1,
 html.light .hero-copy h1 em {
-  color: #111827 !important;
-  text-shadow: none;
+  color: #fff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .35);
 }
 
 html.light .hero-copy .eyebrow,
 html.light .hero-copy .gold-text {
-  color: #9b7b22 !important;
+  color: #d4af37 !important;
+  font-weight: 600;
+  letter-spacing: .2em;
 }
 
 html.light .hero-copy .hero-description {
-  color: #4b5563 !important;
+  color: #e2e8f0 !important;
 }
 
 html.light .hero-copy .button-gold {
   background: #d4af37 !important;
+  border-color: #d4af37 !important;
   color: #000 !important;
+  font-weight: 600;
 }
 
 html.light .hero-copy .text-link,
 html.light .hero-copy .button-outline {
-  border-color: #111827 !important;
-  color: #111827 !important;
+  border-color: rgba(255, 255, 255, .72) !important;
+  color: #fff !important;
 }
 
 html.light .hero-copy .text-link:hover,
 html.light .hero-copy .button-outline:hover {
-  background: rgba(0, 0, 0, .05);
+  border-color: #d4af37 !important;
+  background: rgba(255, 255, 255, .08);
+  color: #d4af37 !important;
+}
+
+html.light .hero-overlay {
+  background: linear-gradient(90deg, rgba(10, 10, 10, .12) 0%, rgba(10, 10, 10, .04) 52%, transparent 100%), linear-gradient(0deg, rgba(10, 10, 10, .18), transparent 48%) !important;
+}
+
+html.light .hero-layout::before {
+  background: linear-gradient(90deg, transparent 0%, transparent 56%, rgba(10, 10, 10, .18) 100%);
 }
 
 html.light .intro-section h2,
@@ -3655,6 +3671,70 @@ html, body, main, .site-header, .utility-bar, .main-nav, .hero-section, .categor
 .light body, .light main { background:#fcfbf7 !important; color:#141414 !important; }.light .site-header, .light .utility-bar, .light .main-nav, .light .hero-section, .light .category-section, .light .products-section, .light .story-section, .light .trust-section, .light .newsletter-section, .light .site-footer { background:#fcfbf7 !important; color:#141414 !important; }.light .hero-section { background:radial-gradient(circle at 70% 30%, rgba(197,155,39,.12) 0%, transparent 60%), #fcfbf7 !important; }.light .hero-image { opacity:.14; filter:saturate(.65) brightness(1.05); }.light .hero-overlay { background:linear-gradient(90deg,rgba(252,251,247,.9),rgba(252,251,247,.42),rgba(252,251,247,.9)) !important; }.light .hero-copy h1, .light h1, .light h2, .light h3, .light h4, .light p, .light .hero-copy, .light .product-info, .light .category-copy { color:#141414; }.light .hero-copy > p.hero-copy, .light .modal-copy, .light .story-copy > p { color:#a39a82; }.light .glass-panel, .light .product-card, .light .category-card, .light .hero-photo-card, .light .account-modal, .light .cart-drawer { background:#f5efe6 !important; border-color:rgba(197,155,39,.25) !important; color:#141414; box-shadow:0 18px 50px rgba(20,20,20,.08); }.light .button-dark { background:#141414 !important; color:#f5e6c8 !important; }.light .search-wrap, .light .account-trigger { background:#f5efe6; color:#141414; border-color:rgba(197,155,39,.25); }.light .search-wrap input, .light .search-wrap select, .light select { color:#141414; }.light .main-nav a, .light .utility-bar, .light .site-header a, .light .icon-button, .light .mobile-menu, .light .account-trigger { color:#141414; }.light .hero-caption { color:#a39a82; }
 
 .admin-page { min-height:100vh; padding:48px 6vw 80px; background:#0a0a0a; color:#f5e6c8; }.admin-login { width:min(420px,100%); margin:12vh auto; padding:42px; border:1px solid rgba(197,155,39,.3); background:#101010; }.admin-login h1,.admin-header h1 { margin:8px 0 12px; font:500 42px 'Playfair Display',serif; }.admin-login p:not(.eyebrow) { color:#a39a82; }.admin-login form,.admin-form-grid { display:grid; gap:14px; }.admin-page label { display:grid; gap:7px; color:#a39a82; font-size:12px; letter-spacing:.04em; }.admin-page input,.admin-page select,.admin-page textarea { width:100%; border:1px solid rgba(197,155,39,.28); border-radius:4px; padding:12px; background:#151515; color:#f5e6c8; font:inherit; }.admin-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:0 17px; border:1px solid #c59b27; background:#c59b27; color:#0a0a0a; font-size:11px; font-weight:700; letter-spacing:.08em; }.admin-header,.admin-toolbar { max-width:1180px; margin:0 auto 34px; display:flex; justify-content:space-between; align-items:center; gap:20px; }.admin-logout { display:flex; align-items:center; gap:7px; border:1px solid rgba(197,155,39,.35); background:transparent; color:#c59b27; padding:10px 14px; }.admin-stats { max-width:1180px; margin:0 auto 58px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }.admin-stats div { padding:20px; border:1px solid rgba(197,155,39,.25); background:#111; }.admin-stats span,.admin-table span { display:block; color:#a39a82; font-size:12px; }.admin-stats strong { display:block; margin-top:8px; color:#c59b27; font:400 30px 'Playfair Display',serif; }.admin-toolbar h2 { font:400 30px 'Playfair Display',serif; }.admin-table { max-width:1180px; margin:auto; border-top:1px solid rgba(197,155,39,.3); }.admin-table article { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:18px 0; border-bottom:1px solid rgba(197,155,39,.18); }.admin-table strong { display:block; margin-bottom:5px; font-weight:500; }.admin-actions { display:flex; gap:8px; }.admin-actions button,.admin-editor-heading > button { display:grid; place-items:center; border:1px solid rgba(197,155,39,.35); background:transparent; color:#c59b27; width:34px; height:34px; }.admin-editor-backdrop { position:fixed; inset:0; z-index:80; overflow:auto; padding:30px; background:rgba(0,0,0,.82); }.admin-editor { width:min(760px,100%); margin:auto; padding:30px; border:1px solid rgba(197,155,39,.4); background:#101010; }.admin-editor-heading { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:26px; }.admin-editor-heading h2 { margin:5px 0; font:400 30px 'Playfair Display',serif; }.admin-check { display:flex !important; align-items:center; margin:18px 0; }.admin-check input { width:auto; }.admin-form-grid { grid-template-columns:1fr 1fr; }.admin-form-grid label:last-child { grid-column:1 / -1; }.admin-editor > .admin-button { margin-top:18px; }.admin-success { max-width:1180px; margin:0 auto 24px; padding:12px 16px; border:1px solid rgba(197,155,39,.35); background:rgba(197,155,39,.1); color:#c59b27; }.admin-error { color:#d98989; font-size:12px; }.admin-muted,.admin-optional { color:#a39a82; font-size:12px; }.admin-wide { grid-column:1 / -1; }.admin-editor textarea { resize:vertical; }
+
+/* Final light-mode hero contrast pass: metallic panel, white type, and a soft image blend. */
+html.light .hero-section,
+.light .hero-section {
+  background: #faf8f5 !important;
+}
+
+html.light .hero-layout > .hero-copy,
+.light .hero-layout > .hero-copy {
+  background: linear-gradient(90deg, #2c3237 0%, #4a525a 58%, rgba(140, 149, 158, .78) 84%, transparent 100%) !important;
+  color: #e2e8f0 !important;
+  padding-right: 5rem;
+}
+
+html.light .hero-copy h1,
+html.light .hero-copy h1 em,
+.light .hero-copy h1,
+.light .hero-copy h1 em {
+  color: #fff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .35) !important;
+}
+
+html.light .hero-copy .eyebrow,
+html.light .hero-copy .gold-text,
+.light .hero-copy .eyebrow,
+.light .hero-copy .gold-text {
+  color: #d4af37 !important;
+  font-weight: 600;
+  letter-spacing: .2em;
+}
+
+html.light .hero-copy .hero-description,
+.light .hero-copy .hero-description {
+  color: #e2e8f0 !important;
+}
+
+html.light .hero-copy .button-gold,
+.light .hero-copy .button-gold {
+  background: #d4af37 !important;
+  border-color: #d4af37 !important;
+  color: #000 !important;
+}
+
+html.light .hero-copy .text-link,
+html.light .hero-copy .button-outline,
+.light .hero-copy .text-link,
+.light .hero-copy .button-outline {
+  border-color: rgba(255, 255, 255, .72) !important;
+  color: #fff !important;
+}
+
+html.light .hero-copy .text-link:hover,
+html.light .hero-copy .button-outline:hover,
+.light .hero-copy .text-link:hover,
+.light .hero-copy .button-outline:hover {
+  border-color: #d4af37 !important;
+  color: #d4af37 !important;
+  background: rgba(255, 255, 255, .08);
+}
+
+html.light .hero-overlay,
+.light .hero-overlay {
+  background: linear-gradient(90deg, rgba(10, 10, 10, .08), rgba(10, 10, 10, .02) 56%, transparent 100%) !important;
+}
 
 /* Midnight emerald and gold category treatment */
 body {
