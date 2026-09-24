@@ -9,7 +9,7 @@ import { useProducts } from "@/components/product-store"
 import type { Product } from "@/lib/products"
 
 const blankProduct: Product = { id: "", name: "", type: "Fine Jewelry", slug: "", priceInr: 0, image: "", gallery: [], tags: [], category: "Fine Jewelry", goldPurity: "18K Gold", certificate: "", origin: "Jaipur, India", description: "", isFeatured: false, carat: "", metal: "18K Gold", videoUrl: "", view360: [] }
-const categories: Product["category"][] = ["Emerald", "Gold", "Fine Jewelry", "Loose Gemstones", "Ruby"]
+const categories: Product["category"][] = ["Emerald", "Gold", "Fine Jewelry", "Loose Gemstones", "Ruby", "Rings", "Bracelets", "Bangles", "Necklaces", "Pendants"]
 const splitLines = (value: string) => value.split(/[\n,]+/).map((item) => item.trim()).filter(Boolean)
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
 

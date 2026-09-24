@@ -7,13 +7,13 @@ export type Product = {
   image: string
   gallery: string[]
   tags: string[]
-  category: "Gold" | "Emerald" | "Ruby" | "Loose Gemstones" | "Fine Jewelry"
+  category: "Gold" | "Emerald" | "Ruby" | "Loose Gemstones" | "Fine Jewelry" | "Rings" | "Bracelets" | "Bangles" | "Necklaces" | "Pendants"
   goldPurity: string
   certificate: string
   origin: string
   description: string
   isFeatured: boolean
-  view: boolean
+  view?: boolean
   carat: string
   metal: string
   videoUrl?: string
