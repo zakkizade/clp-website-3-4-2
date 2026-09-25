@@ -22,7 +22,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let active = true
     const load = async () => {
-      const { data, error: queryError } = await createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false })
+      const { data, error: queryError } = await createClient().from("products").select("id,name,type,slug,price_inr,regular_price_inr,sale_price_inr,discount_percent,show_sale_badge,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false })
       if (!active) return
       if (queryError) {
         if (active) {
@@ -39,13 +39,13 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     return () => { active = false }
   }, [])
   useEffect(() => {
-    const refresh = () => { try { void createClient().from("products").select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false }).then(({ data }) => { if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>))) }) } catch { /* catalog client not ready; skip this refresh tick */ } }
+    const refresh = () => { try { void createClient().from("products").select("id,name,type,slug,price_inr,regular_price_inr,sale_price_inr,discount_percent,show_sale_badge,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false }).then(({ data }) => { if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>))) }) } catch { /* catalog client not ready; skip this refresh tick */ } }
     const interval = window.setInterval(refresh, 30000)
     return () => window.clearInterval(interval)
   }, [])
   const saveProduct = async (product: Product) => {
     const payload = { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.regularPriceInr || product.priceInr, regular_price_inr: product.regularPriceInr || product.priceInr, sale_price_inr: product.salePriceInr || null, show_sale_badge: Boolean(product.showSaleBadge), discount_percent: product.discountPercent || null, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl || null, view_360: product.view360 || [], updated_at: new Date().toISOString() }
-    const { data, error: mutationError } = await (createClient().from("products") as any).upsert(payload).select("id,name,type,slug,price_inr,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()
+    const { data, error: mutationError } = await (createClient().from("products") as any).upsert(payload).select("id,name,type,slug,price_inr,regular_price_inr,sale_price_inr,discount_percent,show_sale_badge,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()
     if (mutationError) {
       setItems((current) => current.some((item) => item.id === product.id) ? current.map((item) => item.id === product.id ? product : item) : [product, ...current])
       setError("Saved in this preview only. Connect Supabase to sync catalog changes.")
