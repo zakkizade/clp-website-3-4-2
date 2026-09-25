@@ -36,13 +36,14 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
     setUploading(true)
     try {
       const client = createClient()
+      if (!client) throw new Error("Supabase storage is not configured.")
       const uploaded = await Promise.all(selected.map(async (originalFile) => {
         const file = await compressImage(originalFile)
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-")
         const path = `${Date.now()}-${crypto.randomUUID()}-${safeName}`
-        const { error } = await client.storage.from("product-media").upload(path, file, { cacheControl: "31536000", upsert: false, contentType: file.type })
+        const { error } = await client.storage.from("product-images").upload(path, file, { cacheControl: "31536000", upsert: false, contentType: file.type })
         if (error) throw error
-        return client.storage.from("product-media").getPublicUrl(path).data.publicUrl
+        return client.storage.from("product-images").getPublicUrl(path).data.publicUrl
       }))
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))
     } finally {

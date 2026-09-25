@@ -8,6 +8,7 @@ const nextConfig = {
   },
   env: {
     KEY: process.env.KEY,
+    KEY_2: process.env.KEY_2,
   },
 }
 

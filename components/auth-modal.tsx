@@ -11,7 +11,9 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
   const [message, setMessage] = useState("")
   const submit = async (event: FormEvent) => {
     event.preventDefault()
-    const result = mode === "login" ? await createClient().auth.signInWithPassword({ email, password }) : await createClient().auth.signUp({ email, password })
+    const client = createClient()
+    if (!client) { setMessage("Authentication is temporarily unavailable."); return }
+    const result = mode === "login" ? await client.auth.signInWithPassword({ email, password }) : await client.auth.signUp({ email, password })
     setMessage(result.error?.message || (mode === "signup" ? "Check your email to confirm your account." : "Signed in successfully."))
     if (!result.error) window.setTimeout(onClose, 700)
   }
@@ -21,7 +23,9 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
         setMessage("Google sign-in opens in a new tab from the preview. Please use email sign-in here.")
         return
       }
-      const { error } = await createClient().auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/auth/callback` } })
+      const client = createClient()
+      if (!client) { setMessage("Authentication is temporarily unavailable."); return }
+      const { error } = await client.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/auth/callback` } })
       if (error) setMessage("Google sign-in is unavailable right now. Please use email sign-in.")
     } catch {
       setMessage("Google sign-in is unavailable in the preview. Please use email sign-in.")

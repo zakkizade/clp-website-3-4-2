@@ -27,7 +27,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const client = createClient()
     let active = true
     if (!client) {
-      setError("Supabase is not configured. Add the KEY environment variable to load products.")
+      setError("Supabase is not configured. Add the KEY_2 environment variable to load products.")
       setLoading(false)
       return () => { active = false }
     }
@@ -35,11 +35,21 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       setLoading(true)
       const { data, error: fetchError } = await client.from("products").select("*")
       if (!active) return
-      if (fetchError) { setError(fetchError.message); setLoading(false); return }
+      if (fetchError) {
+        setItems(fallbackProducts)
+        setError(`Live catalog unavailable: ${fetchError.message}`)
+        setLoading(false)
+        return
+      }
       if (!data?.length) {
         const { data: seeded, error: seedError } = await client.from("products").insert(fallbackProducts.map(toRow)).select("*")
-        if (seedError) { setError(seedError.message); setLoading(false); return }
-        setItems((seeded ?? []).map((row) => toProduct(row as Record<string, unknown>)))
+        if (seedError) {
+          setItems(fallbackProducts)
+          setError(`Catalog seed unavailable: ${seedError.message}`)
+          setLoading(false)
+          return
+        }
+        setItems(seeded?.length ? seeded.map((row) => toProduct(row as Record<string, unknown>)) : fallbackProducts)
       } else setItems(data.map((row) => toProduct(row as Record<string, unknown>)))
       setError("")
       setLoading(false)
