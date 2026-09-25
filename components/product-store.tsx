@@ -2,8 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { products as fallbackProducts, type Product } from "@/lib/products"
-const PRODUCT_STORAGE_KEY = "clp-products"
-const PRODUCT_SYNC_EVENT = "clp-products-updated"
+import { createClient } from "@/lib/supabase/client"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
 const ProductContext = createContext<ProductStore | null>(null)
@@ -16,35 +15,50 @@ function toProduct(row: Record<string, unknown>): Product {
   }
 }
 
+function toRow(product: Product) {
+  return { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.priceInr, regular_price_inr: product.regularPriceInr ?? product.priceInr, sale_price_inr: product.salePriceInr ?? null, show_sale_badge: product.showSaleBadge ?? false, discount_percent: product.discountPercent ?? null, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl ?? null, view_360: product.view360 ?? [] }
+}
+
 export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   useEffect(() => {
-    try {
-      const stored = window.localStorage.getItem(PRODUCT_STORAGE_KEY)
-      const saved = stored ? JSON.parse(stored) as Product[] : []
-      // Keep the built-in catalog available while allowing admin-created products to persist.
-      const savedById = new Map(saved.map((product) => [product.id, product]))
-      const merged = [...saved, ...fallbackProducts.filter((product) => !savedById.has(product.id))]
-      setItems(merged)
-      if (saved.length) window.localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(merged))
-    } catch {
-      setItems(fallbackProducts)
-      setError("Using the local catalog preview.")
-    } finally { setLoading(false) }
-    const sync = () => { try { const stored = window.localStorage.getItem(PRODUCT_STORAGE_KEY); if (stored) setItems(JSON.parse(stored) as Product[]) } catch { setError("Unable to read the local catalog.") } }
-    window.addEventListener(PRODUCT_SYNC_EVENT, sync)
-    window.addEventListener("storage", sync)
-    return () => { window.removeEventListener(PRODUCT_SYNC_EVENT, sync); window.removeEventListener("storage", sync) }
+    const client = createClient()
+    let active = true
+    const load = async () => {
+      setLoading(true)
+      const { data, error: fetchError } = await client.from("products").select("*")
+      if (!active) return
+      if (fetchError) { setError(fetchError.message); setLoading(false); return }
+      if (!data?.length) {
+        const { data: seeded, error: seedError } = await client.from("products").insert(fallbackProducts.map(toRow)).select("*")
+        if (seedError) { setError(seedError.message); setLoading(false); return }
+        setItems((seeded ?? []).map((row) => toProduct(row as Record<string, unknown>)))
+      } else setItems(data.map((row) => toProduct(row as Record<string, unknown>)))
+      setError("")
+      setLoading(false)
+    }
+    void load()
+    const channel = client.channel("products-realtime").on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => { void load() }).subscribe()
+    return () => { active = false; void client.removeChannel(channel) }
   }, [])
-  const persist = (next: Product[]) => { setItems(next); window.localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(next)); window.dispatchEvent(new Event(PRODUCT_SYNC_EVENT)) }
   const saveProduct = async (product: Product) => {
-    const current = items
-    persist(current.some((item) => item.id === product.id) ? current.map((item) => item.id === product.id ? product : item) : [product, ...current])
+    const client = createClient()
+    const exists = items.some((item) => item.id === product.id)
+    const query = exists
+      ? client.from("products").update(toRow(product)).eq("id", product.id).select("*").single()
+      : client.from("products").insert([toRow(product)]).select("*").single()
+    const { data, error: saveError } = await query
+    if (saveError) throw saveError
+    setItems((current) => [toProduct(data as Record<string, unknown>), ...current.filter((item) => item.id !== product.id)])
     setError("")
   }
-  const deleteProduct = async (id: string) => { persist(items.filter((item) => item.id !== id)) }
+  const deleteProduct = async (id: string) => {
+    const { error: deleteError } = await createClient().from("products").delete().eq("id", id)
+    if (deleteError) throw deleteError
+    setItems((current) => current.filter((item) => item.id !== id))
+  }
   const value = useMemo(() => ({ products: items, loading, error, saveProduct, deleteProduct }), [items, loading, error])
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
 }
