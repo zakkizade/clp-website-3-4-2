@@ -16,7 +16,12 @@ export function OrdersDashboard() {
     sync()
     const onCreated = () => sync()
     window.addEventListener("clp:order-created", onCreated)
-    createClient().from("orders").select("*").order("created_at", { ascending: false }).then(({ data, error: queryError }) => {
+    const client = createClient()
+    if (!client) {
+      setError("Orders are temporarily unavailable. Locally placed orders are still shown.")
+      return () => window.removeEventListener("clp:order-created", onCreated)
+    }
+    client.from("orders").select("*").order("created_at", { ascending: false }).then(({ data, error: queryError }) => {
       const missingOrdersTable = queryError && ["42P01", "PGRST205"].includes(queryError.code || "")
       if (queryError && !missingOrdersTable) {
         setError("Orders are temporarily unavailable. Locally placed orders are still shown.")

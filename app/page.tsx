@@ -51,12 +51,18 @@ export default function Home() {
   const [signatureCategories, setSignatureCategories] = useState<Array<{ id: string; label: string; url: string; sort_order: number }>>([])
   const displaySignatureCategories = signatureCategories.length > 0 ? signatureCategories : Object.entries(signatureDefaults).map(([id, item], index) => ({ id, label: ["LOOSE GEMSTONES", "FINE GOLD JEWELRY", "JAIPUR SILVER", "CUSTOM CRAFT"][index], url: item.image, sort_order: index }))
   useEffect(() => {
-    void createClient().from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data }) => {
+    const client = createClient()
+    if (!client) return
+    void client.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data }) => {
       const rows = (data || []) as Array<Record<string, unknown>>
       setSignatureCategories(rows.map((item) => ({ id: String(item.id), label: String(item.label || item.id), url: String(item.url || ""), sort_order: Number(item.sort_order || 0) })))
     })
   }, [])
-  useEffect(() => { void createClient().from("site_media").select("id,url").then(({ data }) => { const rows = (data || []) as Array<Record<string, unknown>>; setSiteMedia(Object.fromEntries(rows.map((item) => [String(item.id), String(item.url || "")]))) }) }, [])
+  useEffect(() => {
+    const client = createClient()
+    if (!client) return
+    void client.from("site_media").select("id,url").then(({ data }) => { const rows = (data || []) as Array<Record<string, unknown>>; setSiteMedia(Object.fromEntries(rows.map((item) => [String(item.id), String(item.url || "")]))) })
+  }, [])
   useEffect(() => {
     document.documentElement.classList.toggle("light", theme === "light")
     document.documentElement.classList.toggle("dark", theme === "dark")

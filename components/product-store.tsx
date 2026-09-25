@@ -26,6 +26,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const client = createClient()
     let active = true
+    if (!client) {
+      setError("Supabase is not configured. Add the KEY environment variable to load products.")
+      setLoading(false)
+      return () => { active = false }
+    }
     const load = async () => {
       setLoading(true)
       const { data, error: fetchError } = await client.from("products").select("*")
@@ -45,6 +50,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, [])
   const saveProduct = async (product: Product) => {
     const client = createClient()
+    if (!client) throw new Error("Supabase is not configured.")
     const exists = items.some((item) => item.id === product.id)
     const query = exists
       ? client.from("products").update(toRow(product)).eq("id", product.id).select("*").single()
@@ -55,7 +61,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     setError("")
   }
   const deleteProduct = async (id: string) => {
-    const { error: deleteError } = await createClient().from("products").delete().eq("id", id)
+    const client = createClient()
+    if (!client) throw new Error("Supabase is not configured.")
+    const { error: deleteError } = await client.from("products").delete().eq("id", id)
     if (deleteError) throw deleteError
     setItems((current) => current.filter((item) => item.id !== id))
   }
