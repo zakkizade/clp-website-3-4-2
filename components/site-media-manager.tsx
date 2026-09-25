@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
 
 type Media = { id: string; kind: "hero" | "signature" | "slider"; label: string; url: string; sort_order: number }
 
@@ -10,17 +9,59 @@ const heroDefaults = {
   heroBannerDark: "/hero-emerald-gold.png",
 }
 
+const STORAGE_KEY = "clp-slider-banners"
+
 export function SiteMediaManager() {
-  const [items, setItems] = useState<Media[]>([])
-  const [notice, setNotice] = useState("")
+  const [items, setItems] = useState<Media[]>([
+    { id: "heroBannerLight", kind: "hero", label: "Hero Banner (Light Mode)", url: heroDefaults.heroBannerLight, sort_order: -2 },
+    { id: "heroBannerDark", kind: "hero", label: "Hero Banner (Dark Mode)", url: heroDefaults.heroBannerDark, sort_order: -1 },
+  ])
   const [sliderItems, setSliderItems] = useState<Media[]>([])
-  const load = async () => { const { data } = await createClient().from("site_media").select("id,kind,label,url,sort_order").order("sort_order"); const rows = (data || []) as Media[]; const legacy = rows.find((item) => item.id === "hero-default")?.url; const heroLight = rows.find((item) => item.id === "heroBannerLight")?.url || legacy || heroDefaults.heroBannerLight; const heroDark = rows.find((item) => item.id === "heroBannerDark")?.url || legacy || heroDefaults.heroBannerDark; setItems([{ id: "heroBannerLight", kind: "hero", label: "Hero Banner (Light Mode)", url: heroLight, sort_order: -2 }, { id: "heroBannerDark", kind: "hero", label: "Hero Banner (Dark Mode)", url: heroDark, sort_order: -1 }, ...rows.filter((item) => item.kind === "signature")]); setSliderItems(rows.filter((item) => item.kind === "slider")) }
-  useEffect(() => { void load(); try { const stored = window.localStorage.getItem("clp-slider-banners"); if (stored) setSliderItems(JSON.parse(stored) as Media[]) } catch { setNotice("Unable to restore local banner previews.") } }, [])
-  const update = async (item: Media, url: string) => { const { error } = await (createClient().from("site_media") as any).upsert({ ...item, url }); if (error) setNotice(error.message); else { setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry)); setNotice(`${item.label} updated.`) } }
-  const upload = async (item: Media, file: File) => { const path = `site/${item.id}-${Date.now()}-${file.name.replace(/[^a-z0-9.-]/gi, "-")}`; const { error } = await createClient().storage.from("product-media").upload(path, file, { upsert: true }); if (error) { setNotice(error.message); return } const { data } = createClient().storage.from("product-media").getPublicUrl(path); await update(item, data.publicUrl) }
-  return <section className="site-media-manager"><div className="admin-toolbar"><div><p className="eyebrow">Homepage control</p><h2>Site Media &amp; Banners</h2><p className="admin-muted">Manage independent Light Mode and Dark Mode hero banners plus signature collection imagery.</p></div></div>{notice && <p className="admin-success" role="status">{notice}</p>}<section className="slider-manager"><div className="admin-toolbar"><div><p className="eyebrow">Homepage Slider Banners</p><h3>Upload New Banner Image</h3><p className="admin-muted">Promotional banners autoplay every 3 seconds on the storefront.</p></div><label className="admin-button media-upload-label">Upload New Banner Images<input type="file" accept="image/*" multiple hidden onChange={(event) => { const files = Array.from(event.target.files || []); if (!files.length) return; const added = files.map((file, index): Media => ({ id: `slider-${Date.now()}-${index}`, kind: "slider", label: file.name, url: URL.createObjectURL(file), sort_order: sliderItems.length + index })); setSliderItems((current) => { const next = [...current, ...added]; window.localStorage.setItem("clp-slider-banners", JSON.stringify(next)); return next }); setNotice(`${added.length} banner${added.length === 1 ? "" : "s"} added to this preview.`); event.currentTarget.value = "" }} /></label></div>{sliderItems.map((item, index) => <article className="slider-item" key={item.id}><img src={item.url} alt={item.label} /><strong>{item.label}</strong><button type="button" onClick={() => setSliderItems((current) => { const next = current.filter((entry) => entry.id !== item.id); window.localStorage.setItem("clp-slider-banners", JSON.stringify(next)); return next })}>Delete</button><button type="button" disabled={index === 0} onClick={() => setSliderItems((current) => { const next = [...current]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next })}>↑</button><button type="button" disabled={index === sliderItems.length - 1} onClick={() => setSliderItems((current) => { const next = [...current]; [next[index], next[index + 1]] = [next[index + 1], next[index]]; return next })}>↓</button></article>)}</section><div className="site-media-grid">{items.map((item) => <article className="site-media-card" key={item.id}><div className="site-media-preview"><img src={item.url} alt={item.label} /></div><div className="site-media-card-body"><strong>{item.label}</strong><div className="site-media-order"><button type="button" onClick={() => setItems((current) => { const index = current.findIndex((entry) => entry.id === item.id); if (index <= 0) return current; const next = [...current]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; return next })} aria-label={`Move ${item.label} up`}>↑</button><button type="button" onClick={() => setItems((current) => { const index = current.findIndex((entry) => entry.id === item.id); if (index < 0 || index >= current.length - 1) return current; const next = [...current]; [next[index], next[index + 1]] = [next[index + 1], next[index]]; return next })} aria-label={`Move ${item.label} down`}>↓</button><button type="button" onClick={() => setItems((current) => current.filter((entry) => entry.id !== item.id))} aria-label={`Delete ${item.label}`}>Delete</button></div><input value={item.url} onChange={(event) => setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url: event.target.value } : entry))} onBlur={(event) => void update(item, event.target.value)} aria-label={`${item.label} URL`} /><label className="admin-button media-upload-label">Upload image<input type="file" accept="image/*" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void upload(item, file) }} /></label></div></article>)}</div></section>
+  const [notice, setNotice] = useState("")
+
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY)
+      if (stored) setSliderItems(JSON.parse(stored) as Media[])
+    } catch {
+      setNotice("Unable to restore local banner previews.")
+    }
+  }, [])
+
+  const persistSliders = (next: Media[]) => {
+    setSliderItems(next)
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+  }
+
+  const updateHero = (item: Media, file: File) => {
+    const url = URL.createObjectURL(file)
+    setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+    setNotice(`${item.label} updated locally.`)
+  }
+
+  return (
+    <section className="site-media-manager">
+      <div className="admin-toolbar">
+        <div><p className="eyebrow">Homepage control</p><h2>Site Media &amp; Banners</h2><p className="admin-muted">Manage banners locally in this browser without an external database.</p></div>
+      </div>
+      {notice && <p className="admin-success" role="status">{notice}</p>}
+      <div className="media-grid">
+        {items.map((item) => <article className="media-card" key={item.id}><img src={item.url} alt={item.label} /><strong>{item.label}</strong><label className="admin-button media-upload-label">Replace Image<input type="file" accept="image/*" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) updateHero(item, file); event.currentTarget.value = "" }} /></label></article>)}
+      </div>
+      <section className="slider-manager">
+        <div className="admin-toolbar"><div><p className="eyebrow">Homepage Slider Banners</p><h3>Upload New Banner Images</h3><p className="admin-muted">Promotional banners autoplay every 3 seconds on the storefront.</p></div><label className="admin-button media-upload-label">Choose Multiple Images<input type="file" accept="image/*" multiple hidden onChange={(event) => { const files = Array.from(event.target.files || []); if (!files.length) return; const added = files.map((file, index): Media => ({ id: `slider-${Date.now()}-${index}`, kind: "slider", label: file.name, url: URL.createObjectURL(file), sort_order: sliderItems.length + index })); persistSliders([...sliderItems, ...added]); setNotice(`${added.length} banner${added.length === 1 ? "" : "s"} added locally.`); event.currentTarget.value = "" }} /></label></div>
+        <div className="slider-items">{sliderItems.map((item, index) => <article className="slider-item" key={item.id}><img src={item.url} alt={item.label} /><strong>{item.label}</strong><button type="button" onClick={() => persistSliders(sliderItems.filter((entry) => entry.id !== item.id))}>Delete</button><button type="button" disabled={index === 0} onClick={() => { const next = [...sliderItems]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; persistSliders(next) }}>↑</button><button type="button" disabled={index === sliderItems.length - 1} onClick={() => { const next = [...sliderItems]; [next[index], next[index + 1]] = [next[index + 1], next[index]]; persistSliders(next) }}>↓</button></article>)}</div>
+      </section>
+    </section>
+  )
 }
 
-export async function getSiteMedia(kind?: "hero" | "signature" | "slider") { const query = createClient().from("site_media").select("id,kind,label,url,sort_order").order("sort_order"); const { data } = kind ? await query.eq("kind", kind) : await query; return (data || []) as Media[] }
+export async function getSiteMedia(kind?: "hero" | "signature" | "slider") {
+  if (typeof window === "undefined") return [] as Media[]
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]") as Media[]
+    return kind ? stored.filter((item) => item.kind === kind) : stored
+  } catch { return [] as Media[] }
+}
 
 export type { Media }

@@ -1,20 +1,32 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js"
+type QueryResult = { data: unknown[]; error: null }
 
-let client: ReturnType<typeof createSupabaseClient> | undefined
-
-// Public project URL and publishable (anon) key. The anon key is safe to expose
-// in client code — access is enforced by Row Level Security on the database.
-const SUPABASE_URL = "https://mkyutnvicrmhnkxkufyz.supabase.co"
-const SUPABASE_KEY = "sb_publishable_A9CxtVZZdnorh4abVfv7XQ_BsigU8zc"
-
-export function createClient() {
-  if (!client) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || SUPABASE_URL
-    const key =
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-      SUPABASE_KEY
-    client = createSupabaseClient(url, key)
+const emptyQuery = (): any => {
+  const result = Promise.resolve({ data: [], error: null } satisfies QueryResult)
+  return {
+    select: () => emptyQuery(),
+    eq: () => emptyQuery(),
+    order: () => result,
+    upsert: () => result,
+    insert: () => result,
+    update: () => emptyQuery(),
+    delete: () => emptyQuery(),
+    then: result.then.bind(result),
   }
-  return client
+}
+
+export function createClient(): any {
+  return {
+    from: () => emptyQuery(),
+    storage: {
+      from: () => ({
+        upload: async () => ({ data: null, error: null }),
+        getPublicUrl: (path: string) => ({ data: { publicUrl: path }, error: null }),
+      }),
+    },
+    auth: {
+      signInWithPassword: async () => ({ data: null, error: { message: "Account sign-in is unavailable in local mode." } }),
+      signUp: async () => ({ data: null, error: { message: "Account sign-up is unavailable in local mode." } }),
+      signInWithOAuth: async () => ({ data: null, error: { message: "OAuth is unavailable in local mode." } }),
+    },
+  }
 }
