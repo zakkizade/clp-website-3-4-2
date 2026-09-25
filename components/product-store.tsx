@@ -23,7 +23,12 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(PRODUCT_STORAGE_KEY)
-      setItems(stored ? JSON.parse(stored) as Product[] : fallbackProducts)
+      const saved = stored ? JSON.parse(stored) as Product[] : []
+      // Keep the built-in catalog available while allowing admin-created products to persist.
+      const savedById = new Map(saved.map((product) => [product.id, product]))
+      const merged = [...saved, ...fallbackProducts.filter((product) => !savedById.has(product.id))]
+      setItems(merged)
+      if (saved.length) window.localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(merged))
     } catch {
       setItems(fallbackProducts)
       setError("Using the local catalog preview.")
