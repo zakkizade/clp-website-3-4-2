@@ -1,32 +1,17 @@
-type QueryResult = { data: unknown[]; error: null }
+import { createClient as createSupabaseClient, type SupabaseClient } from "@supabase/supabase-js"
 
-const emptyQuery = (): any => {
-  const result = Promise.resolve({ data: [], error: null } satisfies QueryResult)
-  return {
-    select: () => emptyQuery(),
-    eq: () => emptyQuery(),
-    order: () => result,
-    upsert: () => result,
-    insert: () => result,
-    update: () => emptyQuery(),
-    delete: () => emptyQuery(),
-    then: result.then.bind(result),
+const supabaseUrl = "https://wshytfogdrtnsyvisgan.supabase.co"
+const supabaseAnonKey = process.env.KEY
+
+let browserClient: SupabaseClient | null = null
+
+export function createClient(): SupabaseClient {
+  if (!supabaseAnonKey) {
+    throw new Error("Supabase client is not configured: KEY is missing.")
   }
+
+  browserClient ??= createSupabaseClient(supabaseUrl, supabaseAnonKey)
+  return browserClient
 }
 
-export function createClient(): any {
-  return {
-    from: () => emptyQuery(),
-    storage: {
-      from: () => ({
-        upload: async () => ({ data: null, error: null }),
-        getPublicUrl: (path: string) => ({ data: { publicUrl: path }, error: null }),
-      }),
-    },
-    auth: {
-      signInWithPassword: async () => ({ data: null, error: { message: "Account sign-in is unavailable in local mode." } }),
-      signUp: async () => ({ data: null, error: { message: "Account sign-up is unavailable in local mode." } }),
-      signInWithOAuth: async () => ({ data: null, error: { message: "OAuth is unavailable in local mode." } }),
-    },
-  }
-}
+export const supabase = typeof window === "undefined" ? null : createClient()
