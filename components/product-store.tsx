@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import { products as fallbackProducts, type Product } from "@/lib/products"
+import { type Product } from "@/lib/products"
 import { createClient } from "@/lib/supabase/client"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
@@ -36,21 +36,12 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       const { data, error: fetchError } = await client.from("products").select("*")
       if (!active) return
       if (fetchError) {
-        setItems(fallbackProducts)
+        setItems([])
         setError(`Live catalog unavailable: ${fetchError.message}`)
         setLoading(false)
         return
       }
-      if (!data?.length) {
-        const { data: seeded, error: seedError } = await client.from("products").insert(fallbackProducts.map(toRow)).select("*")
-        if (seedError) {
-          setItems(fallbackProducts)
-          setError(`Catalog seed unavailable: ${seedError.message}`)
-          setLoading(false)
-          return
-        }
-        setItems(seeded?.length ? seeded.map((row) => toProduct(row as Record<string, unknown>)) : fallbackProducts)
-      } else setItems(data.map((row) => toProduct(row as Record<string, unknown>)))
+      setItems((data ?? []).map((row) => toProduct(row as Record<string, unknown>)))
       setError("")
       setLoading(false)
     }
