@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { products as fallbackProducts, type Product } from "@/lib/products"
-import { createClient } from "@/lib/supabase/client"
+const PRODUCT_STORAGE_KEY = "clp-products"
+const PRODUCT_SYNC_EVENT = "clp-products-updated"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
 const ProductContext = createContext<ProductStore | null>(null)
@@ -20,44 +21,25 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   useEffect(() => {
-    let active = true
-    const load = async () => {
-      const { data, error: queryError } = await createClient().from("products").select("id,name,type,slug,price_inr,regular_price_inr,sale_price_inr,discount_percent,show_sale_badge,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false })
-      if (!active) return
-      if (queryError) {
-        if (active) {
-          setError("Using the local catalog preview. Connect Supabase to sync products.")
-          setItems(fallbackProducts)
-          setLoading(false)
-        }
-        return
-      }
-      setItems(data?.length ? data.map((row) => toProduct(row as Record<string, unknown>)) : fallbackProducts)
-      setLoading(false)
-    }
-    load().catch((reason: unknown) => { if (active) { setError(reason instanceof Error ? reason.message : "Unable to connect to the catalog."); setItems([]); setLoading(false) } })
-    return () => { active = false }
+    try {
+      const stored = window.localStorage.getItem(PRODUCT_STORAGE_KEY)
+      setItems(stored ? JSON.parse(stored) as Product[] : fallbackProducts)
+    } catch {
+      setItems(fallbackProducts)
+      setError("Using the local catalog preview.")
+    } finally { setLoading(false) }
+    const sync = () => { try { const stored = window.localStorage.getItem(PRODUCT_STORAGE_KEY); if (stored) setItems(JSON.parse(stored) as Product[]) } catch { setError("Unable to read the local catalog.") } }
+    window.addEventListener(PRODUCT_SYNC_EVENT, sync)
+    window.addEventListener("storage", sync)
+    return () => { window.removeEventListener(PRODUCT_SYNC_EVENT, sync); window.removeEventListener("storage", sync) }
   }, [])
-  useEffect(() => {
-    const refresh = () => { try { void createClient().from("products").select("id,name,type,slug,price_inr,regular_price_inr,sale_price_inr,discount_percent,show_sale_badge,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").order("created_at", { ascending: false }).then(({ data }) => { if (data?.length) setItems(data.map((row) => toProduct(row as Record<string, unknown>))) }) } catch { /* catalog client not ready; skip this refresh tick */ } }
-    const interval = window.setInterval(refresh, 30000)
-    return () => window.clearInterval(interval)
-  }, [])
+  const persist = (next: Product[]) => { setItems(next); window.localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(next)); window.dispatchEvent(new Event(PRODUCT_SYNC_EVENT)) }
   const saveProduct = async (product: Product) => {
-    const payload = { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.regularPriceInr || product.priceInr, regular_price_inr: product.regularPriceInr || product.priceInr, sale_price_inr: product.salePriceInr || null, show_sale_badge: Boolean(product.showSaleBadge), discount_percent: product.discountPercent || null, image: product.image, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl || null, view_360: product.view360 || [], updated_at: new Date().toISOString() }
-    const { data, error: mutationError } = await (createClient().from("products") as any).upsert(payload).select("id,name,type,slug,price_inr,regular_price_inr,sale_price_inr,discount_percent,show_sale_badge,image,gallery,tags,category,gold_purity,certificate,origin,description,is_featured,carat,metal,video_url,view_360").single()
-    if (mutationError) {
-      setItems((current) => current.some((item) => item.id === product.id) ? current.map((item) => item.id === product.id ? product : item) : [product, ...current])
-      setError("Saved in this preview only. Connect Supabase to sync catalog changes.")
-      return
-    }
-    setItems((current) => { const next = toProduct(data as Record<string, unknown>); return current.some((item) => item.id === next.id) ? current.map((item) => item.id === next.id ? next : item) : [next, ...current] })
+    const current = items
+    persist(current.some((item) => item.id === product.id) ? current.map((item) => item.id === product.id ? product : item) : [product, ...current])
+    setError("")
   }
-  const deleteProduct = async (id: string) => {
-    const { error: mutationError } = await createClient().from("products").delete().eq("id", id)
-    if (mutationError) setError("Removed in this preview only. Connect Supabase to sync catalog changes.")
-    setItems((current) => current.filter((item) => item.id !== id))
-  }
+  const deleteProduct = async (id: string) => { persist(items.filter((item) => item.id !== id)) }
   const value = useMemo(() => ({ products: items, loading, error, saveProduct, deleteProduct }), [items, loading, error])
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
 }
