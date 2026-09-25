@@ -38,19 +38,39 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
     setUploadError(null)
     try {
       const client = createClient()
-      if (!client) throw new Error("Supabase storage is not configured.")
-      const uploaded = await Promise.all(selected.map(async (originalFile) => {
+      if (!client) {
+        setUploadError("Media uploads are unavailable because Supabase is not configured.")
+        return
+      }
+
+      const uploaded: string[] = []
+      for (const originalFile of selected) {
         const file = await compressImage(originalFile)
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-")
         const path = `${Date.now()}-${crypto.randomUUID()}-${safeName}`
-        const { error } = await client.storage.from("product-images").upload(path, file, { cacheControl: "31536000", upsert: false, contentType: file.type })
-        if (error) throw error
-        return client.storage.from("product-images").getPublicUrl(path).data.publicUrl
-      }))
+        const result = await client.storage.from("product-images").upload(path, file, {
+          cacheControl: "31536000",
+          upsert: false,
+          contentType: file.type,
+        })
+
+        if (result.error) {
+          const message = result.error.message.toLowerCase()
+          setUploadError(message.includes("bucket not found")
+            ? "The product-images storage bucket is not available, so this file was not uploaded."
+            : `Upload failed: ${result.error.message}`)
+          return
+        }
+
+        uploaded.push(client.storage.from("product-images").getPublicUrl(path).data.publicUrl)
+      }
+
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))
     } catch (error) {
       const message = error instanceof Error ? error.message : "The media upload could not be completed."
-      setUploadError(message.includes("Bucket not found") ? "The Supabase product-images bucket is unavailable. Create or enable this public bucket to upload media." : message)
+      setUploadError(message.toLowerCase().includes("bucket not found")
+        ? "The product-images storage bucket is not available, so this file was not uploaded."
+        : message)
     } finally {
       setUploading(false)
     }
