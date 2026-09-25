@@ -16,6 +16,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [dragging, setDragging] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   async function compressImage(file: File) {
     if (!file.type.startsWith("image/") || file.type === "image/svg+xml") return file
@@ -34,6 +35,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
     const selected = Array.from(files)
     if (!selected.length) return
     setUploading(true)
+    setUploadError(null)
     try {
       const client = createClient()
       if (!client) throw new Error("Supabase storage is not configured.")
@@ -46,10 +48,13 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
         return client.storage.from("product-images").getPublicUrl(path).data.publicUrl
       }))
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "The media upload could not be completed."
+      setUploadError(message.includes("Bucket not found") ? "The Supabase product-images bucket is unavailable. Create or enable this public bucket to upload media." : message)
     } finally {
       setUploading(false)
     }
   }
 
-  return <div className="space-y-2"><div className="flex items-center justify-between"><label className="text-sm text-[#c8bfa9]">{label}</label>{value.length > 0 && <span className="text-xs text-[#a99562]">{value.length} uploaded</span>}</div><button type="button" className={`flex min-h-24 w-full flex-col items-center justify-center gap-2 rounded border border-dashed px-4 py-5 text-center transition-colors ${dragging ? "border-[#d4af37] bg-[#d4af37]/10" : "border-[#75643a] bg-black/20 hover:border-[#d4af37]"}`} onClick={() => inputRef.current?.click()} onDragOver={(event) => { event.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); void uploadFiles(event.dataTransfer.files) }}><input ref={inputRef} hidden type="file" accept={accept} multiple={multiple} onChange={(event) => { if (event.target.files) void uploadFiles(event.target.files); event.currentTarget.value = "" }} />{uploading ? <Loader2 className="animate-spin text-[#d4af37]" size={20} /> : <Upload className="text-[#d4af37]" size={20} />}<span className="text-xs text-[#c8bfa9]">{uploading ? "Uploading…" : "Drop files here or click to browse"}</span></button>{value.length > 0 && <div className="space-y-1">{value.map((url) => <div key={url} className="flex items-center gap-2 rounded bg-black/20 px-2 py-1 text-xs text-[#a39a82]"><span className="min-w-0 flex-1 truncate">{url}</span><button type="button" onClick={() => onChange(value.filter((item) => item !== url))} aria-label={`Remove ${url}`}><X size={14} /></button></div>)}</div>}</div>
+  return <div className="space-y-2"><div className="flex items-center justify-between"><label className="text-sm text-[#c8bfa9]">{label}</label>{value.length > 0 && <span className="text-xs text-[#a99562]">{value.length} uploaded</span>}</div>{uploadError && <p role="alert" className="rounded border border-red-400/40 bg-red-950/30 px-3 py-2 text-xs text-red-200">{uploadError}</p>}<button type="button" className={`flex min-h-24 w-full flex-col items-center justify-center gap-2 rounded border border-dashed px-4 py-5 text-center transition-colors ${dragging ? "border-[#d4af37] bg-[#d4af37]/10" : "border-[#75643a] bg-black/20 hover:border-[#d4af37]"}`} onClick={() => inputRef.current?.click()} onDragOver={(event) => { event.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); void uploadFiles(event.dataTransfer.files) }}><input ref={inputRef} hidden type="file" accept={accept} multiple={multiple} onChange={(event) => { if (event.target.files) void uploadFiles(event.target.files); event.currentTarget.value = "" }} />{uploading ? <Loader2 className="animate-spin text-[#d4af37]" size={20} /> : <Upload className="text-[#d4af37]" size={20} />}<span className="text-xs text-[#c8bfa9]">{uploading ? "Uploading…" : "Drop files here or click to browse"}</span></button>{value.length > 0 && <div className="space-y-1">{value.map((url) => <div key={url} className="flex items-center gap-2 rounded bg-black/20 px-2 py-1 text-xs text-[#a39a82]"><span className="min-w-0 flex-1 truncate">{url}</span><button type="button" onClick={() => onChange(value.filter((item) => item !== url))} aria-label={`Remove ${url}`}><X size={14} /></button></div>)}</div>}</div>
 }
