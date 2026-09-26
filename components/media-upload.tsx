@@ -48,7 +48,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
         const file = await compressImage(originalFile)
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-")
         const path = `${Date.now()}-${crypto.randomUUID()}-${safeName}`
-        const result = await client.storage.from("product-images").upload(path, file, {
+        const result = await client.storage.from("products-image").upload(path, file, {
           cacheControl: "31536000",
           upsert: false,
           contentType: file.type,
@@ -57,19 +57,19 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
         if (result.error) {
           const message = result.error.message.toLowerCase()
           setUploadError(message.includes("bucket not found")
-            ? "The product-images storage bucket is not available, so this file was not uploaded."
+            ? "The products-image storage bucket is not available, so this file was not uploaded."
             : `Upload failed: ${result.error.message}`)
           return
         }
 
-        uploaded.push(client.storage.from("product-images").getPublicUrl(path).data.publicUrl)
+        uploaded.push(client.storage.from("products-image").getPublicUrl(path).data.publicUrl)
       }
 
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))
     } catch (error) {
       const message = error instanceof Error ? error.message : "The media upload could not be completed."
       setUploadError(message.toLowerCase().includes("bucket not found")
-        ? "The product-images storage bucket is not available, so this file was not uploaded."
+        ? "The products-image storage bucket is not available, so this file was not uploaded."
         : message)
     } finally {
       setUploading(false)
