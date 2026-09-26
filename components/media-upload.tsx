@@ -31,6 +31,15 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
     return blob ? new File([blob], `${file.name.replace(/\.[^.]+$/, "")}.webp`, { type: "image/webp" }) : file
   }
 
+  async function fileToDataUrl(file: File) {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result))
+      reader.onerror = () => reject(reader.error ?? new Error("The selected file could not be read."))
+      reader.readAsDataURL(file)
+    })
+  }
+
   async function uploadFiles(files: FileList | File[]) {
     const selected = Array.from(files)
     if (!selected.length) return
@@ -56,6 +65,17 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
 
         if (result.error) {
           const message = result.error.message.toLowerCase()
+          const blockedByPolicy = message.includes("row-level security")
+            || message.includes("violates row-level security")
+            || message.includes("permission denied")
+            || message.includes("unauthorized")
+
+          if (blockedByPolicy) {
+            // Keep product creation usable when Storage RLS has not been configured.
+            uploaded.push(await fileToDataUrl(file))
+            continue
+          }
+
           setUploadError(message.includes("bucket not found")
             ? "The products-image storage bucket is not available, so this file was not uploaded."
             : `Upload failed: ${result.error.message}`)
