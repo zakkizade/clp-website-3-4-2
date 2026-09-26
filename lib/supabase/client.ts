@@ -3,7 +3,7 @@ import { createClient as createSupabaseClient, type SupabaseClient } from "@supa
 const supabaseUrl = "https://wshytfogdrtnsyvisgan.supabase.co"
 // Browser bundles only expose NEXT_PUBLIC_* variables; KEY_3 is available to the
 // project runtime through the configured environment variables.
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.KEY_3
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.KEY_5
 
 let browserClient: SupabaseClient | null = null
 
