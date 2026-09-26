@@ -47,11 +47,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
     setUploadError(null)
     try {
       const client = createClient()
-      if (!client) {
-        setUploadError("Media uploads are unavailable because Supabase is not configured.")
-        return
-      }
-
+      if (!client) throw new Error("Supabase upload client could not be initialized.")
       const uploaded: string[] = []
       for (const originalFile of selected) {
         const file = await compressImage(originalFile)
