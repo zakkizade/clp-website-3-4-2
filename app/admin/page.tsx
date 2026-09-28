@@ -57,23 +57,29 @@ export default function AdminPage() {
     setNotice("")
     if (saving) return
     if (!editing?.name.trim()) { setError("Product name is required."); return }
-    const regularPrice = Number(editing.regularPriceInr || editing.priceInr)
+    const regularPrice = Number(editing.regularPriceInr || editing.priceInr || 0)
     const salePrice = Number(editing.salePriceInr || 0)
     if (!Number.isFinite(regularPrice) || regularPrice <= 0) { setError("Regular Price must be a number greater than 0."); return }
     if (!Number.isFinite(salePrice) || salePrice < 0) { setError("Sale Price must be a valid number."); return }
     setSaving(true)
-    const id = editing.id || `${slugify(editing.name)}-${Date.now()}`
+    const payload: Product = {
+      ...editing,
+      priceInr: salePrice || regularPrice,
+      regularPriceInr: regularPrice,
+      salePriceInr: salePrice || undefined,
+      slug: editing.slug || `${slugify(editing.name) || "product"}-${Date.now().toString().slice(-4)}`,
+    }
+    console.log("[v0] Save product clicked; submitting normalized payload", { name: payload.name, price: payload.priceInr, slug: payload.slug })
     try {
-      const pricing = saleDetails({ ...editing, priceInr: regularPrice, regularPriceInr: regularPrice, salePriceInr: salePrice, discountPercent: Number(editing.discountPercent || 0) })
-      const payload = { ...editing, id, slug: editing.slug || id, priceInr: pricing.sale, regularPriceInr: pricing.regular, salePriceInr: pricing.discounted ? pricing.sale : undefined, discountPercent: pricing.percentOff, gallery: Array.isArray(editing.gallery) ? editing.gallery : splitLines(String(editing.gallery)), view360: Array.isArray(editing.view360) ? editing.view360 : splitLines(String(editing.view360 || "")), tags: editing.tags || [] }
-      console.log("[v0] Saving product to Supabase", payload)
       await saveProduct(payload)
+      window.alert("Product Saved Successfully!")
       setEditing(null)
       setNotice("Product saved successfully!")
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save product. Check the Supabase connection."
       console.error("[v0] Supabase product save failed", reason)
-      setError(`Supabase save failed: ${message}`)
+      setError(`Database Error: ${message}`)
+      window.alert(`Database Error: ${message}`)
     } finally { setSaving(false) }
     window.setTimeout(() => { setNotice(""); setError("") }, 4000)
   }
