@@ -76,7 +76,7 @@ export default function Home() {
   }), [activeFilter, query, products])
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize))
   const pageProducts = filteredProducts.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  const saleSlides = products.filter((product) => { const sale = saleDetails(product); return product.showSaleBadge || sale.discounted }).map((product) => { const sale = saleDetails(product); return { id: `sale-${product.id}`, image: product.image, href: `/product/${product.id}`, label: product.name, sale: true, percentOff: sale.percentOff } })
+  const saleSlides = products.filter((product) => { const sale = saleDetails(product); return product.showOnBanner || product.isFeatured || product.showSaleBadge || sale.discounted }).map((product) => { const sale = saleDetails(product); return { id: `sale-${product.id}`, image: product.image, href: `/product/${product.id}`, label: `${product.name} · ${formatPrice(sale.sale || product.priceInr, "INR")}`, sale: true, percentOff: sale.percentOff || (product.showSaleBadge ? 50 : undefined) } })
   useEffect(() => setCurrentPage(1), [activeFilter, query])
 
   return <main className="min-h-screen overflow-hidden bg-[#0a0a0a] text-[#f5e6c8]">

@@ -70,16 +70,14 @@ export default function AdminPage() {
       slug: editing.slug || `${slugify(editing.name) || "product"}-${Date.now().toString().slice(-4)}`,
     }
     console.log("[v0] Save product clicked; submitting normalized payload", { name: payload.name, price: payload.priceInr, slug: payload.slug })
+    setEditing(null)
     try {
       await saveProduct(payload)
-      window.alert("Product Saved Successfully!")
-      setEditing(null)
       setNotice("Product saved successfully!")
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save product. Check the Supabase connection."
       console.error("[v0] Supabase product save failed", reason)
       setError(`Database Error: ${message}`)
-      window.alert(`Database Error: ${message}`)
     } finally { setSaving(false) }
     window.setTimeout(() => { setNotice(""); setError("") }, 4000)
   }

@@ -17,6 +17,7 @@ export type Product = {
   origin: string
   description: string
   isFeatured: boolean
+  showOnBanner?: boolean
   view?: boolean
   carat: string
   metal: string
