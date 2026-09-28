@@ -70,11 +70,16 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const localProducts = readLocalProducts()
-    setItems(localProducts.length ? localProducts : seedProducts)
+    setItems(localProducts.length > 0 ? localProducts : seedProducts)
     setLoading(false)
-    const onLocalUpdate = () => setItems(readLocalProducts())
-    window.addEventListener("clp-products-updated", onLocalUpdate)
-    return () => window.removeEventListener("clp-products-updated", onLocalUpdate)
+
+    const handleLocalProductsUpdated = () => {
+      const nextProducts = readLocalProducts()
+      setItems(nextProducts.length > 0 ? nextProducts : seedProducts)
+    }
+
+    window.addEventListener("clp-products-updated", handleLocalProductsUpdated)
+    return () => window.removeEventListener("clp-products-updated", handleLocalProductsUpdated)
   }, [])
 
   const saveProduct = async (product: Product) => {
