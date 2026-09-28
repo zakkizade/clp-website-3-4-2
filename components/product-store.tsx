@@ -8,9 +8,11 @@ type ProductStore = { products: Product[]; loading: boolean; error: string; save
 const ProductContext = createContext<ProductStore | null>(null)
 
 function toProduct(row: Record<string, unknown>): Product {
+  const images = Array.isArray(row.images) ? row.images.map(String).filter(Boolean) : []
+  const mainImage = String(row.main_image || row.image_url || images[0] || "")
   return {
-    id: String(row.id), name: String(row.name || ""), type: String(row.type || "Jewelry"), slug: String(row.slug || row.id),
-    priceInr: Number(row.price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: row.sale_price != null, discountPercent: row.discount_percent ? Number(row.discount_percent) : undefined, image: String(row.main_image || ""), gallery: Array.isArray(row.images) ? row.images.map(String) : [], tags: Array.isArray(row.tags) ? row.tags.map(String) : typeof row.tags === "string" ? row.tags.split(/[,\n]+/).map((tag) => tag.trim()).filter(Boolean) : [],
+    id: String(row.id), name: String(row.name || row.title || ""), type: String(row.type || "Jewelry"), slug: String(row.slug || row.id),
+    priceInr: Number(row.price ?? row.sale_price ?? row.regular_price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: row.sale_price != null, discountPercent: row.discount_percent ? Number(row.discount_percent) : undefined, image: mainImage, gallery: Array.from(new Set([mainImage, ...images].filter(Boolean))), tags: Array.isArray(row.tags) ? row.tags.map(String) : typeof row.tags === "string" ? row.tags.split(/[,\n]+/).map((tag) => tag.trim()).filter(Boolean) : [],
     category: String(row.category || "Fine Jewelry") as Product["category"], goldPurity: String(row.gold_purity || "18K"), certificate: String(row.certificate || "IGL Certified"), origin: String(row.origin || "Jaipur, India"), description: String(row.description || ""), isFeatured: Boolean(row.is_featured), carat: String(row.carat || ""), metal: String(row.metal || "18K Gold"), videoUrl: row.video_url ? String(row.video_url) : undefined, view360: Array.isArray(row.view_360) ? row.view_360.map(String) : [],
   }
 }
@@ -26,12 +28,19 @@ function toRow(product: Product) {
     name: product.name,
     slug: product.slug || `${slugBase}-${Date.now().toString().slice(-4)}`,
     price,
+    regular_price: regularPrice,
+    sale_price: salePrice || null,
     category: product.category || "Fine Jewelry",
+    type: product.type || "Jewelry",
     carat: product.carat || "",
     gold_purity: product.goldPurity || "",
+    origin: product.origin || "",
+    certificate: product.certificate || "",
     description: product.description || "",
+    image_url: product.image || images[0] || "",
     main_image: product.image || images[0] || "",
     images,
+    tags: product.tags || [],
     video_url: product.videoUrl || "",
     is_featured: Boolean(product.isFeatured),
   }

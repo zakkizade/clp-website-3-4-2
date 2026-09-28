@@ -21,7 +21,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
   async function compressImage(file: File) {
     if (!file.type.startsWith("image/") || file.type === "image/svg+xml") return file
     const bitmap = await createImageBitmap(file)
-    const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height))
+    const scale = Math.min(1, 1200 / Math.max(bitmap.width, bitmap.height))
     const canvas = document.createElement("canvas")
     canvas.width = Math.max(1, Math.round(bitmap.width * scale))
     canvas.height = Math.max(1, Math.round(bitmap.height * scale))
