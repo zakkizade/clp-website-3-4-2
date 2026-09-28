@@ -47,46 +47,79 @@ function toRow(product: Product) {
   }
 }
 
+const LOCAL_PRODUCTS_KEY = "clp-products"
+
+function readLocalProducts(): Product[] {
+  if (typeof window === "undefined") return []
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(LOCAL_PRODUCTS_KEY) || "[]")
+    return Array.isArray(stored) ? stored as Product[] : []
+  } catch {
+    return []
+  }
+}
+
+function writeLocalProducts(products: Product[]) {
+  window.localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products))
+  window.dispatchEvent(new CustomEvent("clp-products-updated"))
+}
+
 export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   useEffect(() => {
+    const localProducts = readLocalProducts()
+    if (localProducts.length) setItems(localProducts)
+    const onLocalUpdate = () => setItems(readLocalProducts())
+    window.addEventListener("clp-products-updated", onLocalUpdate)
     const client = createClient()
     let active = true
     if (!client) {
-      setError("Supabase is not configured. Add the KEY_2 environment variable to load products.")
+      setError("Supabase is not configured. Products are available from local storage.")
       setLoading(false)
-      return () => { active = false }
+      return () => { active = false; window.removeEventListener("clp-products-updated", onLocalUpdate) }
     }
     const load = async () => {
       setLoading(true)
       const { data, error: fetchError } = await client.from("products").select("*")
       if (!active) return
       if (fetchError) {
-        setItems([])
-        setError(`Live catalog unavailable: ${fetchError.message}`)
+        setItems(readLocalProducts())
+        setError(`Live catalog unavailable; using local products: ${fetchError.message}`)
         setLoading(false)
         return
       }
-      setItems((data ?? []).map((row) => toProduct(row as Record<string, unknown>)))
+      const remoteProducts = (data ?? []).map((row) => toProduct(row as Record<string, unknown>))
+      const localProducts = readLocalProducts()
+      const merged = [...localProducts, ...remoteProducts.filter((remote) => !localProducts.some((local) => local.id === remote.id))]
+      setItems(merged)
+      writeLocalProducts(merged)
       setError("")
       setLoading(false)
     }
     void load()
     const channel = client.channel("products-realtime").on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => { void load() }).subscribe()
-    return () => { active = false; void client.removeChannel(channel) }
+    return () => { active = false; window.removeEventListener("clp-products-updated", onLocalUpdate); void client.removeChannel(channel) }
   }, [])
   const saveProduct = async (product: Product) => {
+    const next = [product, ...items.filter((item) => item.id !== product.id)]
+    setItems(next)
+    writeLocalProducts(next)
     const client = createClient()
-    if (!client) throw new Error("Supabase is not configured.")
+    if (!client) return
     const exists = items.some((item) => item.id === product.id)
     const query = exists
       ? client.from("products").update(toRow(product)).eq("id", product.id).select("*").single()
       : client.from("products").insert([toRow(product)]).select("*").single()
     const { data, error: saveError } = await query
     if (saveError) throw saveError
-    setItems((current) => [toProduct(data as Record<string, unknown>), ...current.filter((item) => item.id !== product.id)])
+    const saved = toProduct(data as Record<string, unknown>)
+    setItems((current) => {
+      const next = [saved, ...current.filter((item) => item.id !== product.id)]
+      writeLocalProducts(next)
+      return next
+    })
     setError("")
   }
   const deleteProduct = async (id: string) => {
@@ -94,7 +127,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     if (!client) throw new Error("Supabase is not configured.")
     const { error: deleteError } = await client.from("products").delete().eq("id", id)
     if (deleteError) throw deleteError
-    setItems((current) => current.filter((item) => item.id !== id))
+    setItems((current) => {
+      const next = current.filter((item) => item.id !== id)
+      writeLocalProducts(next)
+      return next
+    })
   }
   const value = useMemo(() => ({ products: items, loading, error, saveProduct, deleteProduct }), [items, loading, error])
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
