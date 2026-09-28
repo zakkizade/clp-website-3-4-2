@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { products as seedProducts, type Product } from "@/lib/products"
+import { createClient } from "@/lib/supabase/client"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
 const ProductContext = createContext<ProductStore | null>(null)
@@ -28,7 +29,7 @@ function toRow(product: Product) {
     slug: product.slug || `${slugBase}-${Date.now().toString().slice(-4)}`,
     price,
     regular_price: regularPrice,
-    sale_price: salePrice || null,
+    discount_percent: Number(product.discountPercent || 0),
     category: product.category || "Fine Jewelry",
     type: product.type || "Jewelry",
     carat: product.carat || "",
@@ -46,61 +47,41 @@ function toRow(product: Product) {
   }
 }
 
-const LOCAL_PRODUCTS_KEY = "clp-products"
-
-function readLocalProducts(): Product[] {
-  if (typeof window === "undefined") return []
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(LOCAL_PRODUCTS_KEY) || "[]")
-    return Array.isArray(stored) ? stored as Product[] : []
-  } catch {
-    return []
-  }
-}
-
-function writeLocalProducts(products: Product[]) {
-  window.localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products))
-  window.dispatchEvent(new CustomEvent("clp-products-updated"))
-}
-
 export function ProductProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<Product[]>(seedProducts)
+  const [items, setItems] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
   useEffect(() => {
-    const localProducts = readLocalProducts()
-    setItems(localProducts.length > 0 ? localProducts : seedProducts)
-    setLoading(false)
-
-    const handleLocalProductsUpdated = () => {
-      const nextProducts = readLocalProducts()
-      setItems(nextProducts.length > 0 ? nextProducts : seedProducts)
+    let active = true
+    const loadProducts = async () => {
+      setLoading(true)
+      const { data, error: readError } = await createClient().from("products").select("*").order("created_at", { ascending: false })
+      if (!active) return
+      if (readError) { setError(readError.message); setItems([]) } else { setError(""); setItems((data || []).map((row) => toProduct(row as Record<string, unknown>))) }
+      setLoading(false)
     }
-
-    window.addEventListener("clp-products-updated", handleLocalProductsUpdated)
-    return () => window.removeEventListener("clp-products-updated", handleLocalProductsUpdated)
+    void loadProducts()
+    return () => { active = false }
   }, [])
 
   const saveProduct = async (product: Product) => {
-    const normalized: Product = {
-      ...product,
-      image: product.image || product.gallery[0] || "",
-      gallery: Array.from(new Set([product.image, ...product.gallery].filter(Boolean))),
-    }
-    setItems((current) => {
-      const next = [normalized, ...current.filter((item) => item.id !== normalized.id)]
-      writeLocalProducts(next)
-      return next
-    })
+    const normalized: Product = { ...product, image: product.image || product.gallery[0] || "", gallery: Array.from(new Set([product.image, ...product.gallery].filter((url) => /^https:\/\//.test(url)))) }
+    if (!normalized.image || normalized.gallery.length === 0) throw new Error("A public HTTPS product image is required.")
+    const row = toRow(normalized)
+    const client = createClient()
+    const result = normalized.id && !normalized.id.startsWith("prod-")
+      ? await client.from("products").update(row).eq("id", normalized.id).select().single()
+      : await client.from("products").insert(row).select().single()
+    if (result.error) { setError(result.error.message); throw new Error(result.error.message) }
+    const saved = toProduct(result.data as Record<string, unknown>)
+    setItems((current) => [saved, ...current.filter((item) => item.id !== saved.id)])
   }
 
   const deleteProduct = async (id: string) => {
-    setItems((current) => {
-      const next = current.filter((item) => item.id !== id)
-      writeLocalProducts(next)
-      return next
-    })
+    const { error: deleteError } = await createClient().from("products").delete().eq("id", id)
+    if (deleteError) { setError(deleteError.message); throw new Error(deleteError.message) }
+    setItems((current) => current.filter((item) => item.id !== id))
   }
 
   const value = useMemo(() => ({ products: items, loading, error, saveProduct, deleteProduct }), [items, loading, error])

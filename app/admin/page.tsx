@@ -87,9 +87,9 @@ export default function AdminPage() {
       slug: editing?.slug || `${slugify(productName) || "product"}-${Date.now().toString().slice(-4)}`,
     }
     console.log("[v0] Save product clicked; submitting normalized payload", { name: payload.name, price: payload.priceInr, slug: payload.slug })
-    setEditing(null)
     try {
       await saveProduct(payload)
+      setEditing(null)
       setNotice("Product saved successfully!")
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save product. Check the Supabase connection."
