@@ -16,7 +16,40 @@ function toProduct(row: Record<string, unknown>): Product {
 }
 
 function toRow(product: Product) {
-  return { id: product.id, name: product.name, type: product.type, slug: product.slug, price_inr: product.priceInr, regular_price_inr: product.regularPriceInr ?? product.priceInr, sale_price_inr: product.salePriceInr ?? null, show_sale_badge: product.showSaleBadge ?? false, discount_percent: product.discountPercent ?? null, image: product.image, image_url: product.image, images: product.gallery, gallery: product.gallery, tags: product.tags, category: product.category, gold_purity: product.goldPurity, certificate: product.certificate, origin: product.origin, description: product.description, is_featured: product.isFeatured, carat: product.carat, metal: product.metal, video_url: product.videoUrl ?? null, view_360: product.view360 ?? [] }
+  const regularPrice = Number(product.regularPriceInr ?? product.priceInr ?? 0)
+  const salePrice = product.salePriceInr == null ? null : Number(product.salePriceInr)
+  const gallery = Array.isArray(product.gallery) ? product.gallery.filter(Boolean) : []
+  const tags = Array.isArray(product.tags) ? product.tags.filter(Boolean) : []
+  return {
+    id: product.id,
+    name: product.name,
+    title: product.name,
+    type: product.type,
+    slug: product.slug,
+    price: Number(product.priceInr || salePrice || regularPrice || 0),
+    price_inr: Number(product.priceInr || salePrice || regularPrice || 0),
+    regular_price: regularPrice,
+    regular_price_inr: regularPrice,
+    sale_price: salePrice,
+    sale_price_inr: salePrice,
+    show_sale_badge: product.showSaleBadge ?? false,
+    discount_percent: product.discountPercent ?? null,
+    image: product.image || "",
+    image_url: product.image || "",
+    images: gallery,
+    gallery,
+    tags,
+    category: product.category || "Fine Jewelry",
+    gold_purity: product.goldPurity || "",
+    certificate: product.certificate || "",
+    origin: product.origin || "",
+    description: product.description || "",
+    is_featured: product.isFeatured ?? false,
+    carat: product.carat || "",
+    metal: product.metal || "",
+    video_url: product.videoUrl ?? null,
+    view_360: product.view360 ?? [],
+  }
 }
 
 export function ProductProvider({ children }: { children: React.ReactNode }) {

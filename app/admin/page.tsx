@@ -57,7 +57,6 @@ export default function AdminPage() {
     setNotice("")
     if (saving) return
     if (!editing?.name.trim()) { setError("Product name is required."); return }
-    if (!editing.image.trim()) { setError("A product image is required."); return }
     const regularPrice = Number(editing.regularPriceInr || editing.priceInr)
     const salePrice = Number(editing.salePriceInr || 0)
     if (!Number.isFinite(regularPrice) || regularPrice <= 0) { setError("Regular Price must be a number greater than 0."); return }
@@ -70,7 +69,7 @@ export default function AdminPage() {
       console.log("[v0] Saving product to Supabase", payload)
       await saveProduct(payload)
       setEditing(null)
-      setNotice(editing.id ? "Product updated successfully." : "Product added successfully.")
+      setNotice("Product saved successfully!")
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save product. Check the Supabase connection."
       console.error("[v0] Supabase product save failed", reason)
