@@ -525,7 +525,11 @@ h2 em {
 }
 
 .product-card {
+  position: relative;
+  z-index: 1;
   overflow: hidden;
+  pointer-events: auto;
+  touch-action: manipulation;
   background: rgba(10, 10, 10, .62);
   border: 1px solid var(--line);
   border-radius: 1rem;
