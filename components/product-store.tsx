@@ -75,7 +75,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       : client.from("products").insert(row).select().single()
     const result = await Promise.race([
       query,
-      new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error("Supabase save timed out. Check your connection and try again.")), 15000)),
+      new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error("Supabase save timed out after 5 seconds. Check your connection and try again.")), 5000)),
     ])
     if (result.error) { setError(result.error.message); throw new Error(result.error.message) }
     const saved = toProduct(result.data as Record<string, unknown>)
