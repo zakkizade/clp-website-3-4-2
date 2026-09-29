@@ -12,11 +12,8 @@ const heroDefaults = {
 }
 
 const STORAGE_KEY = "clp-slider-banners"
+const HERO_STORAGE_KEY = "clp-hero-banners"
 const BANNER_FALLBACK = "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1000"
-
-async function withTimeout<T>(promise: PromiseLike<T>, message: string): Promise<T> {
-  return Promise.race([Promise.resolve(promise), new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error(message)), 5000))])
-}
 
 async function fileToDataUrl(file: File) {
   return new Promise<string>((resolve, reject) => {
@@ -31,7 +28,7 @@ async function uploadBanner(file: File, id: string) {
   const fallback = await fileToDataUrl(file)
   try {
     const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
-    const upload = await withTimeout(supabase.storage.from("banners").upload(path, file, { upsert: true, contentType: file.type }), "Banner upload timed out after 5 seconds.")
+    const upload = await supabase.storage.from("banners").upload(path, file, { upsert: true, contentType: file.type })
     if (upload.error) return fallback
     return supabase.storage.from("banners").getPublicUrl(path).data.publicUrl || fallback
   } catch (error) {
@@ -54,8 +51,10 @@ export function SiteMediaManager() {
     const loadMedia = async () => {
       try {
         const stored = window.localStorage.getItem(STORAGE_KEY)
+        const storedHeroes = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
         if (stored && active) setSliderItems(JSON.parse(stored) as Media[])
-        const { data, error } = await withTimeout(supabase.from("banners").select("type,image_url"), "Banner load timed out after 5 seconds.")
+        if (active) setItems((current) => current.map((item) => storedHeroes[item.id] ? { ...item, url: storedHeroes[item.id] } : item))
+        const { data, error } = await supabase.from("banners").select("type,image_url")
         if (error) throw error
         if (active && data?.length) {
           const rows = data as BannerRow[]
@@ -86,8 +85,14 @@ export function SiteMediaManager() {
       let url = BANNER_FALLBACK
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
       const bannerType = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
-      const { error } = await withTimeout(supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" }), "Banner save timed out after 5 seconds.")
-      if (error) throw error
+      const { error } = await supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" })
+      if (error) {
+        const storedHeroes = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
+        window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify({ ...storedHeroes, [item.id]: url }))
+        setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+        setNotice(`${item.label} saved locally while Supabase is unavailable.`)
+        return
+      }
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       setNotice(`${item.label} saved successfully.`)
     } catch (reason) {

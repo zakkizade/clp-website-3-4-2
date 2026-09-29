@@ -31,19 +31,11 @@ function toRow(product: Product) {
     regular_price: regularPrice,
     discount_percent: Number(product.discountPercent || 0),
     category: product.category || "Fine Jewelry",
-    type: product.type || "Jewelry",
-    carat: product.carat || "",
-    gold_purity: product.goldPurity || "",
-    origin: product.origin || "",
-    certificate: product.certificate || "",
     description: product.description || "",
     image_url: product.image || images[0] || "",
     main_image: product.image || images[0] || "",
     images,
     tags: product.tags || [],
-    video_url: product.videoUrl || "",
-    is_featured: Boolean(product.isFeatured),
-    show_on_banner: Boolean(product.showOnBanner ?? product.isFeatured),
   }
 }
 
@@ -73,10 +65,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     const query = normalized.id && !normalized.id.startsWith("prod-")
       ? client.from("products").update(row).eq("id", normalized.id).select().single()
       : client.from("products").insert(row).select().single()
-    const result = await Promise.race([
-      query,
-      new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error("Supabase save timed out after 5 seconds. Check your connection and try again.")), 5000)),
-    ])
+    const result = await query
     if (result.error) { setError(result.error.message); throw new Error(result.error.message) }
     const saved = toProduct(result.data as Record<string, unknown>)
     setItems((current) => [saved, ...current.filter((item) => item.id !== saved.id)])
