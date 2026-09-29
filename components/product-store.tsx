@@ -70,9 +70,13 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
     if (!normalized.image || normalized.gallery.length === 0) throw new Error("A public HTTPS product image is required.")
     const row = toRow(normalized)
     const client = createClient()
-    const result = normalized.id && !normalized.id.startsWith("prod-")
-      ? await client.from("products").update(row).eq("id", normalized.id).select().single()
-      : await client.from("products").insert(row).select().single()
+    const query = normalized.id && !normalized.id.startsWith("prod-")
+      ? client.from("products").update(row).eq("id", normalized.id).select().single()
+      : client.from("products").insert(row).select().single()
+    const result = await Promise.race([
+      query,
+      new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error("Supabase save timed out. Check your connection and try again.")), 15000)),
+    ])
     if (result.error) { setError(result.error.message); throw new Error(result.error.message) }
     const saved = toProduct(result.data as Record<string, unknown>)
     setItems((current) => [saved, ...current.filter((item) => item.id !== saved.id)])

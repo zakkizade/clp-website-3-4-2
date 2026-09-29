@@ -2,6 +2,7 @@ import { createClient as createSupabaseClient, type SupabaseClient } from "@supa
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://wshytfogdrtnsyvisgan.supabase.co"
 const supabaseAnonKey =
+  process.env.KEY_3 ||
   process.env.KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   "sb_publishable_gc6lMtAmQ7sWlxoW-FayIw_JSPsZfPZ"
