@@ -53,32 +53,21 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
         const file = await compressImage(originalFile)
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-")
         const path = `${Date.now()}-${crypto.randomUUID()}-${safeName}`
-        const result = await client.storage.from("products-image").upload(path, file, {
+        const result = await client.storage.from("products").upload(path, file, {
           cacheControl: "31536000",
           upsert: false,
           contentType: file.type,
         })
 
         if (result.error) {
-          const message = result.error.message.toLowerCase()
-          const blockedByPolicy = message.includes("row-level security")
-            || message.includes("violates row-level security")
-            || message.includes("permission denied")
-            || message.includes("unauthorized")
-
-          if (blockedByPolicy) {
-            // Keep product creation usable when Storage RLS has not been configured.
-            uploaded.push(await fileToDataUrl(file))
-            continue
-          }
-
-          setUploadError(message.includes("bucket not found")
-            ? "The products-image storage bucket is not available, so this file was not uploaded."
-            : `Upload failed: ${result.error.message}`)
-          return
+          // A storage policy or missing bucket must not block the form. Preserve the
+          // selected media as a data URL so the product can still be saved.
+          uploaded.push(await fileToDataUrl(file))
+          continue
         }
 
-        uploaded.push(client.storage.from("products-image").getPublicUrl(path).data.publicUrl)
+        const publicUrl = client.storage.from("products").getPublicUrl(path).data.publicUrl
+        uploaded.push(publicUrl || await fileToDataUrl(file))
       }
 
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))

@@ -60,8 +60,21 @@ export default function Home() {
   }, [])
   useEffect(() => {
     const client = createClient()
-    if (!client) return
-    void client.from("site_media").select("id,url").then(({ data }) => { const rows = (data || []) as Array<Record<string, unknown>>; setSiteMedia(Object.fromEntries(rows.map((item) => [String(item.id), String(item.url || "")]))) })
+    void client.from("site_media").select("id,url").then(({ data }) => {
+      const rows = (data || []) as Array<Record<string, unknown>>
+      setSiteMedia(Object.fromEntries(rows.map((item) => [String(item.id), String(item.url || "")])) )
+    })
+    void client.from("banners").select("type,image_url").then(({ data }) => {
+      const rows = (data || []) as Array<Record<string, unknown>>
+      setSiteMedia((current) => ({
+        ...current,
+        ...Object.fromEntries(rows.filter((row) => row.image_url).map((row) => {
+          const type = String(row.type)
+          const key = type === "hero_dark" || type === "dark" ? "heroBannerDark" : type === "hero_light" || type === "light" ? "heroBannerLight" : type
+          return [key, String(row.image_url)]
+        })),
+      }))
+    })
   }, [])
   useEffect(() => {
     document.documentElement.classList.toggle("light", theme === "light")

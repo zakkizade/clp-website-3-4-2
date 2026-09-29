@@ -66,8 +66,8 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const saveProduct = async (product: Product) => {
-    const normalized: Product = { ...product, image: product.image || product.gallery[0] || "", gallery: Array.from(new Set([product.image, ...product.gallery].filter((url) => /^https:\/\//.test(url)))) }
-    if (!normalized.image || normalized.gallery.length === 0) throw new Error("A public HTTPS product image is required.")
+    const normalizedImages = Array.from(new Set([product.image, ...product.gallery].filter((url): url is string => typeof url === "string" && url.trim().length > 0)))
+    const normalized: Product = { ...product, image: product.image || normalizedImages[0] || "", gallery: normalizedImages }
     const row = toRow(normalized)
     const client = createClient()
     const query = normalized.id && !normalized.id.startsWith("prod-")

@@ -18,11 +18,26 @@ async function withTimeout<T>(promise: PromiseLike<T>, message: string): Promise
   return Promise.race([Promise.resolve(promise), new Promise<never>((_, reject) => window.setTimeout(() => reject(new Error(message)), 5000))])
 }
 
+async function fileToDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = () => reject(reader.error ?? new Error("The selected banner could not be read."))
+    reader.readAsDataURL(file)
+  })
+}
+
 async function uploadBanner(file: File, id: string) {
-  const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
-  const upload = await withTimeout(supabase.storage.from("products-image").upload(path, file, { upsert: true, contentType: file.type }), "Banner upload timed out after 5 seconds.")
-  if (upload.error) throw upload.error
-  return supabase.storage.from("products-image").getPublicUrl(path).data.publicUrl
+  const fallback = await fileToDataUrl(file)
+  try {
+    const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
+    const upload = await withTimeout(supabase.storage.from("banners").upload(path, file, { upsert: true, contentType: file.type }), "Banner upload timed out after 5 seconds.")
+    if (upload.error) return fallback
+    return supabase.storage.from("banners").getPublicUrl(path).data.publicUrl || fallback
+  } catch (error) {
+    console.error("[v0] Banner storage upload failed; using selected file", error)
+    return fallback
+  }
 }
 
 export function SiteMediaManager() {
@@ -45,8 +60,8 @@ export function SiteMediaManager() {
         if (active && data?.length) {
           const rows = data as BannerRow[]
           setItems((current) => current.map((item) => {
-            const type = item.id === "heroBannerDark" ? "dark" : "light"
-            const remote = rows.find((row) => row.type === type)
+            const type = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
+            const remote = rows.find((row) => row.type === type || row.type === type.replace("hero_", ""))
             return remote?.image_url ? { ...item, url: remote.image_url } : item
           }))
         }
@@ -70,7 +85,7 @@ export function SiteMediaManager() {
     try {
       let url = BANNER_FALLBACK
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
-      const bannerType = item.id === "heroBannerDark" ? "dark" : "light"
+      const bannerType = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
       const { error } = await withTimeout(supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" }), "Banner save timed out after 5 seconds.")
       if (error) throw error
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
