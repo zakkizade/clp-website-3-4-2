@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 
 type Media = { id: string; kind: "hero" | "signature" | "slider"; label: string; url: string; sort_order: number }
+type BannerRow = { type: string; image_url: string }
 
 const heroDefaults = {
   heroBannerLight: "/hero-emerald-gold.png",
@@ -39,9 +40,16 @@ export function SiteMediaManager() {
       try {
         const stored = window.localStorage.getItem(STORAGE_KEY)
         if (stored && active) setSliderItems(JSON.parse(stored) as Media[])
-        const { data, error } = await withTimeout(supabase.from("banners").select("id,kind,label,url,sort_order").eq("kind", "hero"), "Banner load timed out after 5 seconds.")
+        const { data, error } = await withTimeout(supabase.from("banners").select("type,image_url"), "Banner load timed out after 5 seconds.")
         if (error) throw error
-        if (active && data?.length) setItems((current) => current.map((item) => data.find((remote) => remote.id === item.id) || item))
+        if (active && data?.length) {
+          const rows = data as BannerRow[]
+          setItems((current) => current.map((item) => {
+            const type = item.id === "heroBannerDark" ? "dark" : "light"
+            const remote = rows.find((row) => row.type === type)
+            return remote?.image_url ? { ...item, url: remote.image_url } : item
+          }))
+        }
       } catch (reason) {
         console.error("[v0] Banner load failed", reason)
         if (active) setNotice(reason instanceof Error ? `Error: ${reason.message}` : "Unable to load saved banners.")
@@ -62,7 +70,8 @@ export function SiteMediaManager() {
     try {
       let url = BANNER_FALLBACK
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
-      const { error } = await withTimeout(supabase.from("banners").upsert({ id: item.id, kind: item.kind, label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" }), "Banner save timed out after 5 seconds.")
+      const bannerType = item.id === "heroBannerDark" ? "dark" : "light"
+      const { error } = await withTimeout(supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" }), "Banner save timed out after 5 seconds.")
       if (error) throw error
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       setNotice(`${item.label} saved successfully.`)
