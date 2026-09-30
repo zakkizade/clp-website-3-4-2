@@ -52,9 +52,11 @@ export default function Home() {
   const displaySignatureCategories = signatureCategories.length > 0 ? signatureCategories : Object.entries(signatureDefaults).map(([id, item], index) => ({ id, label: ["LOOSE GEMSTONES", "FINE GOLD JEWELRY", "JAIPUR SILVER", "CUSTOM CRAFT"][index], url: item.image, sort_order: index }))
   useEffect(() => {
     try {
-      const cached = JSON.parse(window.localStorage.getItem("clp-hero-media-cache") || "{}") as Record<string, string>
+      const cached = JSON.parse(window.localStorage.getItem("site_banners") || "{}") as Record<string, string>
+      const legacyCached = JSON.parse(window.localStorage.getItem("clp-hero-media-cache") || "{}") as Record<string, string>
       const signatures = JSON.parse(window.localStorage.getItem("clp-signature-media-cache") || "{}") as Record<string, string>
-      if (Object.keys(cached).length || Object.keys(signatures).length) setSiteMedia((current) => ({ ...current, ...cached, ...signatures }))
+      const merged = { ...legacyCached, ...signatures, ...cached }
+      if (Object.keys(merged).length) setSiteMedia((current) => ({ ...current, ...merged }))
     } catch { /* stale cache is non-blocking */ }
     const client = createClient()
     if (!client) return
@@ -62,6 +64,12 @@ export default function Home() {
       const rows = (data || []) as Array<Record<string, unknown>>
       setSignatureCategories(rows.map((item) => ({ id: String(item.id), label: String(item.label || item.id), url: String(item.url || ""), sort_order: Number(item.sort_order || 0) })))
     })
+    const onBannerUpdate = (event: Event) => {
+      const detail = (event as CustomEvent<Record<string, string>>).detail
+      if (detail && typeof detail === "object") setSiteMedia((current) => ({ ...current, ...detail }))
+    }
+    window.addEventListener("site-banners-updated", onBannerUpdate)
+    return () => window.removeEventListener("site-banners-updated", onBannerUpdate)
   }, [])
   useEffect(() => {
     const client = createClient()
