@@ -51,6 +51,11 @@ export default function Home() {
   const [signatureCategories, setSignatureCategories] = useState<Array<{ id: string; label: string; url: string; sort_order: number }>>([])
   const displaySignatureCategories = signatureCategories.length > 0 ? signatureCategories : Object.entries(signatureDefaults).map(([id, item], index) => ({ id, label: ["LOOSE GEMSTONES", "FINE GOLD JEWELRY", "JAIPUR SILVER", "CUSTOM CRAFT"][index], url: item.image, sort_order: index }))
   useEffect(() => {
+    try {
+      const cached = JSON.parse(window.localStorage.getItem("clp-hero-media-cache") || "{}") as Record<string, string>
+      const signatures = JSON.parse(window.localStorage.getItem("clp-signature-media-cache") || "{}") as Record<string, string>
+      if (Object.keys(cached).length || Object.keys(signatures).length) setSiteMedia((current) => ({ ...current, ...cached, ...signatures }))
+    } catch { /* stale cache is non-blocking */ }
     const client = createClient()
     if (!client) return
     void client.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data }) => {
@@ -66,14 +71,13 @@ export default function Home() {
     })
     void client.from("banners").select("type,image_url").then(({ data }) => {
       const rows = (data || []) as Array<Record<string, unknown>>
-      setSiteMedia((current) => ({
-        ...current,
-        ...Object.fromEntries(rows.filter((row) => row.image_url).map((row) => {
-          const type = String(row.type)
-          const key = type === "hero_dark" || type === "dark" ? "heroBannerDark" : type === "hero_light" || type === "light" ? "heroBannerLight" : type
-          return [key, String(row.image_url)]
-        })),
+      const remoteMedia = Object.fromEntries(rows.filter((row) => row.image_url).map((row) => {
+        const type = String(row.type)
+        const key = type === "hero_dark" || type === "dark" ? "heroBannerDark" : type === "hero_light" || type === "light" ? "heroBannerLight" : type
+        return [key, String(row.image_url)]
       }))
+      setSiteMedia((current) => ({ ...current, ...remoteMedia }))
+      try { window.localStorage.setItem("clp-hero-media-cache", JSON.stringify(remoteMedia)) } catch { /* cache is optional */ }
     })
   }, [])
   useEffect(() => {

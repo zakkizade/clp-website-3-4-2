@@ -11,6 +11,13 @@ const heroDefaults = {
   heroBannerDark: "/hero-emerald-gold.png",
 }
 
+const signatureDefaults = [
+  ["signature-loose", "Loose Gemstones", "/category-loose-gemstones.png"],
+  ["signature-gold", "Fine Gold Jewelry", "/category-gold-jewelry.png"],
+  ["signature-jaipur", "Jaipur Silver", "/category-jaipur-craft.png"],
+  ["signature-custom", "Custom Craft", "/category-jaipur-craft.png"],
+] as const
+
 const STORAGE_KEY = "clp-slider-banners"
 const HERO_STORAGE_KEY = "clp-hero-banners"
 const BANNER_FALLBACK = "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1000"
@@ -41,6 +48,7 @@ export function SiteMediaManager() {
   const [items, setItems] = useState<Media[]>([
     { id: "heroBannerLight", kind: "hero", label: "Hero Banner (Light Mode)", url: heroDefaults.heroBannerLight, sort_order: -2 },
     { id: "heroBannerDark", kind: "hero", label: "Hero Banner (Dark Mode)", url: heroDefaults.heroBannerDark, sort_order: -1 },
+    ...signatureDefaults.map(([id, label, url], index) => ({ id, kind: "signature" as const, label, url, sort_order: index })),
   ])
   const [sliderItems, setSliderItems] = useState<Media[]>([])
   const [notice, setNotice] = useState("")
@@ -64,6 +72,14 @@ export function SiteMediaManager() {
             return remote?.image_url ? { ...item, url: remote.image_url } : item
           }))
         }
+        const signatures = await supabase.from("site_media").select("id,url").eq("kind", "signature")
+        if (signatures.error) throw signatures.error
+        if (active && signatures.data?.length) {
+          setItems((current) => current.map((item) => {
+            const remote = (signatures.data as Array<{ id: string; url: string }>).find((row) => row.id === item.id)
+            return remote?.url ? { ...item, url: remote.url } : item
+          }))
+        }
       } catch (reason) {
         console.error("[v0] Banner load failed", reason)
         if (active) setNotice(reason instanceof Error ? `Error: ${reason.message}` : "Unable to load saved banners.")
@@ -84,6 +100,17 @@ export function SiteMediaManager() {
     try {
       let url = BANNER_FALLBACK
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
+      if (item.kind === "signature") {
+        const { error } = await supabase.from("site_media").upsert({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" })
+        if (error) throw error
+        try {
+          const cached = JSON.parse(window.localStorage.getItem("clp-signature-media-cache") || "{}") as Record<string, string>
+          window.localStorage.setItem("clp-signature-media-cache", JSON.stringify({ ...cached, [item.id]: url }))
+        } catch { /* cache is optional */ }
+        setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+        setNotice(`${item.label} saved successfully.`)
+        return
+      }
       const bannerType = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
       const { error } = await supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" })
       if (error) {
