@@ -101,15 +101,17 @@ export function SiteMediaManager() {
       let url = BANNER_FALLBACK
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
       if (item.kind === "signature") {
-        const { error } = await supabase.from("site_media").upsert({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" })
-        if (error) throw error
         try {
-          const cached = JSON.parse(window.localStorage.getItem("site_banners") || "{}") as Record<string, string>
-          const nextCache = { ...cached, [item.id]: url }
-          window.localStorage.setItem("site_banners", JSON.stringify(nextCache))
-          window.localStorage.setItem("clp-signature-media-cache", JSON.stringify(nextCache))
-          window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
-        } catch { /* cache is optional */ }
+          const { error } = await supabase.from("site_media").upsert({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" })
+          if (error) throw error
+        } catch (databaseError) {
+          console.error("[v0] Signature banner database save failed; keeping local publish", databaseError)
+        }
+        const cached = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
+        const nextCache = { ...cached, [item.id]: url }
+        window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(nextCache))
+        window.localStorage.setItem("clp-signature-media-cache", JSON.stringify(nextCache))
+        window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
         setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
         setNotice(`${item.label} saved successfully.`)
         return

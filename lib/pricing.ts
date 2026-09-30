@@ -5,6 +5,6 @@ export function saleDetails(product: { priceInr: number; regularPriceInr?: numbe
     : product.discountPercent && product.discountPercent > 0 && product.discountPercent < 100
       ? Math.round(regular * (1 - product.discountPercent / 100))
       : product.priceInr
-  const discounted = product.showSaleBadge !== false && regular > sale && sale > 0
+  const discounted = product.showSaleBadge === true && regular > sale && sale > 0
   return { regular, sale: discounted ? sale : regular, discounted, percentOff: discounted ? (product.discountPercent && product.discountPercent > 0 ? product.discountPercent : Math.round(((regular - sale) / regular) * 100)) : 0, savings: discounted ? regular - sale : 0 }
 }
