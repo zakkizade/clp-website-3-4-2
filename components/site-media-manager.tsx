@@ -22,20 +22,64 @@ const STORAGE_KEY = "clp-slider-banners"
 const HERO_STORAGE_KEY = "site_banners"
 const BANNER_FALLBACK = "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1000"
 
-async function fileToDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = () => reject(reader.error ?? new Error("The selected banner could not be read."))
-    reader.readAsDataURL(file)
-  })
+async function compressImage(file: File) {
+  const sourceUrl = URL.createObjectURL(file)
+  try {
+    const image = new Image()
+    image.decoding = "async"
+    image.src = sourceUrl
+    await image.decode()
+    const maxDimension = 1600
+    const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight))
+    const canvas = document.createElement("canvas")
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale))
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale))
+    const context = canvas.getContext("2d")
+    if (!context) throw new Error("Unable to prepare the banner image.")
+    context.drawImage(image, 0, 0, canvas.width, canvas.height)
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((result) => result ? resolve(result) : reject(new Error("Unable to compress the banner image.")), "image/webp", 0.72)
+    })
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result))
+      reader.onerror = () => reject(reader.error ?? new Error("The selected banner could not be read."))
+      reader.readAsDataURL(blob)
+    })
+    return { blob, dataUrl }
+  } finally {
+    URL.revokeObjectURL(sourceUrl)
+  }
+}
+
+function readBannerCache() {
+  try {
+    return JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
+  } catch {
+    return {} as Record<string, string>
+  }
+}
+
+function writeBannerCache(nextCache: Record<string, string>) {
+  try {
+    window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(nextCache))
+    return true
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "QuotaExceededError") {
+      console.warn("[v0] Banner cache quota exceeded; keeping the image in React state only")
+    } else {
+      console.warn("[v0] Banner cache could not be written", error)
+    }
+    return false
+  }
 }
 
 async function uploadBanner(file: File, id: string) {
-  const fallback = await fileToDataUrl(file)
+  const compressed = await compressImage(file)
+  const fallback = compressed.dataUrl
   try {
     const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
-    const upload = await supabase.storage.from("banners").upload(path, file, { upsert: true, contentType: file.type })
+    const upload = await supabase.storage.from("banners").upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
     if (upload.error) return fallback
     return supabase.storage.from("banners").getPublicUrl(path).data.publicUrl || fallback
   } catch (error) {
@@ -91,7 +135,11 @@ export function SiteMediaManager() {
 
   const persistSliders = (next: Media[]) => {
     setSliderItems(next)
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "QuotaExceededError") console.warn("[v0] Slider cache quota exceeded; keeping slider changes in memory")
+    }
   }
 
   const updateHero = async (item: Media, file: File) => {
@@ -107,10 +155,13 @@ export function SiteMediaManager() {
         } catch (databaseError) {
           console.error("[v0] Signature banner database save failed; keeping local publish", databaseError)
         }
-        const cached = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
-        const nextCache = { ...cached, [item.id]: url }
-        window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(nextCache))
-        window.localStorage.setItem("clp-signature-media-cache", JSON.stringify(nextCache))
+        const nextCache = { ...readBannerCache(), [item.id]: url }
+        writeBannerCache(nextCache)
+        try {
+          window.localStorage.setItem("clp-signature-media-cache", JSON.stringify(nextCache))
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "QuotaExceededError") console.warn("[v0] Signature cache quota exceeded; preview remains in memory")
+        }
         window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
         setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
         setNotice(`${item.label} saved successfully.`)
@@ -119,18 +170,16 @@ export function SiteMediaManager() {
       const bannerType = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
       const { error } = await supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" })
       if (error) {
-        const storedHeroes = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
-        window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify({ ...storedHeroes, [item.id]: url }))
+        const nextCache = { ...readBannerCache(), [item.id]: url }
+        writeBannerCache(nextCache)
         setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+        window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
         setNotice(`${item.label} saved locally while Supabase is unavailable.`)
         return
       }
-      try {
-        const cached = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
-        const nextCache = { ...cached, [item.id]: url }
-        window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(nextCache))
-        window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
-      } catch { /* cache is optional */ }
+      const nextCache = { ...readBannerCache(), [item.id]: url }
+      writeBannerCache(nextCache)
+      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       setNotice(`${item.label} saved successfully.`)
     } catch (reason) {
