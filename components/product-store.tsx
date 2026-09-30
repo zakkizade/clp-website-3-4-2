@@ -12,7 +12,7 @@ function toProduct(row: Record<string, unknown>): Product {
   const mainImage = String(row.main_image || row.image_url || images[0] || "")
   return {
     id: String(row.id), name: String(row.name || row.title || ""), type: String(row.type || "Jewelry"), slug: String(row.slug || row.id),
-    priceInr: Number(row.price ?? row.sale_price ?? row.regular_price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: row.sale_price != null, discountPercent: row.discount_percent ? Number(row.discount_percent) : undefined, image: mainImage, gallery: Array.from(new Set([mainImage, ...images].filter(Boolean))), tags: Array.isArray(row.tags) ? row.tags.map(String) : typeof row.tags === "string" ? row.tags.split(/[,\n]+/).map((tag) => tag.trim()).filter(Boolean) : [],
+    priceInr: Number(row.price ?? row.sale_price ?? row.regular_price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: Boolean(row.show_sale_badge ?? (row.sale_price != null || Number(row.discount_percent || 0) > 0)), discountPercent: row.discount_percent ? Number(row.discount_percent) : undefined, image: mainImage, gallery: Array.from(new Set([mainImage, ...images].filter(Boolean))), tags: Array.isArray(row.tags) ? row.tags.map(String) : typeof row.tags === "string" ? row.tags.split(/[,\n]+/).map((tag) => tag.trim()).filter(Boolean) : [],
     category: String(row.category || "Fine Jewelry") as Product["category"], goldPurity: String(row.gold_purity || "18K"), certificate: String(row.certificate || "IGL Certified"), origin: String(row.origin || "Jaipur, India"), description: String(row.description || ""), isFeatured: Boolean(row.is_featured), showOnBanner: Boolean(row.show_on_banner ?? row.is_featured), carat: String(row.carat || ""), metal: String(row.metal || "18K Gold"), videoUrl: row.video_url ? String(row.video_url) : undefined, view360: Array.isArray(row.view_360) ? row.view_360.map(String) : [],
   }
 }
@@ -30,6 +30,7 @@ function toRow(product: Product) {
     price,
     regular_price: regularPrice,
     discount_percent: Number(product.discountPercent || 0),
+    show_sale_badge: Boolean(product.showSaleBadge),
     category: product.category || "Fine Jewelry",
     description: product.description || "",
     image_url: product.image || images[0] || "",

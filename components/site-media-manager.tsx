@@ -6,16 +6,11 @@ import { supabase } from "@/lib/supabase"
 type Media = { id: string; kind: "hero" | "signature" | "slider"; label: string; url: string; sort_order: number }
 type BannerRow = { type: string; image_url: string }
 
-const heroDefaults = {
-  heroBannerLight: "/hero-emerald-gold.png",
-  heroBannerDark: "/hero-emerald-gold.png",
-}
-
 const signatureDefaults = [
-  ["signature-loose", "Loose Gemstones", "/category-loose-gemstones.png"],
-  ["signature-gold", "Fine Gold Jewelry", "/category-gold-jewelry.png"],
-  ["signature-jaipur", "Jaipur Silver", "/category-jaipur-craft.png"],
-  ["signature-custom", "Custom Craft", "/category-jaipur-craft.png"],
+  ["signature-loose", "Loose Gemstones"],
+  ["signature-gold", "Fine Gold Jewelry"],
+  ["signature-jaipur", "Jaipur Silver"],
+  ["signature-custom", "Custom Craft"],
 ] as const
 
 const STORAGE_KEY = "clp-slider-banners"
@@ -90,9 +85,9 @@ async function uploadBanner(file: File, id: string) {
 
 export function SiteMediaManager() {
   const [items, setItems] = useState<Media[]>([
-    { id: "heroBannerLight", kind: "hero", label: "Hero Banner (Light Mode)", url: heroDefaults.heroBannerLight, sort_order: -2 },
-    { id: "heroBannerDark", kind: "hero", label: "Hero Banner (Dark Mode)", url: heroDefaults.heroBannerDark, sort_order: -1 },
-    ...signatureDefaults.map(([id, label, url], index) => ({ id, kind: "signature" as const, label, url, sort_order: index })),
+    { id: "heroBannerLight", kind: "hero", label: "Hero Banner (Light Mode)", url: "", sort_order: -2 },
+    { id: "heroBannerDark", kind: "hero", label: "Hero Banner (Dark Mode)", url: "", sort_order: -1 },
+    ...signatureDefaults.map(([id, label], index) => ({ id, kind: "signature" as const, label, url: "", sort_order: index })),
   ])
   const [sliderItems, setSliderItems] = useState<Media[]>([])
   const [notice, setNotice] = useState("")
@@ -197,7 +192,7 @@ export function SiteMediaManager() {
       </div>
       {notice && <p className="admin-success" role="status">{notice}</p>}
       <div className="media-grid">
-        {items.map((item) => <article className="media-card" key={item.id}><img src={item.url} alt={item.label} /><strong>{item.label}</strong><label className="admin-button media-upload-label" aria-disabled={savingId === item.id}>{savingId === item.id ? "Saving..." : "Replace Image"}<input type="file" accept="image/*" hidden disabled={savingId === item.id} onChange={(event) => { const file = event.target.files?.[0]; if (file) void updateHero(item, file); event.currentTarget.value = "" }} /></label></article>)}
+        {items.map((item) => <article className="media-card" key={item.id}>{item.url ? <img src={item.url} alt={item.label} /> : <div className="media-preview-empty" aria-label={`${item.label} has no uploaded image`}>No image uploaded</div>}<strong>{item.label}</strong><label className="admin-button media-upload-label" aria-disabled={savingId === item.id}>{savingId === item.id ? "Saving..." : "Replace Image"}<input type="file" accept="image/*" hidden disabled={savingId === item.id} onChange={(event) => { const file = event.target.files?.[0]; if (file) void updateHero(item, file); event.currentTarget.value = "" }} /></label></article>)}
       </div>
       <section className="slider-manager">
         <div className="admin-toolbar"><div><p className="eyebrow">Homepage Slider Banners</p><h3>Upload New Banner Images</h3><p className="admin-muted">Promotional banners autoplay every 3 seconds on the storefront.</p></div><label className="admin-button media-upload-label">Choose Multiple Images<input type="file" accept="image/*" multiple hidden onChange={(event) => { const files = Array.from(event.target.files || []); if (!files.length) return; const added = files.map((file, index): Media => ({ id: `slider-${Date.now()}-${index}`, kind: "slider", label: file.name, url: URL.createObjectURL(file), sort_order: sliderItems.length + index })); persistSliders([...sliderItems, ...added]); setNotice(`${added.length} banner${added.length === 1 ? "" : "s"} added locally.`); event.currentTarget.value = "" }} /></label></div>
