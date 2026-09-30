@@ -15,8 +15,6 @@ const signatureDefaults = [
 
 const STORAGE_KEY = "clp-slider-banners"
 const HERO_STORAGE_KEY = "site_banners"
-const BANNER_FALLBACK = "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1000"
-
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
   try {
@@ -142,8 +140,9 @@ export function SiteMediaManager() {
     setSavingId(item.id)
     setNotice(`Saving ${item.label}...`)
     try {
-      let url = BANNER_FALLBACK
+      let url = ""
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
+      if (!url) throw new Error("The uploaded media could not be prepared.")
       if (item.kind === "signature") {
         try {
           const { error } = await supabase.from("site_media").upsert({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" })

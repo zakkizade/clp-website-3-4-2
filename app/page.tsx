@@ -66,7 +66,9 @@ export default function Home() {
     })
     const onBannerUpdate = (event: Event) => {
       const detail = (event as CustomEvent<Record<string, string>>).detail
-      if (detail && typeof detail === "object") setSiteMedia((current) => ({ ...current, ...detail }))
+      if (!detail || typeof detail !== "object") return
+      setSiteMedia((current) => ({ ...current, ...detail }))
+      setSignatureCategories((current) => current.map((category) => detail[category.id] ? { ...category, url: detail[category.id] } : category))
     }
     window.addEventListener("site-banners-updated", onBannerUpdate)
     return () => window.removeEventListener("site-banners-updated", onBannerUpdate)
