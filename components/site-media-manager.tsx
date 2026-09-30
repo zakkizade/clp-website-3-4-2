@@ -111,9 +111,10 @@ export function SiteMediaManager() {
             return remote?.image_url ? { ...item, url: remote.image_url } : item
           }))
         }
+        // Signature banners are optional on older projects. Keep the local cache
+        // and current preview when the optional table is unavailable.
         const signatures = await supabase.from("site_media").select("id,url").eq("kind", "signature")
-        if (signatures.error) throw signatures.error
-        if (active && signatures.data?.length) {
+        if (active && !signatures.error && signatures.data?.length) {
           setItems((current) => current.map((item) => {
             const remote = (signatures.data as Array<{ id: string; url: string }>).find((row) => row.id === item.id)
             return remote?.url ? { ...item, url: remote.url } : item
