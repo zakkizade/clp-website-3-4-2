@@ -3,6 +3,7 @@ export type ActiveOffer = { type: "percentage" | "fixed"; value: number; start: 
 
 const ANNOUNCEMENT_STORAGE_KEY = "clp-announcement"
 const OFFER_STORAGE_KEY = "clp-active-offer"
+const BANNER_VISIBILITY_STORAGE_KEY = "clp-banner-visible"
 let announcement: Announcement = { text: "Complimentary insured shipping on every CLP Jewels order", href: "#collection" }
 let activeOffer: ActiveOffer | null = null
 
@@ -22,6 +23,11 @@ const listeners = new Set<() => void>()
 export function getAnnouncement() { return announcement }
 export function setAnnouncement(next: Announcement) { announcement = next; if (typeof window !== "undefined") window.localStorage.setItem(ANNOUNCEMENT_STORAGE_KEY, JSON.stringify(next)); listeners.forEach((listener) => listener()) }
 export function getActiveOffer() { return activeOffer }
+export function getBannerVisibility() { return readStored(BANNER_VISIBILITY_STORAGE_KEY, true) }
+export function setBannerVisibility(next: boolean) {
+  if (typeof window !== "undefined") window.localStorage.setItem(BANNER_VISIBILITY_STORAGE_KEY, String(next))
+  listeners.forEach((listener) => listener())
+}
 export function setActiveOffer(next: ActiveOffer | null) { activeOffer = next; if (typeof window !== "undefined") { if (next) window.localStorage.setItem(OFFER_STORAGE_KEY, JSON.stringify(next)); else window.localStorage.removeItem(OFFER_STORAGE_KEY) }; listeners.forEach((listener) => listener()) }
 export function subscribeSiteConfig(listener: () => void) { listeners.add(listener); return () => { listeners.delete(listener) } }
 
