@@ -65,7 +65,6 @@ function toRow(product: Product) {
     certificate: product.certificate || "",
     origin: product.origin || "",
     carat: product.carat || "",
-    metal: product.metal || "",
     is_featured: Boolean(product.isFeatured),
     show_on_banner: Boolean(product.showOnBanner),
     video_url: product.videoUrl || "",
