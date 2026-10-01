@@ -8,17 +8,31 @@ type ProductStore = { products: Product[]; loading: boolean; error: string; save
 const ProductContext = createContext<ProductStore | null>(null)
 
 function cleanTags(value: unknown): string[] {
-  const values: unknown[] = Array.isArray(value) ? value : typeof value === "string" ? (() => {
-    const source = value.trim()
-    if (!source) return []
+  if (Array.isArray(value)) {
+    return Array.from(new Set(value.flatMap((item) => cleanTags(item))))
+  }
+  if (typeof value !== "string") return []
+  const source = value.trim()
+  if (!source) return []
+
+  // Older rows may contain escaped or repeatedly quoted JSON. Normalize those
+  // forms before parsing, then fall back to a human-readable delimiter split.
+  const candidates = [source, source.replace(/\\\\/g, "\\"), source.replace(/\\/g, "")]
+  for (const candidate of candidates) {
     try {
-      const parsed: unknown = JSON.parse(source.replace(/\\\\/g, "\\"))
-      return Array.isArray(parsed) ? parsed : [parsed]
+      const parsed: unknown = JSON.parse(candidate)
+      if (parsed !== candidate) return cleanTags(parsed)
     } catch {
-      return source.split(/[,\n]+/)
+      // Try the next normalized representation.
     }
-  })() : []
-  return Array.from(new Set(values.flatMap((item) => String(item ?? "").replace(/\\/g, "").replace(/^\[|\]$/g, "").replace(/^['\"]+|['\"]+$/g, "").trim()).filter(Boolean)))
+  }
+
+  return Array.from(new Set(source
+    .replace(/\\/g, "")
+    .replace(/[\[\]]/g, "")
+    .split(/[,\n]+/)
+    .map((item) => item.replace(/^\s*['\"]+|['\"]+\s*$/g, "").trim())
+    .filter(Boolean)))
 }
 
 function toProduct(row: Record<string, unknown>): Product {
@@ -47,6 +61,14 @@ function toRow(product: Product) {
     // showSaleBadge is presentation state derived from supported price columns.
     // Do not send it to Supabase: older products tables do not include this column.
     category: product.category || "Fine Jewelry",
+    gold_purity: product.goldPurity || "",
+    certificate: product.certificate || "",
+    origin: product.origin || "",
+    carat: product.carat || "",
+    metal: product.metal || "",
+    is_featured: Boolean(product.isFeatured),
+    show_on_banner: Boolean(product.showOnBanner),
+    video_url: product.videoUrl || "",
     description: product.description || "",
     image_url: product.image || images[0] || "",
     main_image: product.image || images[0] || "",
@@ -66,7 +88,16 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       setLoading(true)
       const { data, error: readError } = await createClient().from("products").select("*").order("created_at", { ascending: false })
       if (!active) return
-      if (readError) { setError(readError.message); setItems([]) } else { setError(""); setItems((data || []).map((row) => toProduct(row as Record<string, unknown>))) }
+      if (readError) {
+        setError(readError.message)
+        setItems(seedProducts)
+      } else {
+        const remoteProducts = (data || []).map((row) => toProduct(row as Record<string, unknown>)).filter((product) => product.name)
+        setError("")
+        // Keep the existing catalog visible when the table is reachable but empty;
+        // real Supabase rows still replace it as soon as they exist.
+        setItems(remoteProducts.length ? remoteProducts : seedProducts)
+      }
       setLoading(false)
     }
     void loadProducts()
