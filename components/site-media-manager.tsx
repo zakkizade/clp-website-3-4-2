@@ -148,7 +148,8 @@ export function SiteMediaManager() {
           const { error } = await supabase.from("site_media").upsert({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" })
           if (error) throw error
         } catch (databaseError) {
-          console.error("[v0] Signature banner database save failed; keeping local publish", databaseError)
+          console.error("[v0] Signature banner database save failed", databaseError)
+          throw databaseError
         }
         const nextCache = { ...readBannerCache(), [item.id]: url }
         writeBannerCache(nextCache)
@@ -188,7 +189,7 @@ export function SiteMediaManager() {
   return (
     <section className="site-media-manager">
       <div className="admin-toolbar">
-        <div><p className="eyebrow">Homepage control</p><h2>Site Media &amp; Banners</h2><p className="admin-muted">Manage banners locally in this browser without an external database.</p></div>
+        <div><p className="eyebrow">Homepage control</p><h2>Site Media &amp; Banners</h2><p className="admin-muted">Manage homepage media for every visitor through the shared site media database.</p></div>
       </div>
       {notice && <p className="admin-success" role="status">{notice}</p>}
       <div className="media-grid">
