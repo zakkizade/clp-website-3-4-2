@@ -11,11 +11,20 @@ export function AuthModal({ onClose }: { onClose: () => void }) {
   const [message, setMessage] = useState("")
   const submit = async (event: FormEvent) => {
     event.preventDefault()
-    const client = createClient()
-    if (!client) { setMessage("Authentication is temporarily unavailable."); return }
-    const result = mode === "login" ? await client.auth.signInWithPassword({ email, password }) : await client.auth.signUp({ email, password })
-    setMessage(result.error?.message || (mode === "signup" ? "Check your email to confirm your account." : "Signed in successfully."))
-    if (!result.error) window.setTimeout(onClose, 700)
+    setMessage("")
+    try {
+      const client = createClient()
+      if (!client) throw new Error("Authentication is temporarily unavailable.")
+      const result = mode === "login" ? await client.auth.signInWithPassword({ email, password }) : await client.auth.signUp({ email, password })
+      if (result.error) {
+        setMessage(mode === "login" ? "Incorrect email or password. Please try again." : result.error.message)
+        return
+      }
+      setMessage(mode === "signup" ? "Check your email to confirm your account." : "Signed in successfully.")
+      if (mode === "login") window.setTimeout(onClose, 700)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to sign in right now.")
+    }
   }
   const google = async () => {
     try {
