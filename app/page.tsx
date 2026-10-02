@@ -79,7 +79,16 @@ export default function Home() {
     if (!client) return
     void client.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data }) => {
       const rows = (data || []) as Array<Record<string, unknown>>
-      setSignatureCategories(rows.map((item) => ({ id: String(item.id), label: String(item.label || item.id), url: String(item.url || ""), sort_order: Number(item.sort_order || 0) })))
+      const remoteCategories = rows
+        .map((item) => ({ id: String(item.id), label: String(item.label || item.id), url: String(item.url || ""), sort_order: Number(item.sort_order || 0) }))
+        .filter((item) => item.url)
+      // An empty/partial remote response must not erase the visible curated cards.
+      if (remoteCategories.length) {
+        setSignatureCategories((current) => signatureFallbacks.map((fallback) => {
+          const remote = remoteCategories.find((item) => item.id === fallback.id)
+          return remote || current.find((item) => item.id === fallback.id) || fallback
+        }))
+      }
     })
     const onBannerUpdate = (event: Event) => {
       const detail = (event as CustomEvent<Record<string, string>>).detail
@@ -94,7 +103,10 @@ export default function Home() {
     const client = createClient()
     void client.from("site_media").select("id,url").then(({ data }) => {
       const rows = (data || []) as Array<Record<string, unknown>>
-      setSiteMedia(Object.fromEntries(rows.map((item) => [String(item.id), String(item.url || "")])) )
+      if (rows.length) {
+        const remoteMedia = Object.fromEntries(rows.filter((item) => item.url).map((item) => [String(item.id), String(item.url)]))
+        setSiteMedia((current) => ({ ...current, ...remoteMedia }))
+      }
     })
     void client.from("banners").select("type,image_url").then(({ data }) => {
       const rows = (data || []) as Array<Record<string, unknown>>

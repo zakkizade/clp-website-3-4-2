@@ -78,7 +78,9 @@ function toRow(product: Product) {
 }
 
 export function ProductProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<Product[]>([])
+  // Keep the curated catalog visible while Supabase loads so the storefront never
+  // flashes an empty grid during a cold start or a transient network failure.
+  const [items, setItems] = useState<Product[]>(seedProducts)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 

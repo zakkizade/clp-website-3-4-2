@@ -39,18 +39,19 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  try {
-    const [signatures, heroes] = await Promise.all([
-      supabase.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order"),
-      supabase.from("banners").select("type,image_url"),
-    ])
-    if (signatures.error) throw signatures.error
-    if (heroes.error) throw heroes.error
-    return NextResponse.json({ signatures: signatures.data || [], heroes: heroes.data || [] })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unable to load saved banners."
-    return NextResponse.json({ error: message }, { status: 502 })
-  }
+  // Media is optional for older deployments. Return a usable empty payload when
+  // either optional table is unavailable so the storefront can render its curated
+  // image assets instead of turning a media read into a page-level error.
+  const [signatures, heroes] = await Promise.all([
+    supabase.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order"),
+    supabase.from("banners").select("type,image_url"),
+  ])
+
+  return NextResponse.json({
+    signatures: signatures.error ? [] : signatures.data || [],
+    heroes: heroes.error ? [] : heroes.data || [],
+    mediaErrors: [signatures.error?.message, heroes.error?.message].filter(Boolean),
+  })
 }
 
 export const dynamic = "force-dynamic"
