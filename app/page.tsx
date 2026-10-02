@@ -125,9 +125,14 @@ export default function Home() {
   }, [theme])
   const filters = ["All pieces", "Gold", "Emerald", "Ruby", "Diamond", "Loose Stones"]
   const filteredProducts = useMemo(() => products.filter((product) => {
-    const searchable = `${product.name} ${product.type} ${product.category} ${product.origin} ${product.description} ${product.tags.join(" ")}`.toLowerCase()
-    const matchesQuery = searchable.includes(query.toLowerCase())
-    const matchesFilter = activeFilter === "All pieces" || (activeFilter === "Gold" ? product.metal.includes("Gold") || product.type.includes("Gold") : activeFilter === "Loose Stones" ? product.category === "Loose Gemstones" : activeFilter === "Diamond" ? searchable.includes("diamond") : searchable.includes(activeFilter.toLowerCase()))
+    const category = String(product.category || "").trim().toLowerCase()
+    const type = String(product.type || "").trim().toLowerCase()
+    const metal = String(product.metal || "").trim().toLowerCase()
+    const searchable = `${product.name} ${type} ${category} ${product.origin} ${product.description} ${product.tags.join(" ")}`.toLowerCase()
+    const normalizedQuery = query.trim().toLowerCase()
+    const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery)
+    const filter = activeFilter.toLowerCase()
+    const matchesFilter = activeFilter === "All pieces" || (filter === "gold" ? category === "gold" || metal.includes("gold") || type.includes("gold") || searchable.includes("gold") : filter === "loose stones" ? category === "loose gemstones" || category === "loose stones" || type.includes("gemstone") : filter === "diamond" ? searchable.includes("diamond") : searchable.includes(filter))
     return matchesQuery && matchesFilter
   }), [activeFilter, query, products])
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize))
