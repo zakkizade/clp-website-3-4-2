@@ -55,8 +55,14 @@ export default function Home() {
       if (storedVisibility !== null) setBannerVisible(storedVisibility === "true")
     } catch { /* optional preference */ }
   }, [])
-  const [signatureCategories, setSignatureCategories] = useState<Array<{ id: string; label: string; url: string; sort_order: number }>>([])
-  const displaySignatureCategories = signatureCategories
+  const signatureFallbacks = [
+    { id: "signature-loose", label: "Loose Gemstones", url: "/category-loose-gemstones.png", sort_order: 0 },
+    { id: "signature-gold", label: "Fine Gold Jewelry", url: "/category-gold-jewelry.png", sort_order: 1 },
+    { id: "signature-jaipur", label: "Jaipur Silver", url: "/category-jaipur-craft.png", sort_order: 2 },
+    { id: "signature-custom", label: "Custom Craft", url: "/category-jaipur-craft.png", sort_order: 3 },
+  ]
+  const [signatureCategories, setSignatureCategories] = useState(signatureFallbacks)
+  const displaySignatureCategories = signatureCategories.length ? signatureCategories : signatureFallbacks
   const isSaleActive = bannerVisible && products.some((product) => {
     const sale = saleDetails(product)
     return Boolean(product.showSaleBadge) && sale.discounted && sale.sale < sale.regular

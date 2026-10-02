@@ -144,12 +144,20 @@ export function SiteMediaManager() {
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
       if (!url) throw new Error("The uploaded media could not be prepared.")
       if (item.kind === "signature") {
-        try {
-          const { error } = await supabase.from("site_media").upsert({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }, { onConflict: "id" })
-          if (error) throw error
-        } catch (databaseError) {
-          console.error("[v0] Signature banner database save failed", databaseError)
-          throw databaseError
+        const response = await fetch("/api/site-media", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }),
+        })
+        if (!response.ok) {
+          const result = await response.json().catch(() => ({}))
+          console.warn("[v0] Signature banner API save failed; using local preview", result.error)
+          const nextCache = { ...readBannerCache(), [item.id]: url }
+          writeBannerCache(nextCache)
+          setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+          window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
+          setNotice(`${item.label} saved locally while the shared database is unavailable.`)
+          return
         }
         const nextCache = { ...readBannerCache(), [item.id]: url }
         writeBannerCache(nextCache)
@@ -163,15 +171,14 @@ export function SiteMediaManager() {
         setNotice(`${item.label} saved successfully.`)
         return
       }
-      const bannerType = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
-      const { error } = await supabase.from("banners").upsert({ type: bannerType, image_url: url }, { onConflict: "type" })
-      if (error) {
-        const nextCache = { ...readBannerCache(), [item.id]: url }
-        writeBannerCache(nextCache)
-        setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
-        window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
-        setNotice(`${item.label} saved locally while Supabase is unavailable.`)
-        return
+      const response = await fetch("/api/site-media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: item.id, kind: "hero", url }),
+      })
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}))
+        throw new Error(result.error || "Unable to save banner.")
       }
       const nextCache = { ...readBannerCache(), [item.id]: url }
       writeBannerCache(nextCache)
