@@ -33,13 +33,7 @@ async function compressImage(file: File) {
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((result) => result ? resolve(result) : reject(new Error("Unable to compress the banner image.")), "image/webp", 0.72)
     })
-    const dataUrl = await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result))
-      reader.onerror = () => reject(reader.error ?? new Error("The selected banner could not be read."))
-      reader.readAsDataURL(blob)
-    })
-    return { blob, dataUrl }
+    return { blob }
   } finally {
     URL.revokeObjectURL(sourceUrl)
   }
@@ -47,16 +41,12 @@ async function compressImage(file: File) {
 
 async function uploadBanner(file: File, id: string) {
   const compressed = await compressImage(file)
-  const fallback = compressed.dataUrl
-  try {
-    const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
-    const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
-    if (upload.error) return fallback
-    return supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl || fallback
-  } catch (error) {
-    console.error("[v0] Banner storage upload failed; using selected file", error)
-    return fallback
-  }
+  const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
+  const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
+  if (upload.error) throw new Error(`Storage upload failed: ${upload.error.message}`)
+  const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
+  if (!publicUrl || !/^https:\/\//i.test(publicUrl)) throw new Error("Supabase did not return a public banner URL.")
+  return publicUrl
 }
 
 export function SiteMediaManager() {
