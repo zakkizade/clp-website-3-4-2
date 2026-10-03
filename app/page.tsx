@@ -12,10 +12,10 @@ import { HeroSlider } from "@/components/hero-slider"
 import { saleDetails } from "@/lib/pricing"
 import { getActiveOffer, getAnnouncement, getBannerVisibility, offerIsActive, offerLabel, subscribeSiteConfig, type Announcement } from "@/lib/site-config"
 const signatureSubtitles: Record<string, string> = {
-  "signature-loose": "From the earth",
-  "signature-gold": "Made to last",
-  "signature-jaipur": "Heritage in every detail",
-  "signature-custom": "By hand, in Jaipur",
+  loose_gemstones: "From the earth",
+  fine_gold: "Made to last",
+  jaipur_silver: "Heritage in every detail",
+  custom_craft: "By hand, in Jaipur",
 }
 
 export default function Home() {
@@ -63,15 +63,22 @@ export default function Home() {
   })
   useEffect(() => {
     const client = createClient()
-    void client.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data, error }) => {
+    void client.from("site_media").select("id,type,url,updated_at").eq("type", "banner").then(({ data, error }) => {
       if (error) {
         console.error("[v0] Signature media query failed", error)
         return
       }
+      const labels: Record<string, string> = {
+        loose_gemstones: "Loose Gemstones",
+        fine_gold: "Fine Gold Jewelry",
+        jaipur_silver: "Jaipur Silver",
+        custom_craft: "Custom Craft",
+      }
       const rows = (data || []) as Array<Record<string, unknown>>
       const remoteCategories = rows
-        .map((item) => ({ id: String(item.id), label: String(item.label || item.id), url: String(item.url || ""), sort_order: Number(item.sort_order || 0) }))
-        .filter((item) => item.url)
+        .filter((item) => ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].includes(String(item.id)) && String(item.url || ""))
+        .map((item) => ({ id: String(item.id), label: labels[String(item.id)] || String(item.id), url: String(item.url), sort_order: ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].indexOf(String(item.id)) }))
+        .sort((a, b) => a.sort_order - b.sort_order)
       setSignatureCategories(remoteCategories)
       setSiteMedia((current) => ({ ...current, ...Object.fromEntries(remoteCategories.map((item) => [item.id, item.url])) }))
     })

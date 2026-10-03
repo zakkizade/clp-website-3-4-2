@@ -7,19 +7,25 @@ type MediaPayload = {
   url?: string
 }
 
+const MEDIA_KEYS = new Set([
+  "hero_light",
+  "hero_dark",
+  "loose_gemstones",
+  "fine_gold",
+  "jaipur_silver",
+  "custom_craft",
+])
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as MediaPayload
-    if (!body.id || !body.url || !/^https?:\/\/|^data:image\//i.test(body.url)) {
-      return NextResponse.json({ error: "A valid banner image URL is required." }, { status: 400 })
+    if (!body.id || !MEDIA_KEYS.has(body.id) || !body.url || !/^https?:\/\/|^data:image\//i.test(body.url)) {
+      return NextResponse.json({ error: "A valid banner image URL and supported media key are required." }, { status: 400 })
     }
 
-    const type = body.kind === "signature"
-      ? "banner"
-      : body.id === "heroBannerDark" ? "hero_dark" : "hero_light"
     const { error } = await supabase.from("site_media").upsert({
       id: body.id,
-      type,
+      type: "banner",
       url: body.url,
       updated_at: new Date().toISOString(),
     }, { onConflict: "id" })

@@ -7,10 +7,10 @@ type Media = { id: string; kind: "hero" | "signature" | "slider"; label: string;
 type SiteMediaRow = { id: string; type: string; url: string }
 
 const signatureDefaults = [
-  ["signature-loose", "Loose Gemstones"],
-  ["signature-gold", "Fine Gold Jewelry"],
-  ["signature-jaipur", "Jaipur Silver"],
-  ["signature-custom", "Custom Craft"],
+  ["loose_gemstones", "Loose Gemstones"],
+  ["fine_gold", "Fine Gold Jewelry"],
+  ["jaipur_silver", "Jaipur Silver"],
+  ["custom_craft", "Custom Craft"],
 ] as const
 
 const MEDIA_BUCKET = "products-image"
@@ -50,8 +50,8 @@ async function uploadBanner(file: File, id: string) {
 
 export function SiteMediaManager() {
   const [items, setItems] = useState<Media[]>([
-    { id: "heroBannerLight", kind: "hero", label: "Hero Banner (Light Mode)", url: "", sort_order: -2 },
-    { id: "heroBannerDark", kind: "hero", label: "Hero Banner (Dark Mode)", url: "", sort_order: -1 },
+    { id: "hero_light", kind: "hero", label: "Hero Banner (Light Mode)", url: "", sort_order: -2 },
+    { id: "hero_dark", kind: "hero", label: "Hero Banner (Dark Mode)", url: "", sort_order: -1 },
     ...signatureDefaults.map(([id, label], index) => ({ id, kind: "signature" as const, label, url: "", sort_order: index })),
   ])
   const [sliderItems, setSliderItems] = useState<Media[]>([])
