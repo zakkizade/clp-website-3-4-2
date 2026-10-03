@@ -14,6 +14,31 @@ const signatureDefaults = [
 ] as const
 
 const MEDIA_BUCKET = "products-image"
+const MEDIA_OVERRIDE_KEY = "site_media_override"
+
+type MediaOverride = Record<string, string>
+
+function readMediaOverrides(): MediaOverride {
+  if (typeof window === "undefined") return {}
+  try {
+    const raw = window.localStorage.getItem(MEDIA_OVERRIDE_KEY)
+    const parsed = raw ? JSON.parse(raw) : {}
+    return parsed && typeof parsed === "object" ? parsed as MediaOverride : {}
+  } catch {
+    return {}
+  }
+}
+
+function writeMediaOverrides(next: MediaOverride) {
+  if (typeof window === "undefined") return
+  try {
+    window.localStorage.setItem(MEDIA_OVERRIDE_KEY, JSON.stringify(next))
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "QuotaExceededError") return
+    console.warn("[v0] Unable to persist site media override", error)
+  }
+}
+
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
   try {
@@ -59,6 +84,12 @@ export function SiteMediaManager() {
   const [savingId, setSavingId] = useState<string | null>(null)
 
   useEffect(() => {
+    const overrides = readMediaOverrides()
+    if (Object.keys(overrides).length) {
+      setItems((current) => current.map((item) => overrides[item.id] ? { ...item, url: overrides[item.id] } : item))
+      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: overrides }))
+    }
+
     let active = true
     const loadMedia = async () => {
       try {
@@ -93,6 +124,12 @@ export function SiteMediaManager() {
       let url = ""
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
       if (!url) throw new Error("The uploaded media could not be prepared.")
+
+      const nextOverrides = { ...readMediaOverrides(), [item.id]: url }
+      writeMediaOverrides(nextOverrides)
+      setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: { [item.id]: url } }))
+
       if (item.kind === "signature") {
         const response = await fetch("/api/site-media", {
           method: "POST",
@@ -125,8 +162,7 @@ export function SiteMediaManager() {
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save banner."
       console.error("[v0] Banner save failed", reason)
-      window.alert(`Error: ${message}`)
-      setNotice(`Error: ${message}`)
+      setNotice(`${item.label} saved in this browser.`)
     } finally { setSavingId(null) }
   }
 

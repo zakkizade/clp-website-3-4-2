@@ -62,6 +62,20 @@ export default function Home() {
     return Boolean(product.showSaleBadge) && sale.discounted && sale.sale < sale.regular
   })
   useEffect(() => {
+    const localOverrides: Record<string, string> = (() => {
+      try {
+        const raw = window.localStorage.getItem("site_media_override")
+        const parsed = raw ? JSON.parse(raw) : {}
+        return parsed && typeof parsed === "object" ? parsed as Record<string, string> : {}
+      } catch {
+        return {}
+      }
+    })()
+    if (Object.keys(localOverrides).length) {
+      setSiteMedia((current) => ({ ...current, ...localOverrides }))
+      setSignatureCategories((current) => current.map((category) => localOverrides[category.id] ? { ...category, url: localOverrides[category.id] } : category))
+    }
+
     const client = createClient()
     void client.from("site_media").select("id,type,url,updated_at").eq("type", "banner").then(({ data, error }) => {
       if (error) {
@@ -79,14 +93,30 @@ export default function Home() {
         .filter((item) => ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].includes(String(item.id)) && String(item.url || ""))
         .map((item) => ({ id: String(item.id), label: labels[String(item.id)] || String(item.id), url: String(item.url), sort_order: ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].indexOf(String(item.id)) }))
         .sort((a, b) => a.sort_order - b.sort_order)
-      setSignatureCategories(remoteCategories)
-      setSiteMedia((current) => ({ ...current, ...Object.fromEntries(remoteCategories.map((item) => [item.id, item.url])) }))
+      const localCategories = Object.entries(localOverrides)
+        .filter(([id, url]) => ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].includes(id) && Boolean(url))
+        .map(([id, url]) => ({ id, label: ({ loose_gemstones: "Loose Gemstones", fine_gold: "Fine Gold Jewelry", jaipur_silver: "Jaipur Silver", custom_craft: "Custom Craft" } as Record<string, string>)[id] || id, url, sort_order: ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].indexOf(id) }))
+      const mergedCategories = [...remoteCategories, ...localCategories.filter((local) => !remoteCategories.some((remote) => remote.id === local.id))]
+        .map((category) => localOverrides[category.id] ? { ...category, url: localOverrides[category.id] } : category)
+        .sort((a, b) => a.sort_order - b.sort_order)
+      setSignatureCategories(mergedCategories)
+      setSiteMedia((current) => ({ ...current, ...Object.fromEntries(mergedCategories.map((item) => [item.id, item.url])), ...localOverrides }))
     })
     const onBannerUpdate = (event: Event) => {
       const detail = (event as CustomEvent<Record<string, string>>).detail
       if (!detail || typeof detail !== "object") return
       setSiteMedia((current) => ({ ...current, ...detail }))
-      setSignatureCategories((current) => current.map((category) => detail[category.id] ? { ...category, url: detail[category.id] } : category))
+      setSignatureCategories((current) => {
+        const labels: Record<string, string> = { loose_gemstones: "Loose Gemstones", fine_gold: "Fine Gold Jewelry", jaipur_silver: "Jaipur Silver", custom_craft: "Custom Craft" }
+        const next = [...current]
+        Object.entries(detail).forEach(([id, url]) => {
+          if (!url) return
+          const index = next.findIndex((category) => category.id === id)
+          if (index >= 0) next[index] = { ...next[index], url }
+          else if (labels[id]) next.push({ id, label: labels[id], url, sort_order: ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].indexOf(id) })
+        })
+        return next.sort((a, b) => a.sort_order - b.sort_order)
+      })
     }
     window.addEventListener("site-banners-updated", onBannerUpdate)
     return () => window.removeEventListener("site-banners-updated", onBannerUpdate)
