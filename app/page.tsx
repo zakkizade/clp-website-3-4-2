@@ -55,40 +55,25 @@ export default function Home() {
       if (storedVisibility !== null) setBannerVisible(storedVisibility === "true")
     } catch { /* optional preference */ }
   }, [])
-  const signatureFallbacks = [
-    { id: "signature-loose", label: "Loose Gemstones", url: "/category-loose-gemstones.png", sort_order: 0 },
-    { id: "signature-gold", label: "Fine Gold Jewelry", url: "/category-gold-jewelry.png", sort_order: 1 },
-    { id: "signature-jaipur", label: "Jaipur Silver", url: "/category-jaipur-craft.png", sort_order: 2 },
-    { id: "signature-custom", label: "Custom Craft", url: "/category-jaipur-craft.png", sort_order: 3 },
-  ]
-  const [signatureCategories, setSignatureCategories] = useState(signatureFallbacks)
-  const displaySignatureCategories = signatureCategories.length ? signatureCategories : signatureFallbacks
+  const [signatureCategories, setSignatureCategories] = useState<Array<{ id: string; label: string; url: string; sort_order: number }>>([])
+  const displaySignatureCategories = signatureCategories.filter((category) => category.url)
   const isSaleActive = bannerVisible && products.some((product) => {
     const sale = saleDetails(product)
     return Boolean(product.showSaleBadge) && sale.discounted && sale.sale < sale.regular
   })
   useEffect(() => {
-    try {
-      const cached = JSON.parse(window.localStorage.getItem("site_banners") || "{}") as Record<string, string>
-      const legacyCached = JSON.parse(window.localStorage.getItem("clp-hero-media-cache") || "{}") as Record<string, string>
-      const signatures = JSON.parse(window.localStorage.getItem("clp-signature-media-cache") || "{}") as Record<string, string>
-      const merged = { ...legacyCached, ...signatures, ...cached }
-      if (Object.keys(merged).length) setSiteMedia((current) => ({ ...current, ...merged }))
-    } catch { /* stale cache is non-blocking */ }
     const client = createClient()
-    if (!client) return
-    void client.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data }) => {
+    void client.from("site_media").select("id,kind,label,url,sort_order").eq("kind", "signature").order("sort_order").then(({ data, error }) => {
+      if (error) {
+        console.error("[v0] Signature media query failed", error)
+        return
+      }
       const rows = (data || []) as Array<Record<string, unknown>>
       const remoteCategories = rows
         .map((item) => ({ id: String(item.id), label: String(item.label || item.id), url: String(item.url || ""), sort_order: Number(item.sort_order || 0) }))
         .filter((item) => item.url)
-      // An empty/partial remote response must not erase the visible curated cards.
-      if (remoteCategories.length) {
-        setSignatureCategories((current) => signatureFallbacks.map((fallback) => {
-          const remote = remoteCategories.find((item) => item.id === fallback.id)
-          return remote || current.find((item) => item.id === fallback.id) || fallback
-        }))
-      }
+      setSignatureCategories(remoteCategories)
+      setSiteMedia((current) => ({ ...current, ...Object.fromEntries(remoteCategories.map((item) => [item.id, item.url])) }))
     })
     const onBannerUpdate = (event: Event) => {
       const detail = (event as CustomEvent<Record<string, string>>).detail
@@ -116,7 +101,6 @@ export default function Home() {
         return [key, String(row.image_url)]
       }))
       setSiteMedia((current) => ({ ...current, ...remoteMedia }))
-      try { window.localStorage.setItem("clp-hero-media-cache", JSON.stringify(remoteMedia)) } catch { /* cache is optional */ }
     })
   }, [])
   useEffect(() => {

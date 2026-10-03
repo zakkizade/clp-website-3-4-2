@@ -14,7 +14,6 @@ const signatureDefaults = [
 ] as const
 
 const STORAGE_KEY = "clp-slider-banners"
-const HERO_STORAGE_KEY = "site_banners"
 const MEDIA_BUCKET = "products-image"
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
@@ -43,28 +42,6 @@ async function compressImage(file: File) {
     return { blob, dataUrl }
   } finally {
     URL.revokeObjectURL(sourceUrl)
-  }
-}
-
-function readBannerCache() {
-  try {
-    return JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
-  } catch {
-    return {} as Record<string, string>
-  }
-}
-
-function writeBannerCache(nextCache: Record<string, string>) {
-  try {
-    window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(nextCache))
-    return true
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "QuotaExceededError") {
-      console.warn("[v0] Banner cache quota exceeded; keeping the image in React state only")
-    } else {
-      console.warn("[v0] Banner cache could not be written", error)
-    }
-    return false
   }
 }
 
@@ -97,9 +74,7 @@ export function SiteMediaManager() {
     const loadMedia = async () => {
       try {
         const stored = window.localStorage.getItem(STORAGE_KEY)
-        const storedHeroes = JSON.parse(window.localStorage.getItem(HERO_STORAGE_KEY) || "{}") as Record<string, string>
         if (stored && active) setSliderItems(JSON.parse(stored) as Media[])
-        if (active) setItems((current) => current.map((item) => storedHeroes[item.id] ? { ...item, url: storedHeroes[item.id] } : item))
         const { data, error } = await supabase.from("banners").select("type,image_url")
         if (error) throw error
         if (active && data?.length) {
@@ -152,21 +127,9 @@ export function SiteMediaManager() {
         })
         if (!response.ok) {
           const result = await response.json().catch(() => ({}))
-          console.warn("[v0] Signature banner API save failed; using local preview", result.error)
-          const nextCache = { ...readBannerCache(), [item.id]: url }
-          writeBannerCache(nextCache)
-          setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
-          window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
-          setNotice(`${item.label} saved locally while the shared database is unavailable.`)
-          return
+          throw new Error(result.error || "Unable to save signature banner to Supabase.")
         }
-        const nextCache = { ...readBannerCache(), [item.id]: url }
-        writeBannerCache(nextCache)
-        try {
-          window.localStorage.setItem("clp-signature-media-cache", JSON.stringify(nextCache))
-        } catch (error) {
-          if (error instanceof DOMException && error.name === "QuotaExceededError") console.warn("[v0] Signature cache quota exceeded; preview remains in memory")
-        }
+        const nextCache = { [item.id]: url }
         window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
         setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
         setNotice(`${item.label} saved successfully.`)
@@ -181,9 +144,8 @@ export function SiteMediaManager() {
         const result = await response.json().catch(() => ({}))
         throw new Error(result.error || "Unable to save banner.")
       }
-      const nextCache = { ...readBannerCache(), [item.id]: url }
-      writeBannerCache(nextCache)
-      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
+      const nextMedia = { [item.id]: url }
+      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextMedia }))
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       setNotice(`${item.label} saved successfully.`)
     } catch (reason) {
