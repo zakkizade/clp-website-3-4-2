@@ -15,6 +15,7 @@ const signatureDefaults = [
 
 const STORAGE_KEY = "clp-slider-banners"
 const HERO_STORAGE_KEY = "site_banners"
+const MEDIA_BUCKET = "products-image"
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
   try {
@@ -72,9 +73,9 @@ async function uploadBanner(file: File, id: string) {
   const fallback = compressed.dataUrl
   try {
     const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
-    const upload = await supabase.storage.from("banners").upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
+    const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
     if (upload.error) return fallback
-    return supabase.storage.from("banners").getPublicUrl(path).data.publicUrl || fallback
+    return supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl || fallback
   } catch (error) {
     console.error("[v0] Banner storage upload failed; using selected file", error)
     return fallback

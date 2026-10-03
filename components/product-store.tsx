@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import { products as seedProducts, type Product } from "@/lib/products"
+import { type Product } from "@/lib/products"
 import { createClient } from "@/lib/supabase/client"
 
 type ProductStore = { products: Product[]; loading: boolean; error: string; saveProduct: (product: Product) => Promise<void>; deleteProduct: (id: string) => Promise<void> }
@@ -78,9 +78,9 @@ function toRow(product: Product) {
 }
 
 export function ProductProvider({ children }: { children: React.ReactNode }) {
-  // Keep the curated catalog visible while Supabase loads so the storefront never
-  // flashes an empty grid during a cold start or a transient network failure.
-  const [items, setItems] = useState<Product[]>(seedProducts)
+  // Supabase is the catalog source of truth. Start empty to avoid rendering demo
+  // products while the shared catalog is loading.
+  const [items, setItems] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
@@ -92,13 +92,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       if (!active) return
       if (readError) {
         setError(readError.message)
-        setItems(seedProducts)
+        setItems([])
       } else {
         const remoteProducts = (data || []).map((row) => toProduct(row as Record<string, unknown>)).filter((product) => product.name)
         setError("")
-        // Keep the existing catalog visible when the table is reachable but empty;
-        // real Supabase rows still replace it as soon as they exist.
-        setItems(remoteProducts.length ? remoteProducts : seedProducts)
+        setItems(remoteProducts)
       }
       setLoading(false)
     }
