@@ -13,7 +13,6 @@ const signatureDefaults = [
   ["signature-custom", "Custom Craft"],
 ] as const
 
-const STORAGE_KEY = "clp-slider-banners"
 const MEDIA_BUCKET = "products-image"
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
@@ -63,8 +62,6 @@ export function SiteMediaManager() {
     let active = true
     const loadMedia = async () => {
       try {
-        const stored = window.localStorage.getItem(STORAGE_KEY)
-        if (stored && active) setSliderItems(JSON.parse(stored) as Media[])
         const { data, error } = await supabase.from("banners").select("type,image_url")
         if (error) throw error
         if (active && data?.length) {
@@ -95,11 +92,6 @@ export function SiteMediaManager() {
 
   const persistSliders = (next: Media[]) => {
     setSliderItems(next)
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    } catch (error) {
-      if (error instanceof DOMException && error.name === "QuotaExceededError") console.warn("[v0] Slider cache quota exceeded; keeping slider changes in memory")
-    }
   }
 
   const updateHero = async (item: Media, file: File) => {
@@ -163,12 +155,10 @@ export function SiteMediaManager() {
   )
 }
 
-export async function getSiteMedia(kind?: "hero" | "signature" | "slider") {
-  if (typeof window === "undefined") return [] as Media[]
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]") as Media[]
-    return kind ? stored.filter((item) => item.kind === kind) : stored
-  } catch { return [] as Media[] }
+export async function getSiteMedia(_kind?: "hero" | "signature" | "slider") {
+  const { data, error } = await supabase.from("site_media").select("id,kind,label,url,sort_order").order("sort_order")
+  if (error) throw new Error(error.message)
+  return (data || []) as Media[]
 }
 
 export type { Media }
