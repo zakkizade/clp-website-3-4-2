@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
 
 type Media = { id: string; kind: "hero" | "signature" | "slider"; label: string; url: string; sort_order: number }
-type BannerRow = { type: string; image_url: string }
+type SiteMediaRow = { id: string; type: string; url: string }
 
 const signatureDefaults = [
   ["signature-loose", "Loose Gemstones"],
@@ -62,22 +62,14 @@ export function SiteMediaManager() {
     let active = true
     const loadMedia = async () => {
       try {
-        const { data, error } = await supabase.from("banners").select("type,image_url")
+        const { data, error } = await supabase
+          .from("site_media")
+          .select("id,type,url")
         if (error) throw error
         if (active && data?.length) {
-          const rows = data as BannerRow[]
+          const rows = data as SiteMediaRow[]
           setItems((current) => current.map((item) => {
-            const type = item.id === "heroBannerDark" ? "hero_dark" : "hero_light"
-            const remote = rows.find((row) => row.type === type || row.type === type.replace("hero_", ""))
-            return remote?.image_url ? { ...item, url: remote.image_url } : item
-          }))
-        }
-        // Signature banners are optional on older projects. Keep the local cache
-        // and current preview when the optional table is unavailable.
-        const signatures = await supabase.from("site_media").select("id,url").eq("kind", "signature")
-        if (active && !signatures.error && signatures.data?.length) {
-          setItems((current) => current.map((item) => {
-            const remote = (signatures.data as Array<{ id: string; url: string }>).find((row) => row.id === item.id)
+            const remote = rows.find((row) => row.id === item.id)
             return remote?.url ? { ...item, url: remote.url } : item
           }))
         }
@@ -156,9 +148,15 @@ export function SiteMediaManager() {
 }
 
 export async function getSiteMedia(_kind?: "hero" | "signature" | "slider") {
-  const { data, error } = await supabase.from("site_media").select("id,kind,label,url,sort_order").order("sort_order")
+  const { data, error } = await supabase.from("site_media").select("id,type,url,updated_at").order("updated_at", { ascending: false })
   if (error) throw new Error(error.message)
-  return (data || []) as Media[]
+  return (data || []).map((row) => ({
+    id: row.id,
+    kind: row.id.startsWith("hero") ? "hero" : "signature",
+    label: row.id,
+    url: row.url,
+    sort_order: 0,
+  })) as Media[]
 }
 
 export type { Media }
