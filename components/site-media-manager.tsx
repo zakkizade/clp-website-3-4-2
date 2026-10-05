@@ -14,6 +14,7 @@ const signatureDefaults = [
 ] as const
 
 const MEDIA_BUCKET = "site-banners"
+// force redeploy site_media fix
 
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
