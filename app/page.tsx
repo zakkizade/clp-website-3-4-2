@@ -119,7 +119,17 @@ export default function Home() {
       })
     }
     window.addEventListener("site-banners-updated", onBannerUpdate)
-    return () => window.removeEventListener("site-banners-updated", onBannerUpdate)
+    const mediaChannel = client
+      .channel("site-media-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "site_media" }, (payload) => {
+        const row = (payload.new || {}) as { id?: string; url?: string }
+        if (row.id && row.url) onBannerUpdate(new CustomEvent("site-banners-updated", { detail: { [row.id]: row.url } }))
+      })
+      .subscribe()
+    return () => {
+      window.removeEventListener("site-banners-updated", onBannerUpdate)
+      void client.removeChannel(mediaChannel)
+    }
   }, [])
   useEffect(() => {
     const client = createClient()

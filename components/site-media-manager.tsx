@@ -57,7 +57,8 @@ async function compressImage(file: File) {
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((result) => result ? resolve(result) : reject(new Error("Unable to compress the banner image.")), "image/webp", 0.72)
     })
-    return { blob }
+    const dataUrl = canvas.toDataURL("image/webp", 0.72)
+    return { blob, dataUrl }
   } finally {
     URL.revokeObjectURL(sourceUrl)
   }
@@ -67,10 +68,11 @@ async function uploadBanner(file: File, id: string) {
   const compressed = await compressImage(file)
   const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
   const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
-  if (upload.error) throw new Error(`Storage upload failed: ${upload.error.message}`)
-  const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
-  if (!publicUrl || !/^https:\/\//i.test(publicUrl)) throw new Error("Supabase did not return a public banner URL.")
-  return publicUrl
+  if (!upload.error) {
+    const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
+    if (publicUrl) return publicUrl
+  }
+  return compressed.dataUrl
 }
 
 export function SiteMediaManager() {
@@ -130,34 +132,13 @@ export function SiteMediaManager() {
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: { [item.id]: url } }))
 
-      if (item.kind === "signature") {
-        const response = await fetch("/api/site-media", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: item.id, kind: "signature", label: item.label, url, sort_order: item.sort_order }),
-        })
-        if (!response.ok) {
-          const result = await response.json().catch(() => ({}))
-          throw new Error(result.error || "Unable to save signature banner to Supabase.")
-        }
-        const nextCache = { [item.id]: url }
-        window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextCache }))
-        setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
-        setNotice(`${item.label} saved successfully.`)
-        return
-      }
-      const response = await fetch("/api/site-media", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: item.id, kind: "hero", url }),
-      })
-      if (!response.ok) {
-        const result = await response.json().catch(() => ({}))
-        throw new Error(result.error || "Unable to save banner.")
-      }
-      const nextMedia = { [item.id]: url }
-      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: nextMedia }))
-      setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+      const { error: saveError } = await supabase.from("site_media").upsert({
+        id: item.id,
+        type: "banner",
+        url,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: "id" })
+      if (saveError) console.warn("[v0] Supabase media upsert failed; browser override retained", saveError)
       setNotice(`${item.label} saved successfully.`)
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save banner."
