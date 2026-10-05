@@ -62,8 +62,6 @@ export default function Home() {
     return Boolean(product.showSaleBadge) && sale.discounted && sale.sale < sale.regular
   })
   useEffect(() => {
-    const localOverrides: Record<string, string> = {}
-
     const client = createClient()
     void client.from("site_media").select("*").then(({ data, error }) => {
       if (error) {
@@ -81,14 +79,8 @@ export default function Home() {
         .filter((item) => ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].includes(String(item.id)) && String(item.url || ""))
         .map((item) => ({ id: String(item.id), label: labels[String(item.id)] || String(item.id), url: String(item.url), sort_order: ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].indexOf(String(item.id)) }))
         .sort((a, b) => a.sort_order - b.sort_order)
-      const localCategories = Object.entries(localOverrides)
-        .filter(([id, url]) => ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].includes(id) && Boolean(url))
-        .map(([id, url]) => ({ id, label: ({ loose_gemstones: "Loose Gemstones", fine_gold: "Fine Gold Jewelry", jaipur_silver: "Jaipur Silver", custom_craft: "Custom Craft" } as Record<string, string>)[id] || id, url, sort_order: ["loose_gemstones", "fine_gold", "jaipur_silver", "custom_craft"].indexOf(id) }))
-      const mergedCategories = [...remoteCategories, ...localCategories.filter((local) => !remoteCategories.some((remote) => remote.id === local.id))]
-        .map((category) => localOverrides[category.id] ? { ...category, url: localOverrides[category.id] } : category)
-        .sort((a, b) => a.sort_order - b.sort_order)
-      setSignatureCategories(mergedCategories)
-      setSiteMedia((current) => ({ ...current, ...Object.fromEntries(mergedCategories.map((item) => [item.id, item.url])), ...localOverrides }))
+      setSignatureCategories(remoteCategories)
+      setSiteMedia((current) => ({ ...current, ...Object.fromEntries(remoteCategories.map((item) => [item.id, item.url])) }))
     })
     const onBannerUpdate = (event: Event) => {
       const detail = (event as CustomEvent<Record<string, string>>).detail

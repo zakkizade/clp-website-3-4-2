@@ -43,7 +43,7 @@ async function uploadBanner(file: File, id: string) {
   const compressed = await compressImage(file)
   const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
   const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
-  if (upload.error) throw new Error(`Banner upload failed: ${upload.error.message}`)
+  if (upload.error) throw new Error(`Storage upload failed: ${upload.error.message}`)
   const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
   if (!publicUrl) throw new Error("Supabase did not return a banner URL.")
   return publicUrl
@@ -93,25 +93,24 @@ export function SiteMediaManager() {
     try {
       const url = await uploadBanner(file, item.id)
 
-      setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
-      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: { [item.id]: url } }))
-
-      const { error: saveError } = await supabase.from("site_media").upsert({
+      const { data, error: saveError } = await supabase.from("site_media").upsert({
         id: item.id,
         type: "banner",
         url,
         updated_at: new Date().toISOString(),
-      }, { onConflict: "id" })
+      }, { onConflict: "id" }).select()
       if (saveError) {
-        const message = `Supabase site_media upsert failed: ${saveError.message}`
-        console.error(`[v0] ${message}`, saveError)
-        throw new Error(message)
+        console.error("[v0] site_media upsert failed", saveError)
+        throw new Error(`DB upsert failed: ${saveError.message}`)
       }
+      if (!data) throw new Error("DB upsert failed: Supabase returned no saved row.")
+      setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
+      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: { [item.id]: url } }))
       setNotice(`${item.label} saved successfully.`)
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save banner."
       console.error("[v0] Banner save failed", reason)
-      setNotice(`Unable to save ${item.label}: ${message}`)
+      setNotice(`Error: ${message}`)
     } finally { setSavingId(null) }
   }
 
@@ -120,7 +119,7 @@ export function SiteMediaManager() {
       <div className="admin-toolbar">
         <div><p className="eyebrow">Homepage control</p><h2>Site Media &amp; Banners</h2><p className="admin-muted">Manage homepage media for every visitor through the shared site media database.</p></div>
       </div>
-      {notice && <p className="admin-success" role="status">{notice}</p>}
+      {notice && <p className={notice.startsWith("Error:") ? "admin-error" : "admin-success"} role="status" aria-live="polite">{notice}</p>}
       <div className="media-grid">
         {items.map((item) => <article className="media-card min-w-0 overflow-hidden" key={item.id}>{item.url ? <div className="h-48 max-h-48 w-full max-w-2xl overflow-hidden rounded-md border border-[#75643a] bg-black/20"><img className="h-full max-h-48 w-full max-w-full object-cover" src={item.url} alt={item.label} /></div> : <div className="media-preview-empty h-48 max-h-48 w-full max-w-2xl overflow-hidden rounded-md border border-[#75643a]" aria-label={`${item.label} has no uploaded image`}>No image uploaded</div>}<strong className="block max-w-full truncate">{item.label}</strong><label className="admin-button media-upload-label" aria-disabled={savingId === item.id}>{savingId === item.id ? "Saving..." : "Replace Image"}<input type="file" accept="image/*" hidden disabled={savingId === item.id} onChange={(event) => { const file = event.target.files?.[0]; if (file) void updateHero(item, file); event.currentTarget.value = "" }} /></label></article>)}
       </div>

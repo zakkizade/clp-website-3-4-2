@@ -31,15 +31,6 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
     return blob ? new File([blob], `${file.name.replace(/\.[^.]+$/, "")}.webp`, { type: "image/webp" }) : file
   }
 
-  async function fileToDataUrl(file: File) {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result))
-      reader.onerror = () => reject(reader.error ?? new Error("The selected file could not be read."))
-      reader.readAsDataURL(file)
-    })
-  }
-
   async function uploadFiles(files: FileList | File[]) {
     const selected = Array.from(files)
     if (!selected.length) return
@@ -60,14 +51,13 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
         })
 
         if (result.error) {
-          // A storage policy or missing bucket must not block the form. Preserve the
-          // selected media as a data URL so the product can still be saved.
-          uploaded.push(await fileToDataUrl(file))
-          continue
+          console.error("[v0] Product media storage upload failed", result.error)
+          throw new Error(`Storage upload failed: ${result.error.message}`)
         }
 
         const publicUrl = client.storage.from("products").getPublicUrl(path).data.publicUrl
-        uploaded.push(publicUrl || await fileToDataUrl(file))
+        if (!publicUrl) throw new Error("Storage upload failed: Supabase did not return a public URL.")
+        uploaded.push(publicUrl)
       }
 
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))
