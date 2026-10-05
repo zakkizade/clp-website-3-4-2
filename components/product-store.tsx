@@ -101,7 +101,14 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     }
     void loadProducts()
-    return () => { active = false }
+    const channel = createClient()
+      .channel("products-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => { void loadProducts() })
+      .subscribe()
+    return () => {
+      active = false
+      void createClient().removeChannel(channel)
+    }
   }, [])
 
   const saveProduct = async (product: Product) => {

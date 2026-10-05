@@ -62,19 +62,7 @@ export default function Home() {
     return Boolean(product.showSaleBadge) && sale.discounted && sale.sale < sale.regular
   })
   useEffect(() => {
-    const localOverrides: Record<string, string> = (() => {
-      try {
-        const raw = window.localStorage.getItem("site_media_override")
-        const parsed = raw ? JSON.parse(raw) : {}
-        return parsed && typeof parsed === "object" ? parsed as Record<string, string> : {}
-      } catch {
-        return {}
-      }
-    })()
-    if (Object.keys(localOverrides).length) {
-      setSiteMedia((current) => ({ ...current, ...localOverrides }))
-      setSignatureCategories((current) => current.map((category) => localOverrides[category.id] ? { ...category, url: localOverrides[category.id] } : category))
-    }
+    const localOverrides: Record<string, string> = {}
 
     const client = createClient()
     void client.from("site_media").select("id,type,url,updated_at").eq("type", "banner").then(({ data, error }) => {

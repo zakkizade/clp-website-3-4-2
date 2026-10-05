@@ -13,31 +13,7 @@ const signatureDefaults = [
   ["custom_craft", "Custom Craft"],
 ] as const
 
-const MEDIA_BUCKET = "products-image"
-const MEDIA_OVERRIDE_KEY = "site_media_override"
-
-type MediaOverride = Record<string, string>
-
-function readMediaOverrides(): MediaOverride {
-  if (typeof window === "undefined") return {}
-  try {
-    const raw = window.localStorage.getItem(MEDIA_OVERRIDE_KEY)
-    const parsed = raw ? JSON.parse(raw) : {}
-    return parsed && typeof parsed === "object" ? parsed as MediaOverride : {}
-  } catch {
-    return {}
-  }
-}
-
-function writeMediaOverrides(next: MediaOverride) {
-  if (typeof window === "undefined") return
-  try {
-    window.localStorage.setItem(MEDIA_OVERRIDE_KEY, JSON.stringify(next))
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "QuotaExceededError") return
-    console.warn("[v0] Unable to persist site media override", error)
-  }
-}
+const MEDIA_BUCKET = "site-banners"
 
 async function compressImage(file: File) {
   const sourceUrl = URL.createObjectURL(file)
@@ -57,8 +33,7 @@ async function compressImage(file: File) {
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((result) => result ? resolve(result) : reject(new Error("Unable to compress the banner image.")), "image/webp", 0.72)
     })
-    const dataUrl = canvas.toDataURL("image/webp", 0.72)
-    return { blob, dataUrl }
+    return { blob }
   } finally {
     URL.revokeObjectURL(sourceUrl)
   }
@@ -68,11 +43,10 @@ async function uploadBanner(file: File, id: string) {
   const compressed = await compressImage(file)
   const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
   const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
-  if (!upload.error) {
-    const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
-    if (publicUrl) return publicUrl
-  }
-  return compressed.dataUrl
+  if (upload.error) throw new Error(`Banner upload failed: ${upload.error.message}`)
+  const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
+  if (!publicUrl) throw new Error("Supabase did not return a banner URL.")
+  return publicUrl
 }
 
 export function SiteMediaManager() {
@@ -86,12 +60,6 @@ export function SiteMediaManager() {
   const [savingId, setSavingId] = useState<string | null>(null)
 
   useEffect(() => {
-    const overrides = readMediaOverrides()
-    if (Object.keys(overrides).length) {
-      setItems((current) => current.map((item) => overrides[item.id] ? { ...item, url: overrides[item.id] } : item))
-      window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: overrides }))
-    }
-
     let active = true
     const loadMedia = async () => {
       try {
@@ -127,8 +95,6 @@ export function SiteMediaManager() {
       try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
       if (!url) throw new Error("The uploaded media could not be prepared.")
 
-      const nextOverrides = { ...readMediaOverrides(), [item.id]: url }
-      writeMediaOverrides(nextOverrides)
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: { [item.id]: url } }))
 
@@ -143,7 +109,7 @@ export function SiteMediaManager() {
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save banner."
       console.error("[v0] Banner save failed", reason)
-      setNotice(`${item.label} saved in this browser.`)
+      setNotice(`Unable to save ${item.label}: ${message}`)
     } finally { setSavingId(null) }
   }
 
