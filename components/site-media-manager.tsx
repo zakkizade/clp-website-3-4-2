@@ -91,9 +91,7 @@ export function SiteMediaManager() {
     setSavingId(item.id)
     setNotice(`Saving ${item.label}...`)
     try {
-      let url = ""
-      try { url = await uploadBanner(file, item.id) } catch (uploadError) { console.error("[v0] Banner upload failed", uploadError) }
-      if (!url) throw new Error("The uploaded media could not be prepared.")
+      const url = await uploadBanner(file, item.id)
 
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, url } : entry))
       window.dispatchEvent(new CustomEvent("site-banners-updated", { detail: { [item.id]: url } }))
@@ -104,7 +102,11 @@ export function SiteMediaManager() {
         url,
         updated_at: new Date().toISOString(),
       }, { onConflict: "id" })
-      if (saveError) console.warn("[v0] Supabase media upsert failed; browser override retained", saveError)
+      if (saveError) {
+        const message = `Supabase site_media upsert failed: ${saveError.message}`
+        console.error(`[v0] ${message}`, saveError)
+        throw new Error(message)
+      }
       setNotice(`${item.label} saved successfully.`)
     } catch (reason) {
       const message = reason instanceof Error ? reason.message : "Unable to save banner."

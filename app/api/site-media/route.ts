@@ -19,7 +19,7 @@ const MEDIA_KEYS = new Set([
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as MediaPayload
-    if (!body.id || !MEDIA_KEYS.has(body.id) || !body.url || !/^https?:\/\/|^data:image\//i.test(body.url)) {
+    if (!body.id || !MEDIA_KEYS.has(body.id) || !body.url || !/^https:\/\//i.test(body.url)) {
       return NextResponse.json({ error: "A valid banner image URL and supported media key are required." }, { status: 400 })
     }
 

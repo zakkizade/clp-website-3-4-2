@@ -65,7 +65,7 @@ export default function Home() {
     const localOverrides: Record<string, string> = {}
 
     const client = createClient()
-    void client.from("site_media").select("id,type,url,updated_at").eq("type", "banner").then(({ data, error }) => {
+    void client.from("site_media").select("*").then(({ data, error }) => {
       if (error) {
         console.error("[v0] Signature media query failed", error)
         return
@@ -118,25 +118,6 @@ export default function Home() {
       window.removeEventListener("site-banners-updated", onBannerUpdate)
       void client.removeChannel(mediaChannel)
     }
-  }, [])
-  useEffect(() => {
-    const client = createClient()
-    void client.from("site_media").select("id,url").then(({ data }) => {
-      const rows = (data || []) as Array<Record<string, unknown>>
-      if (rows.length) {
-        const remoteMedia = Object.fromEntries(rows.filter((item) => item.url).map((item) => [String(item.id), String(item.url)]))
-        setSiteMedia((current) => ({ ...current, ...remoteMedia }))
-      }
-    })
-    void client.from("banners").select("type,image_url").then(({ data }) => {
-      const rows = (data || []) as Array<Record<string, unknown>>
-      const remoteMedia = Object.fromEntries(rows.filter((row) => row.image_url).map((row) => {
-        const type = String(row.type)
-        const key = type === "hero_dark" || type === "dark" ? "heroBannerDark" : type === "hero_light" || type === "light" ? "heroBannerLight" : type
-        return [key, String(row.image_url)]
-      }))
-      setSiteMedia((current) => ({ ...current, ...remoteMedia }))
-    })
   }, [])
   useEffect(() => {
     document.documentElement.classList.toggle("light", theme === "light")
