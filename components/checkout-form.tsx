@@ -5,6 +5,7 @@ import type { Product } from "@/lib/products"
 import { formatPrice } from "@/lib/products"
 import { addLocalOrder, orderId, whatsappOrderUrl } from "@/lib/order-store"
 import { purityOptions, sizingForProduct } from "@/lib/sizing"
+import { useCurrency } from "@/components/currency-provider"
 
 const fields = [["fullName", "Full Name"], ["phone", "Phone Number"], ["address", "Full Address"], ["city", "City"], ["state", "State"], ["pincode", "Pincode / Zip Code"]] as const
 type Shipping = Record<(typeof fields)[number][0], string>
@@ -16,10 +17,11 @@ export function CheckoutForm({ product, quantity = 1, onComplete }: { product: P
   const [paymentMethod, setPaymentMethod] = useState<"UPI" | "Card">("UPI")
   const [notes, setNotes] = useState("")
   const [message, setMessage] = useState("")
+  const { currency } = useCurrency()
   const sizing = sizingForProduct(product)
   const total = useMemo(() => product.priceInr * quantity, [product.priceInr, quantity])
   const update = (key: keyof Shipping, value: string) => setShipping((current) => ({ ...current, [key]: value }))
-  const messageText = `Hello CLP Jewels, I would like to order:\n\nProduct: ${product.name}\nQuantity: ${quantity}\nTotal: ${formatPrice(total, "INR")}\nPurity: ${purity}\n${sizing.label}: ${size}\nPayment preference: ${paymentMethod === "Card" ? "Credit / Debit Card" : "UPI"}\n\nShipping details:\n${shipping.fullName}\n${shipping.phone}\n${shipping.address}, ${shipping.city}, ${shipping.state} - ${shipping.pincode}${notes ? `\n\nNotes: ${notes}` : ""}`
+  const messageText = `Hello CLP Jewels, I would like to order:\n\nProduct: ${product.name}\nQuantity: ${quantity}\nTotal: ${formatPrice(total, currency)}\nPurity: ${purity}\n${sizing.label}: ${size}\nPayment preference: ${paymentMethod === "Card" ? "Credit / Debit Card" : "UPI"}\n\nShipping details:\n${shipping.fullName}\n${shipping.phone}\n${shipping.address}, ${shipping.city}, ${shipping.state} - ${shipping.pincode}${notes ? `\n\nNotes: ${notes}` : ""}`
   const submit = (event: FormEvent) => {
     event.preventDefault()
     addLocalOrder({ id: orderId(), product_id: product.id, product_name: product.name, quantity, total_inr: total, customer_name: shipping.fullName, customer_phone: shipping.phone, address: shipping.address, city: shipping.city, state: shipping.state, pincode: shipping.pincode, payment_method: paymentMethod, destination: "India", buyer_notes: `${notes}${notes ? "\n" : ""}Purity: ${purity}; ${sizing.label}: ${size}`, dispatch_status: "New", created_at: new Date().toISOString() })
