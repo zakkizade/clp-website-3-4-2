@@ -863,7 +863,30 @@ h2 em {
 }
 
 @media (max-width:900px) {
-  .content-width {
+.clp-loading-spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 2px solid rgba(212, 175, 55, .22);
+  border-top-color: #d4af37;
+  border-right-color: #f5e6c8;
+  border-radius: 9999px;
+  animation: clp-spin .75s linear infinite;
+}
+
+@keyframes clp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.clp-loading-overlay {
+  display: grid;
+  min-height: 12rem;
+  place-items: center;
+  border: 1px solid rgba(212, 175, 55, .18);
+  background: rgba(10, 10, 10, .72);
+}
+
+.content-width {
+
     width: min(100% - 36px, 680px);
   }
 
