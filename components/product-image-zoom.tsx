@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 type ProductImageZoomProps = { src: string; alt: string }
 
@@ -12,6 +12,12 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
   const [hovering, setHovering] = useState(false)
   const pointerStart = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 })
   const lastTap = useRef(0)
+
+  useEffect(() => {
+    setZoomed(false)
+    setHovering(false)
+    setOffset({ x: 0, y: 0 })
+  }, [src])
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
           if (event.pointerType === "mouse") {
@@ -54,8 +60,9 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
       aria-label={zoomed ? "Zoomed product image. Double tap to zoom out." : "Product image. Double tap to zoom in."}
       onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") setZoomed((current) => !current) }}
     >
-      <Image src={src} alt={alt} fill sizes="(max-width: 700px) 100vw, 55vw" className="product-image-zoom-img" style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoomed || hovering ? 2.5 : 1})`, transformOrigin: zoomed ? "50% 50%" : origin }} priority draggable={false} />
-      <span className="product-image-zoom-hint" aria-hidden="true">{zoomed ? "Double tap to reset" : "Hover or double tap to zoom"}</span>
+      <Image src={src} alt={alt} fill sizes="(max-width: 700px) 100vw, 55vw" className="product-image-zoom-img" style={{ transform: zoomed ? `translate(${offset.x}px, ${offset.y}px) scale(2.5)` : "none", transformOrigin: "50% 50%" }} priority draggable={false} />
+      {hovering && !zoomed && <span className="product-image-zoom-lens" aria-hidden="true" style={{ backgroundImage: `url(${src})`, backgroundPosition: origin }} />}
+      {zoomed && <span className="product-image-zoom-hint" aria-hidden="true">Double tap to reset</span>}
     </div>
   )
 }
