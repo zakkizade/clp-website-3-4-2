@@ -32,6 +32,9 @@ export default function AdminPage() {
   const [saleNotice, setSaleNotice] = useState("")
   const [bannerVisible, setBannerVisible] = useState(true)
   useEffect(() => setBannerVisible(getBannerVisibility()), [])
+  const cloneProduct = (product: Product): Product => ({ ...product, gallery: [...(product.gallery || [])], view360: [...(product.view360 || [])], tags: [...(product.tags || [])] })
+  const openProduct = (product: Product) => { setError(""); setNotice(""); setSmartImport(""); setShowSmartImport(false); setEditing(cloneProduct(product)) }
+  const openNewProduct = () => { setError(""); setNotice(""); setSmartImport(""); setShowSmartImport(false); setEditing(cloneProduct(blankProduct)) }
   const update = (key: keyof Product, value: string | number | boolean | string[]) => setEditing((current) => {
     if (!current) return current
     const next = { ...current, [key]: value }
