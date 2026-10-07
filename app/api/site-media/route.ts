@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabase, toCleanPublicUrl } from "@/lib/supabase"
 
 type MediaPayload = {
   id?: string
@@ -23,15 +23,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "A valid banner image URL and supported media key are required." }, { status: 400 })
     }
 
+    const url = toCleanPublicUrl(body.url)
+    if (!url.startsWith(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-banners/`)) {
+      return NextResponse.json({ error: "Banner URL must be a public URL from the site-banners bucket." }, { status: 400 })
+    }
+
     const { error } = await supabase.from("site_media").upsert({
       id: body.id,
       type: "banner",
-      url: body.url,
+      url,
       updated_at: new Date().toISOString(),
     }, { onConflict: "id" })
     if (error) return NextResponse.json({ error: error.message }, { status: 502 })
 
-    return NextResponse.json({ ok: true, id: body.id, url: body.url })
+    return NextResponse.json({ ok: true, id: body.id, url })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to save banner."
     return NextResponse.json({ error: message }, { status: 500 })
