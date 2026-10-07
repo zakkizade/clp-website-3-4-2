@@ -438,28 +438,34 @@ h2 em {
 }
 
 
-/* Requested signature text colors apply only in light mode. */
-html.light #collection .category-copy {
+/* Signature card copy stays readable against every image in both themes. */
+#collection .category-copy {
   padding: 16px 12px 18px;
-  background: linear-gradient(to top, rgba(8, 18, 17, .78), rgba(8, 18, 17, .4) 72%, transparent);
+  background: linear-gradient(to top, rgba(8, 18, 17, .82), rgba(8, 18, 17, .42) 72%, transparent);
 }
 
-html.light #collection .category-card-1 .category-copy span,
-html.light #collection .category-card-1 .category-copy h3,
-html.light #collection .category-card-3 .category-copy span,
-html.light #collection .category-card-3 .category-copy h3 {
-  color: #cde3d9;
-  font-weight: 700;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .72);
+html.dark #collection .category-copy p,
+html.dark #collection .category-copy span {
+  color: #d4af37 !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .85) !important;
 }
 
-html.light #collection .category-card-2 .category-copy span,
-html.light #collection .category-card-2 .category-copy h3,
-html.light #collection .category-card-4 .category-copy span,
-html.light #collection .category-card-4 .category-copy h3 {
-  color: #c4ddd5;
+html.dark #collection .category-copy h3 {
+  color: #f5e6c8 !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .9), 0 2px 12px rgba(0, 0, 0, .75) !important;
+}
+
+html.light #collection .category-copy p,
+html.light #collection .category-copy span {
+  color: #d4af37 !important;
   font-weight: 700;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .72);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .8) !important;
+}
+
+html.light #collection .category-copy h3 {
+  color: #f5e6c8 !important;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .8) !important;
 }
 
   .card-shade {
