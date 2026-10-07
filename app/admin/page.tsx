@@ -88,7 +88,7 @@ export default function AdminPage() {
     if (!Number.isFinite(regularPrice) || regularPrice <= 0) { setError("Regular Price must be a number greater than 0."); return }
     if (!Number.isFinite(salePrice) || salePrice < 0) { setError("Sale Price must be a valid number."); return }
     setSaving(true)
-    const uploadedImages = editing?.gallery || []
+    const uploadedImages = editing ? [editing.image, ...editing.gallery].filter((url, index, all) => Boolean(url) && all.indexOf(url) === index) : []
     const fallbackImage = "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=1000"
     const payload: Product = {
       ...(editing || blankProduct),
