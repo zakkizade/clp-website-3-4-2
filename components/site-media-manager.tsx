@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase"
+import { supabase, toCleanPublicUrl } from "@/lib/supabase"
 
 type Media = { id: string; kind: "hero" | "signature" | "slider"; label: string; url: string; sort_order: number }
 type SiteMediaRow = { id: string; type: string; url: string }
@@ -45,9 +45,9 @@ async function uploadBanner(file: File, id: string) {
   const path = `banners/${id}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "-")}`
   const upload = await supabase.storage.from(MEDIA_BUCKET).upload(path, compressed.blob, { upsert: true, contentType: "image/webp" })
   if (upload.error) throw new Error(`Storage upload failed: ${upload.error.message}`)
-  const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl
+  const publicUrl = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(upload.data.path).data.publicUrl
   if (!publicUrl) throw new Error("Supabase did not return a banner URL.")
-  return publicUrl
+  return toCleanPublicUrl(publicUrl)
 }
 
 export function SiteMediaManager() {
