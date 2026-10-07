@@ -73,6 +73,7 @@ function toRow(product: Product) {
     image_url: product.image || images[0] || "",
     main_image: product.image || images[0] || "",
     images,
+    view_360: Array.isArray(product.view360) ? product.view360 : [],
     tags: cleanTags(product.tags),
   }
 }
@@ -123,7 +124,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       : client.from("products").insert(row).select().single()
     const result = await query
     if (result.error) { setError(result.error.message); throw new Error(result.error.message) }
-    const saved = toProduct(result.data as Record<string, unknown>)
+    const { data: freshRow, error: refreshError } = await client.from("products").select("*").eq("id", normalized.id || result.data.id).single()
+    if (refreshError) { setError(refreshError.message); throw new Error(refreshError.message) }
+    const saved = toProduct(freshRow as Record<string, unknown>)
     setItems((current) => [saved, ...current.filter((item) => item.id !== saved.id)])
   }
 
