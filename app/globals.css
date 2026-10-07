@@ -437,6 +437,19 @@ h2 em {
   transform: scale(1.04);
 }
 
+/* Signature category card color tints */
+section#collection > div.category-grid:nth-of-type(2) > a.category-card:nth-of-type(1) img {
+  filter: brightness(0.85) saturate(0.9);
+  mix-blend-mode: lighten;
+  background-color: #cde3d9;
+}
+
+section#collection > div.category-grid:nth-of-type(2) > a.category-card:nth-of-type(2) img {
+  filter: brightness(0.85) saturate(0.9);
+  mix-blend-mode: lighten;
+  background-color: #c4ddd5;
+}
+
 .card-shade {
   position: absolute;
   inset: 0;
