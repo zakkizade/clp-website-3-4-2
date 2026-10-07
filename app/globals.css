@@ -456,6 +456,44 @@ h2 em {
   color: #c4ddd5;
   }
 
+  /* Keep the four signature labels legible in light mode without tinting imagery. */
+  #collection .category-copy {
+  padding: 16px 12px 18px;
+  background: linear-gradient(to top, rgba(8, 18, 17, .82), rgba(8, 18, 17, .46) 72%, transparent);
+  }
+
+  #collection .category-copy span,
+  #collection .category-copy h3 {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .95), 0 0 10px rgba(0, 0, 0, .72);
+  }
+
+  #collection .category-card-1 .category-copy span,
+  #collection .category-card-1 .category-copy h3,
+  #collection .category-card-3 .category-copy span,
+  #collection .category-card-3 .category-copy h3 {
+  color: #cde3d9 !important;
+  }
+
+  #collection .category-card-2 .category-copy span,
+  #collection .category-card-2 .category-copy h3,
+  #collection .category-card-4 .category-copy span,
+  #collection .category-card-4 .category-copy h3 {
+  color: #c4ddd5 !important;
+  }
+
+  .light #collection .category-copy,
+  [data-theme="light"] #collection .category-copy {
+  background: linear-gradient(to top, rgba(8, 18, 17, .78), rgba(8, 18, 17, .4) 72%, transparent);
+  }
+  
+  .light #collection .category-copy h3,
+  [data-theme="light"] #collection .category-copy h3 {
+  font-weight: 700;
+  }
+
   .card-shade {
   position: absolute;
   inset: 0;
