@@ -44,7 +44,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
         const file = await compressImage(originalFile)
         const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-")
         const path = `${Date.now()}-${crypto.randomUUID()}-${safeName}`
-        const result = await client.storage.from("products").upload(path, file, {
+        const result = await client.storage.from("products-image").upload(path, file, {
           cacheControl: "31536000",
           upsert: false,
           contentType: file.type,
@@ -55,7 +55,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
           throw new Error(`Storage upload failed: ${result.error.message}`)
         }
 
-        const publicUrl = client.storage.from("products").getPublicUrl(path).data.publicUrl
+        const publicUrl = client.storage.from("products-image").getPublicUrl(path).data.publicUrl
         if (!publicUrl) throw new Error("Storage upload failed: Supabase did not return a public URL.")
         uploaded.push(publicUrl)
       }
@@ -63,9 +63,7 @@ export function MediaUpload({ label, accept, multiple = false, value, onChange }
       onChange(multiple ? [...value, ...uploaded] : uploaded.slice(0, 1))
     } catch (error) {
       const message = error instanceof Error ? error.message : "The media upload could not be completed."
-      setUploadError(message.toLowerCase().includes("bucket not found")
-        ? "The products-image storage bucket is not available, so this file was not uploaded."
-        : message)
+      setUploadError(message)
     } finally {
       setUploading(false)
     }
