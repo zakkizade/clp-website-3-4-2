@@ -38,9 +38,10 @@ function cleanTags(value: unknown): string[] {
 function toProduct(row: Record<string, unknown>): Product {
   const images = Array.isArray(row.images) ? row.images.map(String).filter(Boolean) : []
   const mainImage = String(row.main_image || row.image_url || images[0] || "")
+  const orderedImages = images.length ? images : (mainImage ? [mainImage] : [])
   return {
     id: String(row.id), name: String(row.name || row.title || ""), type: String(row.type || "Jewelry"), slug: String(row.slug || row.id),
-    priceInr: Number(row.price ?? row.sale_price ?? row.regular_price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: row.show_sale_badge != null ? Boolean(row.show_sale_badge) : Boolean(row.sale_price != null || Number(row.discount_percent || 0) > 0), discountPercent: row.discount_percent != null ? Number(row.discount_percent) : 0, image: mainImage, gallery: Array.from(new Set([mainImage, ...images].filter(Boolean))), tags: cleanTags(row.tags),
+    priceInr: Number(row.price ?? row.sale_price ?? row.regular_price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: row.show_sale_badge != null ? Boolean(row.show_sale_badge) : Boolean(row.sale_price != null || Number(row.discount_percent || 0) > 0), discountPercent: row.discount_percent != null ? Number(row.discount_percent) : 0, image: mainImage, gallery: orderedImages, tags: cleanTags(row.tags),
     category: String(row.category || "Fine Jewelry") as Product["category"], goldPurity: String(row.gold_purity || "18K"), certificate: String(row.certificate || "IGL Certified"), origin: String(row.origin || "Jaipur, India"), description: String(row.description || ""), isFeatured: Boolean(row.is_featured), showOnBanner: Boolean(row.show_on_banner ?? row.isFeatured), carat: String(row.carat || ""), metal: String(row.metal || "18K Gold"), videoUrl: row.video_url || row.video ? String(row.video_url || row.video) : undefined, view360: Array.isArray(row.view_360) ? row.view_360.map(String) : [],
   }
 }
@@ -50,7 +51,8 @@ function toRow(product: Product) {
   const salePrice = Number(product.salePriceInr || 0)
   const price = Number(salePrice || product.priceInr || regularPrice || 0)
   const slugBase = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") || "product"
-  const images = Array.from(new Set([product.image, ...product.gallery].filter(Boolean)))
+  const images = product.gallery.filter((url): url is string => typeof url === "string" && url.trim().length > 0)
+  const orderedImages = images.length && images[0] === product.image ? images : [product.image, ...images.filter((url) => url !== product.image)].filter(Boolean)
 
   return {
     name: product.name,
@@ -70,9 +72,9 @@ function toRow(product: Product) {
     show_on_banner: Boolean(product.showOnBanner),
     video_url: product.videoUrl || "",
     description: product.description || "",
-    image_url: product.image || images[0] || "",
-    main_image: product.image || images[0] || "",
-    images,
+    image_url: product.image || orderedImages[0] || "",
+    main_image: product.image || orderedImages[0] || "",
+    images: orderedImages,
     view_360: Array.isArray(product.view360) ? product.view360 : [],
     tags: cleanTags(product.tags),
   }
@@ -115,8 +117,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const saveProduct = async (product: Product) => {
-    const normalizedImages = Array.from(new Set([product.image, ...product.gallery].filter((url): url is string => typeof url === "string" && url.trim().length > 0)))
-    const normalized: Product = { ...product, image: product.image || normalizedImages[0] || "", gallery: normalizedImages }
+  const normalizedImages = product.gallery.filter((url): url is string => typeof url === "string" && url.trim().length > 0)
+  const orderedImages = normalizedImages.length && normalizedImages[0] === product.image ? normalizedImages : [product.image, ...normalizedImages.filter((url) => url !== product.image)].filter(Boolean)
+  const normalized: Product = { ...product, image: product.image || orderedImages[0] || "", gallery: orderedImages }
     const row = toRow(normalized)
     const client = createClient()
     const query = normalized.id && !normalized.id.startsWith("prod-")
