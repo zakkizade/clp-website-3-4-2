@@ -4505,6 +4505,12 @@ body {
   pointer-events: none;
 }
 
+/* Shared checkout is the only cart modal form; hide the legacy shell kept in the page markup. */
+.checkout-modal > .account-form.checkout-form { display: none !important; }
+.checkout-modal > .eyebrow,
+.checkout-modal > h2 { display: none !important; }
+.checkout-modal > .checkout-form { display: block !important; }
+
 /* Shared checkout is the only Buy Now form; hide the legacy fields kept for compatibility. */
 .checkout-modal > *:not(.shared-checkout-form):not(.pdp-modal-close) { display: none; }
 .checkout-modal .shared-checkout-form { display: block; }
