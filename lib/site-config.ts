@@ -12,12 +12,13 @@ function readStored<T>(key: string, fallback: T): T {
   try { const value = window.localStorage.getItem(key); return value ? JSON.parse(value) as T : fallback } catch { return fallback }
 }
 
-function hydrateSiteConfig() {
+// Stored values must be read after hydration (inside an effect), never at module
+// load, otherwise the client's first render differs from the server HTML.
+export function hydrateSiteConfig() {
   announcement = readStored(ANNOUNCEMENT_STORAGE_KEY, announcement)
   activeOffer = readStored<ActiveOffer | null>(OFFER_STORAGE_KEY, activeOffer)
 }
 
-if (typeof window !== "undefined") hydrateSiteConfig()
 const listeners = new Set<() => void>()
 
 export function getAnnouncement() { return announcement }

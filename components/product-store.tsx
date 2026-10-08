@@ -90,8 +90,6 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let active = true
     const loadProducts = async () => {
-      setLoading(true)
-      const startedAt = performance.now()
       const { data, error: readError } = await createClient().from("products").select("*").order("created_at", { ascending: false })
       if (!active) return
       if (readError) {
@@ -102,8 +100,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         setError("")
         setItems(remoteProducts)
       }
-      const remaining = Math.max(0, 200 - (performance.now() - startedAt))
-      window.setTimeout(() => { if (active) setLoading(false) }, remaining)
+      setLoading(false)
     }
     void loadProducts()
     const channel = createClient()
