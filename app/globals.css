@@ -1041,6 +1041,48 @@ html.light #collection .category-copy h3 {
 @media (max-width: 640px) { .hero-slider, .hero-slider-link, .hero-slider-link img { min-height:220px; max-height:240px; } .slider-item { flex-wrap:wrap; } .slider-item strong { flex:1 1 100%; } } .hero-slider { position:relative; min-height:260px; max-height:280px; overflow:hidden; background:#15130f; touch-action:pan-y; } .hero-slider-link { display:block; height:100%; min-height:360px; position:relative; } .hero-slider-link img { width:100%; height:100%; min-height:260px; max-height:280px; object-fit:cover; display:block; } .hero-slider-caption { position:absolute; left:24px; bottom:24px; color:#fff; font-size:14px; letter-spacing:.08em; text-transform:uppercase; text-shadow:0 2px 8px #000; } .hero-slider-arrow { position:absolute; top:50%; transform:translateY(-50%); border:1px solid rgba(255,255,255,.35); background:rgba(0,0,0,.45); color:#fff; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; } .hero-slider-prev { left:14px; } .hero-slider-next { right:14px; } .hero-slider-dots { position:absolute; bottom:14px; right:20px; display:flex; gap:6px; } .hero-slider-dots button { width:7px; height:7px; border-radius:50%; border:0; background:rgba(255,255,255,.45); cursor:pointer; } .hero-slider-dots button.active { background:#d4af37; transform:scale(1.3); } .slider-manager { margin-bottom:20px; padding:16px; border:1px solid rgba(212,175,55,.25); } .slider-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.1); } .slider-item img { width:96px; height:54px; object-fit:cover; } .slider-item button { margin-left:auto; } .slider-item button + button { margin-left:0; } .sales-form-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } .sale-status { color:#d4af37; border:1px solid rgba(212,175,55,.35); padding:7px 10px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; } .hero-slider-caption strong { color:#d4af37; font-size:clamp(12px,1.7vw,18px); } .admin-control-panel { margin:2rem 0; padding:1.25rem; border:1px solid rgba(212,175,55,.24); background:rgba(17,16,14,.45); } .admin-inline-grid { grid-template-columns:repeat(2,minmax(0,1fr)); align-items:end; } .admin-toggle { display:flex !important; align-items:center; gap:8px; } .admin-toggle input { width:auto !important; } .site-media-order { display:flex; gap:6px; margin:7px 0; } .site-media-order button { border:1px solid rgba(212,175,55,.3); background:transparent; color:#f5e6c8; padding:5px 8px; cursor:pointer; } .sale-badge { display:inline-block; padding:3px 6px; background:#b68b22; color:#0a0a0a; font-size:9px; letter-spacing:.12em; font-weight:700; vertical-align:middle; } .product-info del, .pdp-price del { color:#928b7b; font-size:.72em; margin-right:5px; } .wishlist-actions { display:flex; gap:8px; align-items:center; margin-top:10px; }
 .wishlist-actions button { display:inline-flex; align-items:center; justify-content:center; gap:6px; border:1px solid rgba(197,155,39,.48); padding:8px 10px; color:#f5e6c8; background:rgba(197,155,39,.12); cursor:pointer; }
 .wishlist-actions button:first-child { background:#c59b27; color:#0a0a0a; }
+
+/* Production-safe signature card overlay: keep copy above images and clipping layers. */
+#collection .category-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+#collection .category-card > .relative.group {
+  position: relative;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+#collection .category-card .category-copy {
+  position: absolute !important;
+  inset: auto 0 0 !important;
+  z-index: 30 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  padding: 16px !important;
+  overflow: visible !important;
+  background: linear-gradient(to top, rgba(0, 0, 0, .8), rgba(0, 0, 0, .4) 72%, transparent) !important;
+  color: #fff !important;
+}
+
+#collection .category-card .category-copy p,
+#collection .category-card .category-copy h3 {
+  position: relative;
+  z-index: 31;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#collection .category-card .category-copy p {
+  color: #d4af37 !important;
+}
+
+#collection .category-card .category-copy h3 {
+  color: #fff !important;
+}
 .wishlist-actions button:hover { filter:brightness(1.12); }
   .mobile-menu {
     display: block;
