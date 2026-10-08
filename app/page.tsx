@@ -12,7 +12,7 @@ import { HeroSlider } from "@/components/hero-slider"
 import { ProductViewer360 } from "@/components/product-viewer-360"
 import { saleDetails } from "@/lib/pricing"
 import { useCurrency } from "@/components/currency-provider"
-import { getActiveOffer, getAnnouncement, getBannerVisibility, offerIsActive, offerLabel, subscribeSiteConfig, type Announcement } from "@/lib/site-config"
+import { getActiveOffer, getAnnouncement, getBannerVisibility, hydrateSiteConfig, offerIsActive, offerLabel, subscribeSiteConfig, type Announcement } from "@/lib/site-config"
 const signatureSubtitles: Record<string, string> = {
   loose_gemstones: "From the earth",
   fine_gold: "Made to last",
@@ -53,7 +53,12 @@ export default function Home() {
   const [announcement, setAnnouncementState] = useState<Announcement>(getAnnouncement())
   const [activeOffer, setActiveOfferState] = useState(getActiveOffer())
   const [bannerVisible, setBannerVisible] = useState(true)
-  useEffect(() => subscribeSiteConfig(() => { setAnnouncementState(getAnnouncement()); setActiveOfferState(getActiveOffer()); setBannerVisible(getBannerVisibility()) }), [])
+  useEffect(() => {
+    hydrateSiteConfig()
+    setAnnouncementState(getAnnouncement())
+    setActiveOfferState(getActiveOffer())
+    return subscribeSiteConfig(() => { setAnnouncementState(getAnnouncement()); setActiveOfferState(getActiveOffer()); setBannerVisible(getBannerVisibility()) })
+  }, [])
   useEffect(() => {
     try {
       const storedVisibility = window.localStorage.getItem("clp-banner-visible")
