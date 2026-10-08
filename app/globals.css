@@ -4505,6 +4505,11 @@ body {
   pointer-events: none;
 }
 
+/* Shared checkout is the only Buy Now form; hide the legacy fields kept for compatibility. */
+.checkout-modal > *:not(.shared-checkout-form):not(.pdp-modal-close) { display: none; }
+.checkout-modal .shared-checkout-form { display: block; }
+.checkout-modal .shared-checkout-form + .pdp-modal-close { position: absolute; top: .75rem; right: .75rem; z-index: 4; }
+
 /* Empty catalogue state */
 .clp-empty-state {
   display: grid;
