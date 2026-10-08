@@ -13,12 +13,12 @@ type Shipping = Record<(typeof fields)[number][0], string>
 type Payment = "UPI · GPay / PhonePe" | "Credit / Debit Card" | "Netbanking" | "Cash on Delivery"
 type CheckoutItem = { product: Product; quantity: number; purity?: string; size?: string }
 
-export function CheckoutForm({ product, quantity = 1, items, onComplete, onLocation }: { product?: Product; quantity?: number; items?: CheckoutItem[]; onComplete?: () => void; onLocation?: () => void }) {
+export function CheckoutForm({ product, quantity = 1, items, initialPurity, initialSize, onComplete, onLocation }: { product?: Product; quantity?: number; items?: CheckoutItem[]; initialPurity?: string; initialSize?: string; onComplete?: () => void; onLocation?: () => void }) {
   const checkoutItems = items?.length ? items : product ? [{ product, quantity }] : []
   const first = checkoutItems[0]?.product
   const [shipping, setShipping] = useState<Shipping>({ fullName: "", phone: "", address: "", city: "", state: "", pincode: "" })
-  const [purity, setPurity] = useState(first?.goldPurity.replace(" Gold", "") || "18K")
-  const [size, setSize] = useState("")
+  const [purity, setPurity] = useState(initialPurity || first?.goldPurity.replace(" Gold", "") || "18K")
+  const [size, setSize] = useState(initialSize || "")
   const [paymentMethod, setPaymentMethod] = useState<Payment>("UPI · GPay / PhonePe")
   const [message, setMessage] = useState("")
   const { currency } = useCurrency()
@@ -29,7 +29,7 @@ export function CheckoutForm({ product, quantity = 1, items, onComplete, onLocat
     event.preventDefault()
     if (Object.values(shipping).some((value) => !value.trim()) || (first && (!size || !purity))) { setMessage("Please complete your shipping details and product options."); return }
     const id = orderId()
-    checkoutItems.forEach(({ product: item, quantity: itemQuantity }) => addLocalOrder({ id, product_id: item.id, product_name: item.name, quantity: itemQuantity, total_inr: saleDetails(item).sale * itemQuantity, customer_name: shipping.fullName, customer_phone: shipping.phone, address: shipping.address, city: shipping.city, state: shipping.state, pincode: shipping.pincode, payment_method: paymentMethod, destination: "India", buyer_notes: first === item ? `Purity: ${purity}; ${sizing?.label}: ${size}` : "", dispatch_status: "New", created_at: new Date().toISOString() }))
+    checkoutItems.forEach(({ product: item, quantity: itemQuantity }) => addLocalOrder({ id, product_id: item.id, product_name: item.name, quantity: itemQuantity, total_inr: saleDetails(item).sale * itemQuantity, customer_name: shipping.fullName, customer_phone: shipping.phone, address: shipping.address, city: shipping.city, state: shipping.state, pincode: shipping.pincode, payment_method: paymentMethod === "UPI · GPay / PhonePe" ? "UPI" : "Card", destination: "India", buyer_notes: first === item ? `Purity: ${purity}; ${sizing?.label}: ${size}` : "", dispatch_status: "New", created_at: new Date().toISOString() }))
     const productLines = checkoutItems.map(({ product: item, quantity: itemQuantity }) => `Product: ${item.name}\nQuantity: ${itemQuantity}\nPrice: ${formatPrice(saleDetails(item).sale * itemQuantity, currency)}${first === item ? `\nPurity: ${purity}\n${sizing?.label}: ${size}` : ""}`).join("\n\n")
     const whatsappText = `Hello CLP Jewels, I would like to place an order.\n\nOrder ID: ${id}\n\n${productLines}\n\nPayment Method: ${paymentMethod}\n\nCustomer: ${shipping.fullName}\nPhone: ${shipping.phone}\nAddress: ${shipping.address}, ${shipping.city}, ${shipping.state} - ${shipping.pincode}`
     window.open(whatsappOrderUrl(whatsappText), "_blank", "noopener,noreferrer")
