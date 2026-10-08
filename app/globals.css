@@ -4640,6 +4640,61 @@ body {
 }
 .clp-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; }
 
+/* Final quantity control fallback: keep both controls visible above legacy button rules. */
+.cart-drawer .cart-quantity {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: max-content !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid #d4af37 !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+}
+.cart-drawer .cart-quantity button {
+  display: inline-flex !important;
+  flex: 0 0 26px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 26px !important;
+  min-width: 26px !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #17130a !important;
+  color: #d4af37 !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.cart-drawer .cart-quantity button:disabled {
+  color: #d4af37 !important;
+  opacity: .45 !important;
+}
+.cart-drawer .cart-quantity span {
+  display: inline-flex !important;
+  flex: 0 0 24px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 26px !important;
+  color: #fff !important;
+  background: #17130a !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  visibility: visible !important;
+}
+
 @media (max-width: 600px) {
   .cart-drawer .cart-item {
     grid-template-columns: 16px 48px minmax(0, 1fr) auto;
