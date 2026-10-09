@@ -4400,7 +4400,7 @@ body {
   opacity: 1 !important;
   filter: none !important;
   mix-blend-mode: normal !important;
-  background-image: url('/hero-emerald-gold.png') !important;
+  background-image: url('/product-bangle.png') !important;
   background-color: #cbd5e1 !important;
   background-size: cover !important;
   background-position: center !important;
@@ -4791,6 +4791,50 @@ html.dark .hero-copy h1, html:not(.light) .hero-copy h1, .dark .hero-copy h1 { c
 html.dark .hero-copy .hero-description, html:not(.light) .hero-copy .hero-description, .dark .hero-copy .hero-description { color: #f5eee0; }
 html.light .hero-copy h1, .light .hero-copy h1 { color: #10243b; }
 html.light .hero-copy .hero-description, .light .hero-copy .hero-description { color: #314052; }
+
+/* Final hero reset: preserve the original HTML copy and jewelry card; texture belongs only to the wrapper. */
+.hero-section { background: transparent !important; }
+.hero-layout {
+  position: relative;
+  isolation: isolate;
+  background-image: linear-gradient(115deg, rgba(13,13,13,.985), rgba(26,26,26,.97) 58%, rgba(13,13,13,.9)), url('/hero-dark-full.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+.hero-layout::before,
+.hero-layout::after { display: none !important; }
+.hero-copy {
+  position: relative;
+  inset: auto;
+  width: min(550px, 100%);
+  padding: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  pointer-events: auto;
+}
+.hero-copy > * { visibility: visible !important; }
+.hero-copy .hero-buttons { margin-top: 28px; }
+.hero-banner {
+  min-height: clamp(360px, 45vw, 560px);
+  background-image: url('/product-bangle.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+html.light .hero-layout, .light .hero-layout {
+  background-image: linear-gradient(115deg, rgba(249,246,240,.975), rgba(235,227,213,.9) 58%, rgba(249,246,240,.62)), url('/hero-light-full.png') !important;
+}
+html.light .hero-copy h1, .light .hero-copy h1 { color: #10243b !important; text-shadow: none; }
+html.light .hero-copy .hero-description, .light .hero-copy .hero-description { color: #314052 !important; }
+html.light .hero-copy .eyebrow, .light .hero-copy .eyebrow { color: #9a741d !important; }
+
+@media (max-width: 700px) {
+  .hero-layout { background-image: linear-gradient(115deg, rgba(13,13,13,.98), rgba(26,26,26,.92)), url('/hero-dark-full.png') !important; }
+  .hero-copy { position: relative; inset: auto; padding: 44px 7vw 30px; }
+  .hero-banner { background-image: url('/product-bangle.png') !important; min-height: 78vw; }
+  html.light .hero-layout, .light .hero-layout { background-image: linear-gradient(115deg, rgba(249,246,240,.96), rgba(235,227,213,.88)), url('/hero-light-full.png') !important; }
+}
 
 @media (max-width: 700px) {
   .hero-section { padding: 0 !important; }
