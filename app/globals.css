@@ -1376,35 +1376,9 @@ html.light .editorial-logo .logo-light { display: block; mix-blend-mode: normal;
   height: 40px;
   max-width: 132px;
   object-fit: contain;
-  object-position: left center;
-  mix-blend-mode: screen;
-}
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  min-width: 132px;
-}
-.footer-logo img {
-  height: 58px;
-  max-width: 150px;
-}
-.editorial-logo img {
-  display: block;
-  width: auto;
-  height: 40px;
-  max-width: 132px;
-  object-fit: contain;
-  mix-blend-mode: screen;
-}
-
-.light .brand-mark img,
-.light .footer-logo img,
-.light .editorial-logo img,
-html.light .brand-mark img,
-html.light .footer-logo img,
-html.light .editorial-logo img {
-  mix-blend-mode: screen;
-  filter: sepia(1) saturate(1.8) hue-rotate(355deg) brightness(.38) contrast(1.35);
+  mix-blend-mode: normal;
+  background: transparent;
+  border: 0;
 }
 
 /* CLP luxury finish */
