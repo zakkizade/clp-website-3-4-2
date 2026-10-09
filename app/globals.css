@@ -4723,6 +4723,16 @@ html.light .hero-section,
   background: none !important;
   box-shadow: none !important;
 }
+.hero-banner {
+  background-repeat: no-repeat;
+}
+@media (max-width: 700px) {
+  .hero-section { padding: 32px 5vw 0; }
+  .hero-layout { display: flex; flex-direction: column; gap: 24px; }
+  .hero-copy { order: 1; }
+  .hero-banner { order: 2; width: 100%; min-height: min(78vw, 420px); background-position: right center !important; }
+  .hero-buttons .button { min-height: 48px; }
+}
 
 /* Final quantity control fallback: keep both controls visible above legacy button rules. */
 .cart-drawer .cart-quantity {
