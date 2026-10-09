@@ -1354,42 +1354,6 @@ html.light #collection .category-copy h3 {
   }
 }
 
-/* Official CLP wordmark */
-.brand-mark .logo-light,
-.editorial-logo .logo-light { display: none; }
-.light .brand-mark .logo-dark,
-.light .footer-logo .logo-dark,
-.light .editorial-logo .logo-dark,
-html.light .brand-mark .logo-dark,
-html.light .footer-logo .logo-dark,
-html.light .editorial-logo .logo-dark { display: none; }
-.light .brand-mark .logo-light,
-.light .footer-logo .logo-light,
-.light .editorial-logo .logo-light,
-html.light .brand-mark .logo-light,
-html.light .footer-logo .logo-light,
-html.light .editorial-logo .logo-light { display: block; mix-blend-mode: normal; filter: sepia(1) saturate(2.1) hue-rotate(355deg) brightness(.62) contrast(1.35); }
-
-.brand-mark img {
-  display: block;
-  width: auto;
-  height: 54px;
-  max-width: 178px;
-  object-fit: contain;
-  mix-blend-mode: normal;
-  background: transparent;
-  border: 0;
-}
-.footer-logo img {
-  display: block;
-  width: auto;
-  height: 38px;
-  max-width: 126px;
-  object-fit: contain;
-  background: transparent;
-  border: 0;
-}
-
 /* CLP luxury finish */
 .site-header {
   position: sticky;
@@ -2536,16 +2500,15 @@ html.light .hero-caption {
 .hero-section::before {
   content: "";
   position: absolute;
-  top: 50%;
-  left: 68%;
-  width: clamp(360px, 52vw, 760px);
-  aspect-ratio: 1;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  transform: translate(-50%, -50%);
-  opacity: .12;
-  background: url('/clp-hero-ornament-transparent.svg') center / contain no-repeat;
-  filter: sepia(1) saturate(1.5) hue-rotate(355deg) brightness(.82) contrast(1.12);
+  opacity: .05;
+  background:
+    radial-gradient(ellipse at 70% 48%, transparent 0 24%, rgba(197, 155, 39, .8) 24.5% 25%, transparent 25.5% 34%, rgba(197, 155, 39, .55) 34.5% 35%, transparent 35.5%),
+    radial-gradient(circle at 70% 48%, rgba(197, 155, 39, .7) 0 1px, transparent 1.5px),
+    linear-gradient(90deg, transparent 49.7%, rgba(197, 155, 39, .45) 50%, transparent 50.3%);
+  background-size: 100% 100%, 28px 28px, 100% 100%;
 }
 
 .hero-image {
@@ -3982,26 +3945,6 @@ html, body, main, .site-header, .utility-bar, .main-nav, .hero-section, .categor
 
 .admin-page { min-height:100vh; padding:48px 6vw 80px; background:#0a0a0a; color:#f5e6c8; }.admin-login { width:min(420px,100%); margin:12vh auto; padding:42px; border:1px solid rgba(197,155,39,.3); background:#101010; }.admin-login h1,.admin-header h1 { margin:8px 0 12px; font:500 42px 'Playfair Display',serif; }.admin-login p:not(.eyebrow) { color:#a39a82; }.admin-login form,.admin-form-grid { display:grid; gap:14px; }.admin-page label { display:grid; gap:7px; color:#a39a82; font-size:12px; letter-spacing:.04em; }.admin-page input,.admin-page select,.admin-page textarea { width:100%; border:1px solid rgba(197,155,39,.28); border-radius:4px; padding:12px; background:#151515; color:#f5e6c8; font:inherit; }.admin-button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:42px; padding:0 17px; border:1px solid #c59b27; background:#c59b27; color:#0a0a0a; font-size:11px; font-weight:700; letter-spacing:.08em; }.admin-header,.admin-toolbar { max-width:1180px; margin:0 auto 34px; display:flex; justify-content:space-between; align-items:center; gap:20px; }.admin-logout { display:flex; align-items:center; gap:7px; border:1px solid rgba(197,155,39,.35); background:transparent; color:#c59b27; padding:10px 14px; }.admin-stats { max-width:1180px; margin:0 auto 58px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }.admin-stats div { padding:20px; border:1px solid rgba(197,155,39,.25); background:#111; }.admin-stats span,.admin-table span { display:block; color:#a39a82; font-size:12px; }.admin-stats strong { display:block; margin-top:8px; color:#c59b27; font:400 30px 'Playfair Display',serif; }.admin-toolbar h2 { font:400 30px 'Playfair Display',serif; }.admin-table { max-width:1180px; margin:auto; border-top:1px solid rgba(197,155,39,.3); }.admin-table article { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:18px 0; border-bottom:1px solid rgba(197,155,39,.18); }.admin-table strong { display:block; margin-bottom:5px; font-weight:500; }.admin-actions { display:flex; gap:8px; }.admin-actions button,.admin-editor-heading > button { display:grid; place-items:center; border:1px solid rgba(197,155,39,.35); background:transparent; color:#c59b27; width:34px; height:34px; }.admin-editor-backdrop { position:fixed; inset:0; z-index:80; overflow:auto; padding:30px; background:rgba(0,0,0,.82); }.admin-editor { width:min(760px,100%); margin:auto; padding:30px; border:1px solid rgba(197,155,39,.4); background:#101010; }.admin-editor-heading { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:26px; }.admin-editor-heading h2 { margin:5px 0; font:400 30px 'Playfair Display',serif; }.admin-check { display:flex !important; align-items:center; margin:18px 0; }.admin-check input { width:auto; }.admin-form-grid { grid-template-columns:1fr 1fr; }.admin-form-grid label:last-child { grid-column:1 / -1; }.admin-editor > .admin-button { margin-top:18px; }.admin-success { max-width:1180px; margin:0 auto 24px; padding:12px 16px; border:1px solid rgba(197,155,39,.35); background:rgba(197,155,39,.1); color:#c59b27; }.admin-error { color:#d98989; font-size:12px; }.admin-muted,.admin-optional { color:#a39a82; font-size:12px; }.admin-wide { grid-column:1 / -1; }.admin-editor textarea { resize:vertical; }
 
-/* CLP ornament hero watermark: transparent artwork only, never a filled panel. */
-.dark .hero-section::before,
-html.dark .hero-section::before {
-  opacity: .12;
-  filter: sepia(1) saturate(1.35) hue-rotate(355deg) brightness(.95) contrast(1.08);
-}
-.light .hero-section::before,
-html.light .hero-section::before {
-  opacity: .13;
-  filter: sepia(1) saturate(1.8) hue-rotate(355deg) brightness(.58) contrast(1.25);
-}
-
-@media (max-width: 700px) {
-  .hero-section::before {
-    left: 72%;
-    width: min(88vw, 520px);
-    opacity: .1;
-  }
-}
-
 /* Final light-mode hero contrast pass: metallic panel, white type, and a soft image blend. */
 html.light .hero-section,
 .light .hero-section {
@@ -4400,7 +4343,7 @@ body {
   opacity: 1 !important;
   filter: none !important;
   mix-blend-mode: normal !important;
-  background-image: url('/product-bangle.png') !important;
+  background-image: url('/hero-emerald-gold.png') !important;
   background-color: #cbd5e1 !important;
   background-size: cover !important;
   background-position: center !important;
@@ -4614,16 +4557,8 @@ body {
   font-size: clamp(.78rem, 1vw, .92rem) !important;
   font-weight: 700;
 }
-.light .hero-section::before,
-html.light .hero-section::before {
-  border: 0;
-  box-shadow: none;
-  opacity: .16;
-  background: url('/clp-hero-ornament-transparent.svg') center / contain no-repeat;
-  filter: sepia(1) saturate(2.2) hue-rotate(355deg) brightness(.52) contrast(1.3);
-}
-.light .hero-section::after,
-html.light .hero-section::after { display: none; }
+.light .hero-section::before { border-color: rgba(164, 125, 22, .3); box-shadow: 0 0 0 90px rgba(164, 125, 22, .075), 0 0 0 180px rgba(164, 125, 22, .045), 0 0 0 270px rgba(164, 125, 22, .03); }
+.light .hero-section::after { border-color: rgba(164, 125, 22, .2); }
 .light .hero-layout > .hero-copy,
 .light .hero-layout > .hero-copy * { color: #1e293b !important; }
 @media (max-width: 760px) {
@@ -4745,106 +4680,6 @@ html.light .hero-section::after { display: none; }
   color: #d4af37 !important;
   opacity: .45 !important;
 }
-/* Full-frame CLP editorial hero artwork. */
-.hero-section {
-  padding: clamp(42px, 6vw, 76px) clamp(20px, 7vw, 92px) !important;
-  background: transparent !important;
-}
-.hero-layout {
-  position: relative;
-  isolation: isolate;
-  width: min(1180px, 100%);
-  min-height: clamp(500px, 56vw, 680px);
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: minmax(300px, .95fr) minmax(360px, 1.05fr);
-  align-items: center;
-  gap: clamp(28px, 6vw, 92px);
-  background-image: var(--hero-art) !important;
-  background-position: center !important;
-  background-size: cover !important;
-  background-repeat: no-repeat !important;
-  overflow: hidden;
-}
-.hero-layout::before,
-.hero-layout::after { display: none !important; content: none !important; }
-.hero-copy {
-  position: relative;
-  z-index: 1;
-  width: min(550px, 100%);
-  padding: clamp(42px, 7vw, 96px) 0 clamp(42px, 7vw, 96px) clamp(28px, 6vw, 76px);
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.hero-banner {
-  position: relative;
-  z-index: 1;
-  min-height: clamp(360px, 45vw, 560px);
-  background: transparent !important;
-}
-.hero-copy h1 { max-width: 460px; }
-.hero-buttons .button-gold { background: #dcae3f; color: #17130a; }
-html.dark .hero-layout, html:not(.light) .hero-layout, .dark .hero-layout { --hero-art: url('/hero-dark-full.png'); }
-html.light .hero-layout, .light .hero-layout { --hero-art: url('/hero-light-full.png'); }
-html.dark .hero-copy h1, html:not(.light) .hero-copy h1, .dark .hero-copy h1 { color: #f6e6c7; }
-html.dark .hero-copy .hero-description, html:not(.light) .hero-copy .hero-description, .dark .hero-copy .hero-description { color: #f5eee0; }
-html.light .hero-copy h1, .light .hero-copy h1 { color: #10243b; }
-html.light .hero-copy .hero-description, .light .hero-copy .hero-description { color: #314052; }
-
-/* Final hero reset: preserve the original HTML copy and jewelry card; texture belongs only to the wrapper. */
-.hero-section { background: transparent !important; }
-.hero-layout {
-  position: relative;
-  isolation: isolate;
-  background-image: linear-gradient(115deg, rgba(13,13,13,.985), rgba(26,26,26,.97) 58%, rgba(13,13,13,.9)), url('/hero-dark-full.png') !important;
-  background-size: cover !important;
-  background-position: center !important;
-}
-.hero-layout::before,
-.hero-layout::after { display: none !important; }
-.hero-copy {
-  position: relative;
-  inset: auto;
-  width: min(550px, 100%);
-  padding: 0;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  pointer-events: auto;
-}
-.hero-copy > * { visibility: visible !important; }
-.hero-copy .hero-buttons { margin-top: 28px; }
-.hero-banner {
-  min-height: clamp(360px, 45vw, 560px);
-  background-image: url('/product-bangle.png') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-}
-html.light .hero-layout, .light .hero-layout {
-  background-image: linear-gradient(115deg, rgba(249,246,240,.975), rgba(235,227,213,.9) 58%, rgba(249,246,240,.62)), url('/hero-light-full.png') !important;
-}
-html.light .hero-copy h1, .light .hero-copy h1 { color: #10243b !important; text-shadow: none; }
-html.light .hero-copy .hero-description, .light .hero-copy .hero-description { color: #314052 !important; }
-html.light .hero-copy .eyebrow, .light .hero-copy .eyebrow { color: #9a741d !important; }
-
-@media (max-width: 700px) {
-  .hero-layout { background-image: linear-gradient(115deg, rgba(13,13,13,.98), rgba(26,26,26,.92)), url('/hero-dark-full.png') !important; }
-  .hero-copy { position: relative; inset: auto; padding: 44px 7vw 30px; }
-  .hero-banner { background-image: url('/product-bangle.png') !important; min-height: 78vw; }
-  html.light .hero-layout, .light .hero-layout { background-image: linear-gradient(115deg, rgba(249,246,240,.96), rgba(235,227,213,.88)), url('/hero-light-full.png') !important; }
-}
-
-@media (max-width: 700px) {
-  .hero-section { padding: 0 !important; }
-  .hero-layout { display: flex; flex-direction: column; gap: 0; min-height: 0; background-image: none !important; }
-  .hero-copy { order: 1; width: 100%; padding: 44px 7vw 30px; }
-  .hero-banner { order: 2; width: 100%; min-height: 78vw; background-image: var(--hero-art) !important; background-position: center !important; }
-  .hero-copy h1 { max-width: 100%; }
-  .hero-buttons .button { min-height: 48px; }
-}
-
 .cart-drawer .cart-quantity span {
   display: inline-flex !important;
   flex: 0 0 24px !important;
@@ -4860,50 +4695,7 @@ html.light .hero-copy .eyebrow, .light .hero-copy .eyebrow { color: #9a741d !imp
   visibility: visible !important;
 }
 
-/* Final hero correction: one full-width textured section, no inner card surfaces. */
-.hero-section {
-  background: linear-gradient(120deg, #0d0d0d, #1a1a1a 55%, #0d0d0d) !important;
-}
-.hero-layout {
-  background: transparent !important;
-  min-height: clamp(500px, 56vw, 680px);
-}
-.hero-layout::before,
-.hero-layout::after,
-.hero-section::before,
-.hero-section::after { display: none !important; content: none !important; }
-.hero-copy,
-.hero-copy h1,
-.hero-copy .hero-description,
-.hero-copy .hero-buttons { background: transparent !important; border: 0 !important; box-shadow: none !important; }
-.hero-copy { padding: 0 !important; position: relative !important; inset: auto !important; }
-.hero-banner {
-  background: linear-gradient(135deg, rgba(3,39,29,.2), rgba(5,14,28,.3)), url('/hero-emerald-gold.png') center / cover no-repeat !important;
-  min-height: clamp(360px, 45vw, 560px);
-}
-html.light .hero-section,
-.light .hero-section { background: linear-gradient(120deg, #f9f6f0, #ebe3d5 55%, #f9f6f0) !important; }
-html.dark .hero-layout,
-html:not(.light) .hero-layout,
-.dark .hero-layout { background: linear-gradient(120deg, #0d0d0d, #1a1a1a 55%, #0d0d0d) !important; }
-html.light .hero-layout,
-.light .hero-layout { background: linear-gradient(120deg, #f9f6f0, #ebe3d5 55%, #f9f6f0) !important; }
-#top > .hero-layout > .hero-copy,
-#top > .hero-layout > .hero-copy h1,
-#top > .hero-layout > .hero-copy .hero-description,
-#top > .hero-layout > .hero-copy .hero-buttons { background: transparent !important; border: 0 !important; box-shadow: none !important; }
-html.light .hero-banner,
-.light .hero-banner { background: url('/hero-emerald-gold.png') center / cover no-repeat !important; }
-.hero-banner { border: 0 !important; box-shadow: none !important; }
-@media (max-width: 700px) {
-  .hero-layout { min-height: 0; }
-  .hero-copy { padding: 44px 7vw 30px !important; }
-  .hero-banner { min-height: 78vw; }
-}
-
 @media (max-width: 600px) {
-  .brand-mark img { height: 42px; max-width: 140px; }
-  .footer-logo img { height: 38px; max-width: 126px; }
   .cart-drawer .cart-item {
     grid-template-columns: 16px 48px minmax(0, 1fr) auto;
     gap: 8px;
