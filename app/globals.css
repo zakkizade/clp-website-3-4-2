@@ -1368,15 +1368,24 @@ html.light .editorial-logo .logo-dark { display: none; }
 .light .editorial-logo .logo-light,
 html.light .brand-mark .logo-light,
 html.light .footer-logo .logo-light,
-html.light .editorial-logo .logo-light { display: block; mix-blend-mode: normal; filter: none; }
+html.light .editorial-logo .logo-light { display: block; mix-blend-mode: normal; filter: sepia(1) saturate(2.1) hue-rotate(355deg) brightness(.62) contrast(1.35); }
 
 .brand-mark img {
   display: block;
   width: auto;
-  height: 40px;
-  max-width: 132px;
+  height: 54px;
+  max-width: 178px;
   object-fit: contain;
   mix-blend-mode: normal;
+  background: transparent;
+  border: 0;
+}
+.footer-logo img {
+  display: block;
+  width: auto;
+  height: 38px;
+  max-width: 126px;
+  object-fit: contain;
   background: transparent;
   border: 0;
 }
@@ -4723,6 +4732,8 @@ body {
 }
 
 @media (max-width: 600px) {
+  .brand-mark img { height: 42px; max-width: 140px; }
+  .footer-logo img { height: 38px; max-width: 126px; }
   .cart-drawer .cart-item {
     grid-template-columns: 16px 48px minmax(0, 1fr) auto;
     gap: 8px;
