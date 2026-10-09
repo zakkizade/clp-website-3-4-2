@@ -1354,6 +1354,59 @@ html.light #collection .category-copy h3 {
   }
 }
 
+/* Official CLP wordmark */
+.brand-mark .logo-light,
+.editorial-logo .logo-light { display: none; }
+.light .brand-mark .logo-dark,
+.light .footer-logo .logo-dark,
+.light .editorial-logo .logo-dark,
+html.light .brand-mark .logo-dark,
+html.light .footer-logo .logo-dark,
+html.light .editorial-logo .logo-dark { display: none; }
+.light .brand-mark .logo-light,
+.light .footer-logo .logo-light,
+.light .editorial-logo .logo-light,
+html.light .brand-mark .logo-light,
+html.light .footer-logo .logo-light,
+html.light .editorial-logo .logo-light { display: block; mix-blend-mode: normal; filter: none; }
+
+.brand-mark img {
+  display: block;
+  width: auto;
+  height: 40px;
+  max-width: 132px;
+  object-fit: contain;
+  object-position: left center;
+  mix-blend-mode: screen;
+}
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  min-width: 132px;
+}
+.footer-logo img {
+  height: 58px;
+  max-width: 150px;
+}
+.editorial-logo img {
+  display: block;
+  width: auto;
+  height: 40px;
+  max-width: 132px;
+  object-fit: contain;
+  mix-blend-mode: screen;
+}
+
+.light .brand-mark img,
+.light .footer-logo img,
+.light .editorial-logo img,
+html.light .brand-mark img,
+html.light .footer-logo img,
+html.light .editorial-logo img {
+  mix-blend-mode: screen;
+  filter: sepia(1) saturate(1.8) hue-rotate(355deg) brightness(.38) contrast(1.35);
+}
+
 /* CLP luxury finish */
 .site-header {
   position: sticky;
