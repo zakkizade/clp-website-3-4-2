@@ -4705,6 +4705,25 @@ html.light .hero-section::after { display: none; }
 }
 .clp-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; }
 
+/* Editorial hero: keep the jewelry image as the only decorative focal point. */
+.hero-section,
+html.dark .hero-section,
+html:not(.light) .hero-section {
+  background: #0a0a0a !important;
+}
+html.light .hero-section,
+.light .hero-section {
+  background: #faf8f2 !important;
+}
+.hero-section::before,
+.hero-section::after,
+.hero-layout::before {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
 /* Final quantity control fallback: keep both controls visible above legacy button rules. */
 .cart-drawer .cart-quantity {
   display: inline-flex !important;
