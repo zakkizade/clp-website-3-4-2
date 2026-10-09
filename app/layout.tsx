@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   openGraph: { title: 'CLP Jewels | Natural Gemstones & Fine Jewelry from Jaipur', description: 'Certified natural gemstones and fine jewelry shaped in Jaipur since 1987.', type: 'website', siteName: 'CLP Jewels' },
   twitter: { card: 'summary_large_image', title: 'CLP Jewels | Jaipur Fine Jewelry', description: 'Natural gemstones and heirloom jewelry from Jaipur.' },
   alternates: { canonical: '/' },
+  icons: { icon: '/clp-official-logo.png', apple: '/clp-official-logo.png' },
 }
 
 export const viewport: Viewport = {
