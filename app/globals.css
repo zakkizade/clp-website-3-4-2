@@ -4606,7 +4606,40 @@ html.light .hero-copy > * { background: transparent !important; background-image
 html.light .hero-copy,
 .light .hero-copy { background-image: none !important; }
 html.light .brand-mark img,
-.light .brand-mark img { mix-blend-mode: screen; filter: sepia(1) saturate(3.2) hue-rotate(355deg) brightness(.5) contrast(1.8) !important; }
+.light .brand-mark img { mix-blend-mode: screen !important; filter: sepia(1) saturate(2.2) hue-rotate(355deg) brightness(.62) contrast(1.45) !important; }
+
+/* Official logo artwork: black source pixels disappear through screen blending; no box or fill. */
+.site-header .brand-mark,
+.site-footer .brand-mark,
+.site-header .brand-mark img,
+.site-footer .brand-mark img,
+.footer-logo,
+.footer-logo img {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.site-header .brand-mark img,
+.site-footer .brand-mark img,
+.footer-logo img {
+  display: block !important;
+  width: auto !important;
+  height: 40px !important;
+  max-width: 132px !important;
+  padding: 0 !important;
+  object-fit: contain;
+  mix-blend-mode: lighten !important;
+  filter: saturate(1.15) contrast(1.2) !important;
+}
+html.light .site-header .brand-mark img,
+html.light .site-footer .brand-mark img,
+.light .site-header .brand-mark img,
+.light .site-footer .brand-mark img {
+  mix-blend-mode: lighten !important;
+  filter: sepia(1) saturate(2.4) hue-rotate(355deg) brightness(.52) contrast(1.7) !important;
+}
+.site-footer .brand-mark img,
+.footer-logo img { height: 30px !important; max-width: 104px !important; }
 
 .hero-layout > .hero-copy h1,
 #top > .hero-layout > .hero-copy > h1 {
