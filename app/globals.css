@@ -4726,13 +4726,58 @@ html.light .hero-section,
 .hero-banner {
   background-repeat: no-repeat;
 }
+/* The supplied artwork is the complete editorial hero treatment. */
+.hero-layout {
+  min-height: clamp(500px, 56vw, 700px);
+  background-image: var(--hero-art);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.hero-banner {
+  min-height: clamp(500px, 56vw, 700px);
+  background-image: none !important;
+  background-color: transparent;
+}
+.hero-layout::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 8, 8, 1) 0 42%, transparent 55%);
+  opacity: .96;
+}
+.hero-copy {
+  position: absolute;
+  z-index: 2;
+  inset: 0 auto auto 0;
+  width: 52%;
+  padding: clamp(90px, 10vw, 150px) 0 0 clamp(5vw, 10vw, 140px);
+  pointer-events: none;
+}
+.hero-copy > *:not(.hero-buttons) { visibility: hidden; }
+.hero-copy .hero-buttons { pointer-events: auto; margin-top: 210px; }
+.hero-copy .hero-buttons .text-link { display: none; }
+.hero-copy .hero-buttons .button { box-shadow: 0 8px 22px rgba(0, 0, 0, .25); }
+html.light .hero-layout, .light .hero-layout { --hero-art: url('/hero-light-clp.png'); }
+html.dark .hero-layout, html:not(.light) .hero-layout, .dark .hero-layout { --hero-art: url('/hero-dark-clp.png'); }
+html.light .hero-layout::after, .light .hero-layout::after {
+  background: linear-gradient(180deg, rgba(250, 248, 242, 1) 0 42%, transparent 55%);
+}
+
 @media (max-width: 700px) {
-  .hero-section { padding: 32px 5vw 0; }
-  .hero-layout { display: flex; flex-direction: column; gap: 24px; }
-  .hero-copy { order: 1; }
-  .hero-banner { order: 2; width: 100%; min-height: min(78vw, 420px); background-position: right center !important; }
+  .hero-section { padding: 0 5vw 0; }
+  .hero-layout { display: flex; flex-direction: column; gap: 0; min-height: 0; background-image: none; }
+  .hero-layout::after { display: none; }
+  .hero-copy { position: relative; inset: auto; order: 1; width: 100%; padding: 44px 0 30px; pointer-events: auto; }
+  .hero-copy > *:not(.hero-buttons) { visibility: visible; }
+  .hero-copy .hero-buttons { margin-top: 24px; }
+  .hero-copy .hero-buttons .text-link { display: inline-flex; }
+  .hero-banner { order: 2; width: 100%; min-height: min(78vw, 420px); background-image: var(--hero-art) !important; background-position: center !important; }
   .hero-buttons .button { min-height: 48px; }
 }
+
 
 /* Final quantity control fallback: keep both controls visible above legacy button rules. */
 .cart-drawer .cart-quantity {
