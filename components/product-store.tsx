@@ -42,7 +42,7 @@ function toProduct(row: Record<string, unknown>): Product {
   return {
     id: String(row.id), name: String(row.name || row.title || ""), type: String(row.type || "Jewelry"), slug: String(row.slug || row.id),
     priceInr: Number(row.price ?? row.sale_price ?? row.regular_price ?? 0), regularPriceInr: row.regular_price != null ? Number(row.regular_price) : Number(row.price ?? 0), salePriceInr: row.sale_price != null ? Number(row.sale_price) : undefined, showSaleBadge: row.show_sale_badge != null ? Boolean(row.show_sale_badge) : Boolean(row.sale_price != null || Number(row.discount_percent || 0) > 0), discountPercent: row.discount_percent != null ? Number(row.discount_percent) : 0, image: mainImage, gallery: orderedImages, tags: cleanTags(row.tags),
-    category: String(row.category || "Fine Jewelry") as Product["category"], goldPurity: String(row.gold_purity || "18K"), certificate: String(row.certificate || "IGL Certified"), origin: String(row.origin || "Jaipur, India"), description: String(row.description || ""), isFeatured: Boolean(row.is_featured), showOnBanner: Boolean(row.show_on_banner ?? row.isFeatured), carat: String(row.carat || ""), metal: String(row.metal || "18K Gold"), videoUrl: row.video_url || row.video ? String(row.video_url || row.video) : undefined, view360: Array.isArray(row.view_360) ? row.view_360.map(String) : [],
+    category: String(row.category || "Fine Jewelry") as Product["category"], goldPurity: String(row.gold_purity || "18K"), certificate: String(row.certificate || "IGL Certified"), origin: String(row.origin || "Jaipur, India"), description: String(row.description || ""), isFeatured: Boolean(row.is_featured), showOnBanner: Boolean(row.show_on_banner ?? row.isFeatured), carat: String(row.carat || ""), metal: String(row.metal || "18K Gold"), metalOptions: row.metal_options && typeof row.metal_options === "object" ? row.metal_options as Product["metalOptions"] : undefined, videoUrl: row.video_url || row.video ? String(row.video_url || row.video) : undefined, view360: Array.isArray(row.view_360) ? row.view_360.map(String) : [],
   }
 }
 
@@ -77,6 +77,7 @@ function toRow(product: Product) {
     images: orderedImages,
     view_360: Array.isArray(product.view360) ? product.view360 : [],
     tags: cleanTags(product.tags),
+    metal_options: product.metalOptions || null,
   }
 }
 
