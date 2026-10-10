@@ -4593,7 +4593,7 @@ body {
 /* Fine orbital hairlines and restrained corner light for a jewelry-editorial finish. */
 .hero-section {
   background-image:
-    radial-gradient(circle at 0% 0%, rgba(212, 175, 55, .11), transparent 18%),
+    radial-gradient(circle at 0% 0%, rgba(212, 175, 55, .26), transparent 18%),
     radial-gradient(circle at 100% 100%, rgba(212, 175, 55, .09), transparent 20%),
     radial-gradient(circle at 100% 0%, rgba(212, 175, 55, .035), transparent 15%),
     radial-gradient(circle at 0% 100%, rgba(212, 175, 55, .025), transparent 15%),
@@ -4601,8 +4601,8 @@ body {
 }
 .hero-layout {
   background-image:
-    radial-gradient(ellipse 48% 88% at 74% 48%, transparent 0 57%, rgba(212, 175, 55, .065) 57.2%, transparent 57.6%),
-    radial-gradient(ellipse 58% 105% at 72% 48%, transparent 0 66%, rgba(212, 175, 55, .045) 66.2%, transparent 66.55%),
+    radial-gradient(ellipse 48% 88% at 74% 48%, transparent 0 57%, rgba(157, 116, 29, .25) 57.2%, transparent 57.6%),
+    radial-gradient(ellipse 58% 105% at 72% 48%, transparent 0 66%, rgba(157, 116, 29, .21) 66.2%, transparent 66.55%),
     radial-gradient(ellipse 68% 122% at 70% 48%, transparent 0 73%, rgba(212, 175, 55, .028) 73.2%, transparent 73.5%),
     transparent !important;
   background-blend-mode: screen;
@@ -4610,7 +4610,7 @@ body {
 html.light .hero-section,
 .light .hero-section {
   background-image:
-    radial-gradient(circle at 0% 0%, rgba(157, 116, 29, .075), transparent 18%),
+    radial-gradient(circle at 0% 0%, rgba(157, 116, 29, .22), transparent 18%),
     radial-gradient(circle at 100% 100%, rgba(157, 116, 29, .06), transparent 20%),
     radial-gradient(circle at 100% 0%, rgba(157, 116, 29, .022), transparent 15%),
     radial-gradient(circle at 0% 100%, rgba(157, 116, 29, .018), transparent 15%),
@@ -4619,8 +4619,8 @@ html.light .hero-section,
 html.light .hero-layout,
 .light .hero-layout {
   background-image:
-    radial-gradient(ellipse 48% 88% at 74% 48%, transparent 0 57%, rgba(157, 116, 29, .055) 57.2%, transparent 57.6%),
-    radial-gradient(ellipse 58% 105% at 72% 48%, transparent 0 66%, rgba(157, 116, 29, .038) 66.2%, transparent 66.55%),
+    radial-gradient(ellipse 48% 88% at 74% 48%, transparent 0 57%, rgba(157, 116, 29, .26) 57.2%, transparent 57.6%),
+    radial-gradient(ellipse 58% 105% at 72% 48%, transparent 0 66%, rgba(157, 116, 29, .21) 66.2%, transparent 66.55%),
     radial-gradient(ellipse 68% 122% at 70% 48%, transparent 0 73%, rgba(157, 116, 29, .024) 73.2%, transparent 73.5%),
     transparent !important;
   background-blend-mode: multiply;
@@ -4653,9 +4653,10 @@ html.light .hero-layout,
   height: 155%;
   left: -12%;
   top: -30%;
-  border: 1px solid rgba(212, 175, 55, .12);
+  border: 2px solid rgba(212, 175, 55, .32);
   border-radius: 50%;
   transform: rotate(-18deg);
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, .22));
   box-shadow:
     0 0 0 34px rgba(212, 175, 55, .035),
     0 0 0 86px rgba(212, 175, 55, .022);
@@ -4665,7 +4666,9 @@ html.light .hero-layout,
   height: 180%;
   left: 42%;
   top: -42%;
-  border-color: rgba(212, 175, 55, .085);
+  border-color: rgba(212, 175, 55, .26);
+  border-width: 2px;
+  filter: drop-shadow(0 0 7px rgba(212, 175, 55, .18));
   transform: rotate(24deg);
   box-shadow: 0 0 0 28px rgba(212, 175, 55, .025);
 }
@@ -4680,9 +4683,15 @@ html.light .hero-layout,
   transform: rotate(-9deg);
 }
 html.light .hero-section::before,
-.light .hero-section::before { border-color: rgba(157, 116, 29, .19); box-shadow: 0 0 0 34px rgba(157,116,29,.065), 0 0 0 86px rgba(157,116,29,.04); }
+.light .hero-section::before,
 html.light .hero-section::after,
-.light .hero-section::after { border-color: rgba(157, 116, 29, .15); box-shadow: 0 0 0 28px rgba(157,116,29,.045); }
+.light .hero-section::after,
+html.light .hero-layout::before,
+.light .hero-layout::before,
+html.light .hero-layout::after,
+.light .hero-layout::after { border-color: rgba(157, 116, 29, .27); filter: drop-shadow(0 0 8px rgba(157,116,29,.18)); box-shadow: 0 0 0 34px rgba(157,116,29,.065), 0 0 0 86px rgba(157,116,29,.04); }
+html.light .hero-section::after,
+.light .hero-section::after { border-color: rgba(157, 116, 29, .24); border-width: 2px; filter: drop-shadow(0 0 7px rgba(157,116,29,.16)); box-shadow: 0 0 0 28px rgba(157,116,29,.045); }
 html.light .hero-layout::before,
 .light .hero-layout::before { border-color: rgba(157, 116, 29, .11); }
 .hero-layout::after {
