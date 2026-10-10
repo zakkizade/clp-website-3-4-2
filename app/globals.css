@@ -4588,7 +4588,59 @@ body {
   transform: translate(-50%, -50%) rotate(22deg) scaleY(.42);
 }
 .hero-layout { isolation: isolate; }
-.hero-layout > * { position: relative; z-index: 1; }
+  .hero-layout > * { position: relative; z-index: 1; }
+
+/* Fine orbital hairlines and restrained corner light for a jewelry-editorial finish. */
+.hero-section {
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(212, 175, 55, .11), transparent 18%),
+    radial-gradient(circle at 100% 100%, rgba(212, 175, 55, .09), transparent 20%),
+    radial-gradient(circle at 100% 0%, rgba(212, 175, 55, .035), transparent 15%),
+    radial-gradient(circle at 0% 100%, rgba(212, 175, 55, .025), transparent 15%),
+    linear-gradient(120deg, #0d0d0d, #1a1a1a 55%, #0d0d0d) !important;
+}
+.hero-layout {
+  background-image:
+    radial-gradient(ellipse 48% 88% at 74% 48%, transparent 0 57%, rgba(212, 175, 55, .065) 57.2%, transparent 57.6%),
+    radial-gradient(ellipse 58% 105% at 72% 48%, transparent 0 66%, rgba(212, 175, 55, .045) 66.2%, transparent 66.55%),
+    radial-gradient(ellipse 68% 122% at 70% 48%, transparent 0 73%, rgba(212, 175, 55, .028) 73.2%, transparent 73.5%),
+    transparent !important;
+  background-blend-mode: screen;
+}
+html.light .hero-section,
+.light .hero-section {
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(157, 116, 29, .075), transparent 18%),
+    radial-gradient(circle at 100% 100%, rgba(157, 116, 29, .06), transparent 20%),
+    radial-gradient(circle at 100% 0%, rgba(157, 116, 29, .022), transparent 15%),
+    radial-gradient(circle at 0% 100%, rgba(157, 116, 29, .018), transparent 15%),
+    linear-gradient(120deg, #f9f6f0, #ebe3d5 55%, #f9f6f0) !important;
+}
+html.light .hero-layout,
+.light .hero-layout {
+  background-image:
+    radial-gradient(ellipse 48% 88% at 74% 48%, transparent 0 57%, rgba(157, 116, 29, .055) 57.2%, transparent 57.6%),
+    radial-gradient(ellipse 58% 105% at 72% 48%, transparent 0 66%, rgba(157, 116, 29, .038) 66.2%, transparent 66.55%),
+    radial-gradient(ellipse 68% 122% at 70% 48%, transparent 0 73%, rgba(157, 116, 29, .024) 73.2%, transparent 73.5%),
+    transparent !important;
+  background-blend-mode: multiply;
+}
+@media (max-width: 700px) {
+  .hero-layout {
+    background-image:
+      radial-gradient(ellipse 78% 52% at 52% 62%, transparent 0 57%, rgba(212, 175, 55, .055) 57.2%, transparent 57.7%),
+      radial-gradient(ellipse 92% 64% at 52% 60%, transparent 0 67%, rgba(212, 175, 55, .035) 67.2%, transparent 67.6%),
+      transparent !important;
+  }
+  html.light .hero-layout,
+  .light .hero-layout {
+    background-image:
+      radial-gradient(ellipse 78% 52% at 52% 62%, transparent 0 57%, rgba(157, 116, 29, .045) 57.2%, transparent 57.7%),
+      radial-gradient(ellipse 92% 64% at 52% 60%, transparent 0 67%, rgba(157, 116, 29, .028) 67.2%, transparent 67.6%),
+      transparent !important;
+  }
+}
+
 
 /* Soft champagne orbital rings: decorative background-only geometry. */
 .hero-section::before,
