@@ -21,7 +21,7 @@ export type Product = {
   view?: boolean
   carat: string
   metal: string
-  metalOptions?: { gold?: number; silver?: number; goldPurities?: { "14K"?: number; "18K"?: number; "22K"?: number } }
+  metalOptions?: { gold?: number; silver?: number; goldPurities?: { "14K"?: number; "18K"?: number; "22K"?: number }; priceOnRequest?: boolean }
   videoUrl?: string
   view360?: string[]
   sizeOptions?: string[]
