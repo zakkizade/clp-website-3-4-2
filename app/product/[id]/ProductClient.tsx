@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowLeft, Award, Gem, Globe2, Heart, MessageCircle, Play, Rotate3D, ShieldCheck, ShoppingBag, Sparkles, X } from "lucide-react" // lucide icons keep the detail tree consistent with the luxury theme.
 import { formatPrice, type Product } from "@/lib/products"
 import { useWishlist } from "@/components/wishlist-provider"
@@ -36,6 +36,7 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
   const hasGold = hasConfiguredMetal ? typeof metalOptions.gold === "number" : true
   const hasSilver = hasConfiguredMetal && typeof metalOptions.silver === "number"
   const [metal, setMetal] = useState<"Gold" | "Silver">(hasGold ? "Gold" : "Silver")
+  useEffect(() => { if (!hasGold && hasSilver) setMetal("Silver"); else if (hasGold && !hasSilver) setMetal("Gold") }, [hasGold, hasSilver])
   const [purity, setPurity] = useState<"14K" | "18K" | "22K">((product.goldPurity.match(/14K|18K|22K/)?.[0] as "14K" | "18K" | "22K") || "18K")
   const [size, setSize] = useState("")
   const goldPurityPrice = metalOptions.goldPurities?.[purity]
