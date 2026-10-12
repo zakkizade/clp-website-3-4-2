@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-type ProductImageZoomProps = { src: string; alt: string }
+type ProductImageZoomProps = { src: string; alt: string; onError?: () => void }
 type Point = { x: number; y: number }
 
 const HOVER_SCALE = 2.5
@@ -12,7 +12,7 @@ const MAX_SCALE = 4
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y)
 
-export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
+export function ProductImageZoom({ src, alt, onError }: ProductImageZoomProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const pointers = useRef(new Map<number, Point>())
   const gesture = useRef({ startDistance: 0, startScale: 1, dragFrom: { x: 0, y: 0 }, dragOffset: { x: 0, y: 0 }, moved: false })
@@ -143,6 +143,7 @@ export function ProductImageZoom({ src, alt }: ProductImageZoomProps) {
         className="product-image-zoom-img"
         style={{ transform, transformOrigin, transition: isGesturing ? "none" : undefined }}
         priority
+        onError={onError}
         draggable={false}
       />
       {scale > 1 && !isHovering && <span className="product-image-zoom-hint" aria-hidden="true">Double tap to reset</span>}
