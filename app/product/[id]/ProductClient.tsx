@@ -41,12 +41,14 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
   const [size, setSize] = useState("")
   const goldPurityPrice = metalOptions.goldPurities?.[purity]
   const hasMetalPricing = typeof metalOptions.gold === "number" || typeof metalOptions.silver === "number" || Boolean(metalOptions.goldPurities)
-  const fallbackPrice = saleDetails(product).sale
-  const selectedPrice = metal === "Silver" && hasSilver ? Number(metalOptions.silver) : Number(goldPurityPrice || metalOptions.gold || (hasMetalPricing ? product.priceInr : fallbackPrice))
   const productSale = saleDetails(product)
   const configuredDiscountPercent = Number(product.discountPercent || 0)
-  const baseGoldSale = Number(goldPurityPrice || metalOptions.gold || product.salePriceInr || product.priceInr || productSale.sale)
-  const baseGoldOriginal = Number(product.regularPriceInr || productSale.regular || (configuredDiscountPercent > 0 ? baseGoldSale / (1 - configuredDiscountPercent / 100) : baseGoldSale))
+  const fallbackPrice = productSale.sale
+  const activeGoldBasePrice = Number(goldPurityPrice || metalOptions.gold || (hasMetalPricing ? product.priceInr : fallbackPrice))
+  const discountRatio = productSale.regular > 0 && productSale.sale > 0 && productSale.sale < productSale.regular ? productSale.sale / productSale.regular : configuredDiscountPercent > 0 ? 1 - configuredDiscountPercent / 100 : 1
+  const selectedPrice = metal === "Silver" && hasSilver ? Number(metalOptions.silver) : (activeGoldBasePrice >= productSale.regular && discountRatio < 1 ? Math.round(activeGoldBasePrice * discountRatio) : activeGoldBasePrice)
+  const baseGoldSale = activeGoldBasePrice >= productSale.regular && discountRatio < 1 ? Math.round(activeGoldBasePrice * discountRatio) : activeGoldBasePrice
+  const baseGoldOriginal = Number(activeGoldBasePrice || product.regularPriceInr || productSale.regular || (configuredDiscountPercent > 0 ? baseGoldSale / (1 - configuredDiscountPercent / 100) : baseGoldSale))
   const selectedOriginalPrice = metal === "Silver" && hasSilver
     ? (configuredDiscountPercent > 0 ? selectedPrice / (1 - configuredDiscountPercent / 100) : selectedPrice)
     : baseGoldOriginal
