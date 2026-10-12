@@ -41,11 +41,21 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
   const [size, setSize] = useState("")
   const goldPurityPrice = metalOptions.goldPurities?.[purity]
   const hasMetalPricing = typeof metalOptions.gold === "number" || typeof metalOptions.silver === "number" || Boolean(metalOptions.goldPurities)
-  const fallbackPrice = saleDetails(product).sale
-  const selectedPrice = metal === "Silver" && hasSilver ? Number(metalOptions.silver) : Number(goldPurityPrice || metalOptions.gold || (hasMetalPricing ? product.priceInr : fallbackPrice))
-  const selectedOriginalPrice = metal === "Silver" && hasSilver ? selectedPrice : Number(goldPurityPrice || metalOptions.gold || saleDetails(product).regular)
-  const selectedDiscounted = selectedOriginalPrice > selectedPrice && selectedPrice > 0
-  const selectedDiscountPercent = selectedDiscounted ? Math.round((1 - selectedPrice / selectedOriginalPrice) * 100) : 0
+  const productSale = saleDetails(product)
+  const configuredDiscountPercent = Number(product.discountPercent || 0)
+  const fallbackPrice = productSale.sale
+  const activeGoldBasePrice = Number(goldPurityPrice || metalOptions.gold || (hasMetalPricing ? product.priceInr : fallbackPrice))
+  const discountRatio = productSale.regular > 0 && productSale.sale > 0 && productSale.sale < productSale.regular ? productSale.sale / productSale.regular : configuredDiscountPercent > 0 ? 1 - configuredDiscountPercent / 100 : 1
+  const selectedPrice = metal === "Silver" && hasSilver ? Number(metalOptions.silver) : (activeGoldBasePrice >= productSale.regular && discountRatio < 1 ? Math.round(activeGoldBasePrice * discountRatio) : activeGoldBasePrice)
+  const baseGoldSale = activeGoldBasePrice >= productSale.regular && discountRatio < 1 ? Math.round(activeGoldBasePrice * discountRatio) : activeGoldBasePrice
+  const baseGoldOriginal = Number(activeGoldBasePrice || product.regularPriceInr || productSale.regular || (configuredDiscountPercent > 0 ? baseGoldSale / (1 - configuredDiscountPercent / 100) : baseGoldSale))
+  const selectedOriginalPrice = metal === "Silver" && hasSilver
+    ? (configuredDiscountPercent > 0 ? selectedPrice / (1 - configuredDiscountPercent / 100) : selectedPrice)
+    : baseGoldOriginal
+  const selectedDiscountPercent = selectedOriginalPrice > selectedPrice && selectedPrice > 0
+    ? Math.round((1 - selectedPrice / selectedOriginalPrice) * 100)
+    : (configuredDiscountPercent > 0 ? configuredDiscountPercent : 0)
+  const selectedDiscounted = selectedDiscountPercent > 0 && selectedOriginalPrice > selectedPrice && selectedPrice > 0
   const inquireOnly = metalOptions.priceOnRequest === true || selectedPrice <= 0
   const selectedPriceIsFixed = selectedPrice > 0 && !inquireOnly
   const sizing = sizingForProduct(product)
