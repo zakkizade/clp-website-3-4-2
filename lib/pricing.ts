@@ -16,8 +16,10 @@ export function metalPriceDetails(product: MetalPricingProduct, metal: "Gold" | 
   const productSale = saleDetails(product)
   const activeBase = base > 0 ? base : productSale.sale
   const ratio = productSale.regular > 0 && productSale.sale > 0 && productSale.sale < productSale.regular ? productSale.sale / productSale.regular : Number(product.discountPercent || 0) > 0 ? 1 - Number(product.discountPercent) / 100 : 1
-  const original = activeBase
-  const sale = ratio < 1 && activeBase >= productSale.regular ? Math.round(activeBase * ratio) : activeBase
-  const discounted = sale > 0 && original > sale
-  return { original, sale, discounted, percentOff: discounted ? Math.round((1 - sale / original) * 100) : 0 }
+  const hasDiscount = ratio < 1 && activeBase > 0
+  const displaySale = activeBase
+  const displayRegular = hasDiscount ? Math.round(activeBase / ratio) : activeBase
+  const showDiscount = hasDiscount && displayRegular > displaySale
+  const discountPercent = showDiscount ? Math.round((1 - displaySale / displayRegular) * 100) : 0
+  return { displayRegular, displaySale, discountPercent, showDiscount, original: displayRegular, sale: displaySale, discounted: showDiscount, percentOff: discountPercent }
 }

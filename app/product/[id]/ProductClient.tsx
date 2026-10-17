@@ -41,10 +41,10 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
   const [size, setSize] = useState("")
   const hasMetalPricing = typeof metalOptions.gold === "number" || typeof metalOptions.silver === "number" || Boolean(metalOptions.goldPurities)
   const selectedPricing = metalPriceDetails(product, metal, purity)
-  const selectedPrice = selectedPricing.sale
-  const selectedOriginalPrice = selectedPricing.original
-  const selectedDiscounted = selectedPricing.discounted
-  const selectedDiscountPercent = selectedPricing.percentOff
+  const selectedPrice = selectedPricing.displaySale
+  const selectedOriginalPrice = selectedPricing.displayRegular
+  const selectedDiscounted = selectedPricing.showDiscount
+  const selectedDiscountPercent = selectedPricing.discountPercent
   const inquireOnly = metalOptions.priceOnRequest === true || selectedPrice <= 0
   const selectedPriceIsFixed = selectedPrice > 0 && !inquireOnly
   const sizing = sizingForProduct(product)
@@ -74,7 +74,7 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
           {galleryImages.length > 0 && <div className="thumbnail-row">{galleryImages.map((galleryImage, index) => <button type="button" key={`${galleryImage}-${index}`} className={active === index ? "active" : ""} onClick={() => { setActive(index); setMode("gallery") }}><Image src={galleryImage} alt={`${product.name} gallery image ${index + 1}`} fill sizes="90px" className="object-cover" onError={() => setBrokenImages((current) => current.includes(galleryImage) ? current : [...current, galleryImage])} /><span>{viewLabels[index] || `Gallery image ${index + 1}`}</span></button>)}</div>}
         </section>
         <section className="pdp-info">
-          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}{metal === "Silver" && !/silver/i.test(product.name) ? " — 925 Sterling Silver" : ""}</h1><p className="pdp-price">{selectedDiscounted && !inquireOnly ? <><span className="sale-badge">{selectedDiscountPercent}% OFF</span> <del>{formatPrice(selectedOriginalPrice, currency)}</del> {formatPrice(selectedPrice, currency)}</> : formatPrice(selectedPrice, currency)}</p>
+          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}{metal === "Silver" && !/silver/i.test(product.name) ? " — 925 Sterling Silver" : ""}</h1><p className="pdp-price">{selectedPricing.showDiscount && !inquireOnly ? <><span className="sale-badge">{selectedPricing.discountPercent}% OFF</span> <del>{formatPrice(selectedPricing.displayRegular, currency)}</del> <span>{formatPrice(selectedPricing.displaySale, currency)}</span></> : formatPrice(selectedPricing.displaySale, currency)}</p>
           <div className="pdp-specs"><div><span>Carat</span><strong>{product.carat}</strong></div><div><span>Metal</span><strong>{metal === "Silver" ? "925 Sterling Silver" : product.goldPurity}</strong></div><div><span>Certificate</span><strong>{product.certificate}</strong></div><div><span>Origin</span><strong>{product.origin}</strong></div></div><div className="product-option-grid">{(hasGold || hasSilver) && <label>Metal<select value={metal} onChange={(event) => setMetal(event.target.value as "Gold" | "Silver")}><option>Gold</option><option>Silver</option></select></label>}{metal === "Gold" && <label>Gold Purity<select value={purity} onChange={(event) => setPurity(event.target.value as "14K" | "18K" | "22K")}>{purityOptions.map((option) => <option key={option}>{option}</option>)}</select></label>}{metal === "Silver" && <div className="product-option-label"><span>Metal:</span><strong>925 Sterling Silver</strong></div>}<label>{sizing.label}<select value={size} onChange={(event) => setSize(event.target.value)}><option value="">Select {sizing.label.toLowerCase()}</option>{sizing.options.map((option) => <option key={option}>{option}</option>)}</select></label></div>
 <div className="pdp-actions" aria-label="Purchase actions">
   {inquireOnly ? <button className="pdp-buy-button" onClick={() => window.open(`https://wa.me/919828354333?text=${encodeURIComponent(`Hello CLP Jewels, please share the price for ${product.name}.\nMetal: ${metal}${metal === "Gold" ? `\nPurity: ${purity}` : "\nPurity: 925 Sterling Silver"}\n${sizing.label}: ${size || "Not selected"}`)}`, "_blank", "noopener,noreferrer")}>INQUIRE PRICE ON WHATSAPP</button> : <button className="pdp-buy-button" onClick={() => { if (!size) { showToast(`Choose ${sizing.label.toLowerCase()} first`); return }; addToCart(product.id); setCheckoutOpen(true) }}>BUY NOW</button>}
