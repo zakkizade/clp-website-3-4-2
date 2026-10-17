@@ -11,7 +11,7 @@ import { useProducts } from "@/components/product-store"
 import { ProductViewer360 } from "@/components/product-viewer-360"
 import { ProductImageZoom } from "@/components/product-image-zoom"
 import { purityOptions, sizingForProduct } from "@/lib/sizing"
-import { saleDetails } from "@/lib/pricing"
+import { metalPriceDetails } from "@/lib/pricing"
 import { useCurrency } from "@/components/currency-provider"
 import { CheckoutForm } from "@/components/checkout-form"
 
@@ -39,23 +39,12 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
   useEffect(() => { if (!hasGold && hasSilver) setMetal("Silver"); else if (hasGold && !hasSilver) setMetal("Gold") }, [hasGold, hasSilver])
   const [purity, setPurity] = useState<"14K" | "18K" | "22K">((product.goldPurity.match(/14K|18K|22K/)?.[0] as "14K" | "18K" | "22K") || "18K")
   const [size, setSize] = useState("")
-  const goldPurityPrice = metalOptions.goldPurities?.[purity]
   const hasMetalPricing = typeof metalOptions.gold === "number" || typeof metalOptions.silver === "number" || Boolean(metalOptions.goldPurities)
-  const productSale = saleDetails(product)
-  const configuredDiscountPercent = Number(product.discountPercent || 0)
-  const fallbackPrice = productSale.sale
-  const activeGoldBasePrice = Number(goldPurityPrice || metalOptions.gold || (hasMetalPricing ? product.priceInr : fallbackPrice))
-  const discountRatio = productSale.regular > 0 && productSale.sale > 0 && productSale.sale < productSale.regular ? productSale.sale / productSale.regular : configuredDiscountPercent > 0 ? 1 - configuredDiscountPercent / 100 : 1
-  const selectedPrice = metal === "Silver" && hasSilver ? Number(metalOptions.silver) : (activeGoldBasePrice >= productSale.regular && discountRatio < 1 ? Math.round(activeGoldBasePrice * discountRatio) : activeGoldBasePrice)
-  const baseGoldSale = activeGoldBasePrice >= productSale.regular && discountRatio < 1 ? Math.round(activeGoldBasePrice * discountRatio) : activeGoldBasePrice
-  const baseGoldOriginal = Number(activeGoldBasePrice || product.regularPriceInr || productSale.regular || (configuredDiscountPercent > 0 ? baseGoldSale / (1 - configuredDiscountPercent / 100) : baseGoldSale))
-  const selectedOriginalPrice = metal === "Silver" && hasSilver
-    ? (configuredDiscountPercent > 0 ? selectedPrice / (1 - configuredDiscountPercent / 100) : selectedPrice)
-    : baseGoldOriginal
-  const selectedDiscountPercent = selectedOriginalPrice > selectedPrice && selectedPrice > 0
-    ? Math.round((1 - selectedPrice / selectedOriginalPrice) * 100)
-    : (configuredDiscountPercent > 0 ? configuredDiscountPercent : 0)
-  const selectedDiscounted = selectedDiscountPercent > 0 && selectedOriginalPrice > selectedPrice && selectedPrice > 0
+  const selectedPricing = metalPriceDetails(product, metal, purity)
+  const selectedPrice = selectedPricing.displaySale
+  const selectedOriginalPrice = selectedPricing.displayRegular
+  const selectedDiscounted = selectedPricing.showDiscount
+  const selectedDiscountPercent = selectedPricing.discountPercent
   const inquireOnly = metalOptions.priceOnRequest === true || selectedPrice <= 0
   const selectedPriceIsFixed = selectedPrice > 0 && !inquireOnly
   const sizing = sizingForProduct(product)
@@ -85,7 +74,7 @@ export default function ProductClient({ product: initialProduct }: { product: Pr
           {galleryImages.length > 0 && <div className="thumbnail-row">{galleryImages.map((galleryImage, index) => <button type="button" key={`${galleryImage}-${index}`} className={active === index ? "active" : ""} onClick={() => { setActive(index); setMode("gallery") }}><Image src={galleryImage} alt={`${product.name} gallery image ${index + 1}`} fill sizes="90px" className="object-cover" onError={() => setBrokenImages((current) => current.includes(galleryImage) ? current : [...current, galleryImage])} /><span>{viewLabels[index] || `Gallery image ${index + 1}`}</span></button>)}</div>}
         </section>
         <section className="pdp-info">
-          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}{metal === "Silver" && !/silver/i.test(product.name) ? " — 925 Sterling Silver" : ""}</h1><p className="pdp-price">{selectedDiscounted && !inquireOnly ? <><span className="sale-badge">{selectedDiscountPercent}% OFF</span> <del>{formatPrice(selectedOriginalPrice, currency)}</del> {formatPrice(selectedPrice, currency)}</> : formatPrice(selectedPrice, currency)}</p>
+          <p className="eyebrow">{product.type} · Jaipur atelier</p><h1>{product.name}{metal === "Silver" && !/silver/i.test(product.name) ? " — 925 Sterling Silver" : ""}</h1><p className="pdp-price">{selectedPricing.showDiscount && !inquireOnly ? <><span className="sale-badge">{selectedPricing.discountPercent}% OFF</span> <del>{formatPrice(selectedPricing.displayRegular, currency)}</del> <span>{formatPrice(selectedPricing.displaySale, currency)}</span></> : formatPrice(selectedPricing.displaySale, currency)}</p>
           <div className="pdp-specs"><div><span>Carat</span><strong>{product.carat}</strong></div><div><span>Metal</span><strong>{metal === "Silver" ? "925 Sterling Silver" : product.goldPurity}</strong></div><div><span>Certificate</span><strong>{product.certificate}</strong></div><div><span>Origin</span><strong>{product.origin}</strong></div></div><div className="product-option-grid">{(hasGold || hasSilver) && <label>Metal<select value={metal} onChange={(event) => setMetal(event.target.value as "Gold" | "Silver")}><option>Gold</option><option>Silver</option></select></label>}{metal === "Gold" && <label>Gold Purity<select value={purity} onChange={(event) => setPurity(event.target.value as "14K" | "18K" | "22K")}>{purityOptions.map((option) => <option key={option}>{option}</option>)}</select></label>}{metal === "Silver" && <div className="product-option-label"><span>Metal:</span><strong>925 Sterling Silver</strong></div>}<label>{sizing.label}<select value={size} onChange={(event) => setSize(event.target.value)}><option value="">Select {sizing.label.toLowerCase()}</option>{sizing.options.map((option) => <option key={option}>{option}</option>)}</select></label></div>
 <div className="pdp-actions" aria-label="Purchase actions">
   {inquireOnly ? <button className="pdp-buy-button" onClick={() => window.open(`https://wa.me/919828354333?text=${encodeURIComponent(`Hello CLP Jewels, please share the price for ${product.name}.\nMetal: ${metal}${metal === "Gold" ? `\nPurity: ${purity}` : "\nPurity: 925 Sterling Silver"}\n${sizing.label}: ${size || "Not selected"}`)}`, "_blank", "noopener,noreferrer")}>INQUIRE PRICE ON WHATSAPP</button> : <button className="pdp-buy-button" onClick={() => { if (!size) { showToast(`Choose ${sizing.label.toLowerCase()} first`); return }; addToCart(product.id); setCheckoutOpen(true) }}>BUY NOW</button>}
